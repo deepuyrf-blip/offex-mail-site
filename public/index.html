@@ -300,6 +300,9 @@
   .promo-skip{display:block;width:100%;margin-top:10px;background:none;border:none;color:var(--muted2);font-size:13px;
     font-weight:600;cursor:pointer;font-family:inherit;padding:8px}
   .promo-skip:hover{color:var(--text)}
+  .reward-status{min-height:16px;margin-top:10px;font-size:12px;line-height:1.5;color:var(--muted2);text-align:center}
+  button.promo-cta{border:none;cursor:pointer;font:inherit;font-weight:800}
+  button.promo-cta:disabled{opacity:.6;cursor:wait}
 
   /* ads */
   .ad-slot{max-width:1180px;margin:26px auto;padding:0 20px;text-align:center}
@@ -483,7 +486,20 @@
   </div>
 </div>
 
-<script src="/i18n.js?v=2"></script>
+<div class="promo-ov" id="rewardOv" role="dialog" aria-modal="true">
+  <div class="promo-card">
+    <button class="promo-x" id="rewardX" aria-label="Close">&#10005;</button>
+    <div class="promo-emoji">&#127873;</div>
+    <span class="promo-tag" data-i18n="rw_tag">Support us</span>
+    <h3 data-i18n="rw_title">Watch a short ad to create your inbox</h3>
+    <p data-i18n="rw_text">Offex Mail is free to use. A quick ad keeps it running — then your private inbox is created instantly.</p>
+    <button class="promo-cta" id="rewardBtn" data-i18n="rw_btn">&#9654; Watch ad &amp; create inbox</button>
+    <div class="reward-status" id="rewardStatus"></div>
+    <button class="promo-skip" id="rewardSkip" data-i18n="rw_skip">Maybe later</button>
+  </div>
+</div>
+
+<script src="/i18n.js?v=3"></script>
 <script>
 (function(){
   "use strict";
@@ -635,8 +651,34 @@
     renderMessages([]); startPolling(); loadMessages(true); tickExpiry(); renderHistory();
   }
 
-  /* ---------- create / load ---------- */
+  /* ---------- rewarded ad gate (network plug-and-play) ---------- */
+  var OFFEX_REWARDED = false; /* flip to true once a rewarded ad network is connected */
+  function rewardedReady(){ return OFFEX_REWARDED && typeof window.offexRewardedAd === "function"; }
+  var _rewardPending = false;
   function createInbox(){
+    if(!rewardedReady() && !window.OFFEX_PREVIEW_REWARDED){ doCreateInbox(); return; }
+    var ov = $("rewardOv"); if(!ov){ doCreateInbox(); return; }
+    var st = $("rewardStatus"); if(st) st.textContent = "";
+    ov.classList.add("on");
+  }
+  function closeRewardGate(){ var ov = $("rewardOv"); if(ov) ov.classList.remove("on"); }
+  function runRewarded(){
+    if(_rewardPending) return; _rewardPending = true;
+    var btn = $("rewardBtn"), st = $("rewardStatus");
+    if(btn) btn.disabled = true;
+    if(st) st.textContent = t("rw_loading");
+    function done(){ _rewardPending = false; if(btn) btn.disabled = false; closeRewardGate(); doCreateInbox(); }
+    function fail(){ _rewardPending = false; if(btn) btn.disabled = false; if(st) st.textContent = t("rw_fail"); }
+    if(rewardedReady()){
+      try{ Promise.resolve(window.offexRewardedAd()).then(function(ok){ if(ok === false) fail(); else done(); }).catch(fail); }catch(e){ fail(); }
+    } else if(window.OFFEX_PREVIEW_REWARDED){
+      var left = 15; if(st) st.textContent = "Preview " + left + "s";
+      var iv = setInterval(function(){ left--; if(st) st.textContent = "Preview " + left + "s"; if(left <= 0){ clearInterval(iv); done(); } }, 1000);
+    } else { fail(); }
+  }
+
+  /* ---------- create / load ---------- */
+  function doCreateInbox(){
     var custom = ($("customName").value || "").trim().toLowerCase();
     unlockAudio();
     var btn = $("createBtn"); btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> ' + esc(t("btn_create"));
@@ -745,6 +787,10 @@
   }
 
   $("createBtn").onclick = createInbox;
+  if($("rewardBtn")) $("rewardBtn").onclick = runRewarded;
+  if($("rewardX")) $("rewardX").onclick = closeRewardGate;
+  if($("rewardSkip")) $("rewardSkip").onclick = closeRewardGate;
+  if($("rewardOv")) $("rewardOv").addEventListener("click", function(e){ if(e.target === $("rewardOv")) closeRewardGate(); });
   $("customName").addEventListener("keydown", function(e){ if(e.key === "Enter") createInbox(); });
   $("copyBtn").onclick = function(){
     if(!state.address) return;
