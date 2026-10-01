@@ -26,13 +26,12 @@ jobs:
           npx --yes wrangler@3 pages deploy ad --project-name=audio --branch=main
       - name: Verify
         run: |
-          H=$(curl -sL --max-time 30 https://tempmail.offexmail.online/)
-          echo "monetag tag (want 0) : $(echo "$H" | grep -c 'quge5')"
-          echo "i18n v4 tag          : $(echo "$H" | grep -c 'i18n.js?v=4')"
-          echo "FAQPage schema       : $(echo "$H" | grep -c 'FAQPage')"
-          echo "seo faq q6           : $(echo "$H" | grep -c 'data-i18n=.q6.')"
-          echo "rewarded gate        : $(echo "$H" | grep -c 'id=.rewardOv.')"
-          echo "promo popup          : $(echo "$H" | grep -c 'id=.promoOv.')"
-          I=$(curl -s --max-time 30 'https://tempmail.offexmail.online/i18n.js?v=4')
-          echo "i18n q6 (want 10)    : $(echo "$I" | grep -c '\"q6\"')"
-          echo "i18n rw_tag (want 10): $(echo "$I" | grep -c 'rw_tag')"
+          H=$(curl -sL --max-time 30 https://offexmail.online/)
+          echo "AUDIO monetag (want 0) : $(echo "$H" | grep -c 'quge5')"
+          echo "AUDIO adsense (want 1) : $(echo "$H" | grep -c 'adsbygoogle')"
+          echo "AUDIO about words      : $(curl -sL --max-time 30 https://offexmail.online/about.html | sed 's/<[^>]*>/ /g' | wc -w)"
+          echo "AUDIO new guide        : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://offexmail.online/clean-interview-audio)"
+          echo "AUDIO blog->guides     : $(curl -sL --max-time 30 https://offexmail.online/blog.html | grep -c 'record-clean-voice')"
+          echo "AUDIO sw stub          : $(curl -s --max-time 30 https://offexmail.online/sw.js | grep -c 'unregister')"
+          echo "AUDIO sitemap urls     : $(curl -s --max-time 30 https://offexmail.online/sitemap.xml | grep -c '<loc>')"
+          echo "MAIL monetag (want 1)  : $(curl -sL --max-time 30 https://tempmail.offexmail.online/ | grep -c 'quge5')"
