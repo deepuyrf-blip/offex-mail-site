@@ -5,11 +5,16 @@ jobs:
   list:
     runs-on: ubuntu-latest
     steps:
-      - name: Check i18n + promo
+      - name: Verify rewarded gate live
         run: |
-          echo "i18n p_tag count   : $(curl -s --max-time 30 https://tempmail.offexmail.online/i18n.js | grep -c 'p_tag')"
-          echo "i18n p_title count : $(curl -s --max-time 30 https://tempmail.offexmail.online/i18n.js | grep -c 'p_title')"
-          echo "i18n size          : $(curl -s --max-time 30 https://tempmail.offexmail.online/i18n.js | wc -c)"
-          echo "i18n cache hdr     : $(curl -sI --max-time 30 https://tempmail.offexmail.online/i18n.js | grep -i 'cache-control')"
-          echo "promo in html      : $(curl -sL --max-time 30 https://tempmail.offexmail.online/ | grep -c 'id=\"promoOv\"')"
-          echo "script tag         : $(curl -sL --max-time 30 https://tempmail.offexmail.online/ | grep -o 'i18n.js[^\"]*' | head -1)"
+          H=$(curl -sL --max-time 30 https://tempmail.offexmail.online/)
+          echo "i18n v3 tag      : $(echo "$H" | grep -c 'i18n.js?v=3')"
+          echo "rewardOv modal   : $(echo "$H" | grep -c 'id=\"rewardOv\"')"
+          echo "rewardBtn        : $(echo "$H" | grep -c 'id=\"rewardBtn\"')"
+          echo "OFFEX_REWARDED   : $(echo "$H" | grep -c 'OFFEX_REWARDED')"
+          echo "offexRewardedAd  : $(echo "$H" | grep -c 'offexRewardedAd')"
+          echo "promoOv still ok : $(echo "$H" | grep -c 'id=\"promoOv\"')"
+          I=$(curl -s --max-time 30 'https://tempmail.offexmail.online/i18n.js?v=3')
+          echo "i18n rw_tag      : $(echo "$I" | grep -c 'rw_tag')"
+          echo "i18n rw_title    : $(echo "$I" | grep -c 'rw_title')"
+          echo "i18n size        : $(echo "$I" | wc -c)"
