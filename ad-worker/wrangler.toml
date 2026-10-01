@@ -1,0 +1,10 @@
+name = "offex-ads"
+main = "worker.js"
+compatibility_date = "2025-01-01"
+workers_dev = true
+
+# KV namespace id is injected by CI (the workflow creates the namespace on first run
+# and substitutes __KV_ID__ before deploying).
+[[kv_namespaces]]
+binding = "AD_CONFIG"
+id = "__KV_ID__"
