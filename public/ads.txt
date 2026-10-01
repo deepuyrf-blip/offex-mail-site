@@ -1,0 +1,8 @@
+# Offex Mail — ads.txt
+# Authorized Digital Sellers file.
+#
+# Paste the exact line Monetag gives you (Dashboard → your site → ads.txt),
+# it usually looks like:
+#   monetag.com, 1234567, DIRECT
+#
+# Until you add it, this file is just a placeholder so the endpoint exists.
