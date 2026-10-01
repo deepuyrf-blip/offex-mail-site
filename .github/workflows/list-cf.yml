@@ -5,9 +5,18 @@ jobs:
   list:
     runs-on: ubuntu-latest
     steps:
-      - name: Probe Bg (downloader + transcript)
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test yt-dlp youtube clients
         run: |
-          echo "root      : $(curl -s -o /dev/null -w '%{http_code}' --max-time 45 https://factblink514-bg.hf.space/)"
-          echo "body head : $(curl -sL --max-time 45 https://factblink514-bg.hf.space/ | head -c 220)"
-          echo "title     : $(curl -sL --max-time 45 https://factblink514-bg.hf.space/ | grep -o '<title>[^<]*</title>' | head -1)"
-          echo "gradio cfg: $(curl -s -o /dev/null -w '%{http_code}' --max-time 45 https://factblink514-bg.hf.space/config)"
+          pip install -q -U yt-dlp
+          echo "yt-dlp: $(yt-dlp --version)"
+          URL="https://youtu.be/eARvryCEIKU"
+          for C in android ios tv_embedded web_safari mweb web; do
+            OUT=$(yt-dlp --skip-download --print "%(title)s | %(duration)s s" --extractor-args "youtube:player_client=$C" "$URL" 2>&1 | head -2)
+            echo "--- $C ---"
+            echo "$OUT" | head -2
+          done
+          echo "=== Bg space root ==="
+          echo "$(curl -s -o /dev/null -w '%{http_code}' --max-time 40 https://factblink514-bg.hf.space/)"
