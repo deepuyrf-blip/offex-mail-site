@@ -29,19 +29,19 @@ jobs:
         working-directory: ad-worker
         run: |
           OUT=$(npx --yes wrangler@3 kv:namespace create AD_CONFIG 2>&1 || true)
-          echo "$OUT"
           KV_ID=$(echo "$OUT" | grep -oE 'id = "[a-f0-9]{32}"' | grep -oE '[a-f0-9]{32}' | head -1)
           if [ -z "$KV_ID" ]; then
             OUT2=$(npx --yes wrangler@3 kv namespace list 2>&1 || true)
-            echo "$OUT2" | head -20
             KV_ID=$(echo "$OUT2" | grep -oE '"id"[: ]+"[a-f0-9]{32}"' | grep -oE '[a-f0-9]{32}' | head -1)
           fi
           echo "KV_ID=$KV_ID"
-          if [ -z "$KV_ID" ]; then echo "::warning::could not resolve KV namespace id"; exit 0; fi
           sed "s/__KV_ID__/$KV_ID/" wrangler.toml > wrangler.run.toml
+          echo "--- generated wrangler.run.toml ---"
+          cat wrangler.run.toml
           npx --yes wrangler@3 deploy --config wrangler.run.toml
       - name: Verify
         run: |
-          echo "MAIL page  : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://tempmail.offexmail.online/)"
-          echo "AUDIO page : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://offexmail.online/)"
-          echo "worker GET : $(curl -s --max-time 25 'https://offex-ads.deepu-yrf.workers.dev/?site=mail')"
+          echo "MAIL page : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://tempmail.offexmail.online/)"
+          echo "AUDIO page: $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://offexmail.online/)"
+          echo "worker ping : $(curl -s --max-time 25 'https://offex-ads.deepu-yrf.workers.dev/ping')"
+          echo "worker mail : $(curl -s --max-time 25 'https://offex-ads.deepu-yrf.workers.dev/?site=mail')"
