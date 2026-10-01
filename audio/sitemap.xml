@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://offexmail.online/</loc><changefreq>monthly</changefreq></url>
-  <url><loc>https://offexmail.online/blog.html</loc><changefreq>monthly</changefreq></url>
-  <url><loc>https://offexmail.online/about.html</loc><changefreq>monthly</changefreq></url>
-  <url><loc>https://offexmail.online/contact.html</loc><changefreq>monthly</changefreq></url>
-  <url><loc>https://offexmail.online/privacy.html</loc><changefreq>monthly</changefreq></url>
-  <url><loc>https://offexmail.online/terms.html</loc><changefreq>monthly</changefreq></url>
-  <url><loc>https://offexmail.online/remove-silence-from-audio-guide.html</loc><changefreq>monthly</changefreq></url>
-  <url><loc>https://offexmail.online/clean-background-noise-voice-recordings.html</loc><changefreq>monthly</changefreq></url>
-  <url><loc>https://offexmail.online/voice-bgm-separation-explained.html</loc><changefreq>monthly</changefreq></url>
-  <url><loc>https://offexmail.online/podcast-editing-workflow-for-beginners.html</loc><changefreq>monthly</changefreq></url>
+  <url><loc>https://offexmail.online/</loc><changefreq>monthly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://offexmail.online/blog.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://offexmail.online/about.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://offexmail.online/contact.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://offexmail.online/privacy.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://offexmail.online/terms.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://offexmail.online/remove-silence-from-audio-guide.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://offexmail.online/clean-background-noise-voice-recordings.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://offexmail.online/voice-bgm-separation-explained.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://offexmail.online/podcast-editing-workflow-for-beginners.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://offexmail.online/record-clean-voice.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://offexmail.online/remove-echo-reverb.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://offexmail.online/podcast-format-settings.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://offexmail.online/clean-interview-audio.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
 </urlset>
