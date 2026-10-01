@@ -27,10 +27,10 @@ jobs:
       - name: Verify
         run: |
           M=$(curl -sL --max-time 30 https://tempmail.offexmail.online/)
-          echo "MAIL load        : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://tempmail.offexmail.online/)"
-          echo "MAIL adsterra(0) : $(echo "$M" | grep -c 'highperformanceformat\|profitableratecpmnetwork')"
-          echo "MAIL monetag(0)  : $(echo "$M" | grep -c 'quge5')"
-          echo "MAIL autoOpened  : $(echo "$M" | grep -c 'autoOpened')"
-          echo "MAIL reward gate : $(echo "$M" | grep -c 'id=.rewardOv.')"
-          echo "MAIL api/status  : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://tempmail.offexmail.online/api/status)"
-          echo "AUDIO load       : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://offexmail.online/)"
+          echo "MAIL load       : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://tempmail.offexmail.online/)"
+          echo "MAIL detectOtp  : $(echo "$M" | grep -c 'detectOtp')"
+          echo "MAIL otp-badge  : $(echo "$M" | grep -c 'otp-badge')"
+          echo "MAIL otp-bar    : $(echo "$M" | grep -c 'otp-bar')"
+          echo "MAIL autoOpened : $(echo "$M" | grep -c 'autoOpened')"
+          echo "MAIL adsterra(0): $(echo "$M" | grep -c 'highperformanceformat\|profitableratecpmnetwork')"
+          echo "AUDIO load      : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://offexmail.online/)"
