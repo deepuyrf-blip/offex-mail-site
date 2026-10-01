@@ -620,10 +620,10 @@
     m = t.match(/\b(\d{4,8})\b/);
     return m ? m[1] : null;
   }
-  function markOtp(addr, otp){
+  function markOtp(addr, otp, service){
     if(!addr || !otp) return;
     var h = getHistory();
-    for(var i=0;i<h.length;i++){ if(h[i].address === addr){ h[i].otp = otp; h[i].otp_at = Math.floor(Date.now()/1000); } }
+    for(var i=0;i<h.length;i++){ if(h[i].address === addr){ h[i].otp = otp; h[i].service = service || h[i].service || ''; h[i].otp_at = Math.floor(Date.now()/1000); } }
     saveHistory(h);
   }
   function timeAgo(ts){
@@ -656,7 +656,7 @@
       return '<div class="hist'+active+'" data-addr="'+esc(x.address)+'">'+
         '<div class="h-av">'+esc(initial)+'</div>'+
         '<div class="h-body"><div class="h-addr">'+esc(x.address)+'</div>'+
-        '<div class="h-meta">'+esc(timeAgo(x.created_at))+' • '+esc(cnt)+(x.otp ? ' • 🔑 OTP '+esc(x.otp) : '')+'</div></div>'+
+        '<div class="h-meta">'+esc(timeAgo(x.created_at))+' • '+esc(cnt)+(x.otp ? ' • 🔑 '+(x.service ? esc(x.service)+': ' : 'OTP ')+esc(x.otp) : '')+'</div></div>'+
         '<button class="h-del" data-del="'+esc(x.address)+'" title="Delete">🗑️</button></div>';
     }).join("");
     Array.prototype.forEach.call(list.querySelectorAll(".hist"), function(el){
@@ -790,7 +790,7 @@
       return '<button class="msg'+(freshIds[m.id] ? " new" : "")+'" data-id="'+m.id+'">'+
         '<div class="av">'+esc(initial)+'</div>'+
         '<div class="body"><div class="from">'+esc(m.sender || "—")+'</div>'+
-        '<div class="subj">'+esc(m.subject || "(no subject)")+(detectOtp(m.subject) ? '<span class="otp-badge">🔑 '+esc(detectOtp(m.subject))+'</span>' : '')+'</div></div>'+
+        '<div class="subj">'+esc(m.subject || "(no subject)")+(detectOtp(m.subject) ? '<span class="otp-badge">🔑 '+(m.service ? esc(m.service)+' ' : '')+esc(detectOtp(m.subject))+'</span>' : '')+'</div></div>'+
         '<div class="time">'+esc(timeAgo(m.received_at))+'</div></button>';
     }).join("");
     Array.prototype.forEach.call(list.querySelectorAll(".msg"), function(el){
@@ -808,11 +808,12 @@
       $("rSubject").textContent = m.subject || "(no subject)";
       $("rFrom").textContent = (m.sender || "—") + "  →  " + (m.recipient || "");
       showTab("html");
-      var _otp = detectOtp((m.subject||"") + " " + (m.body||"") + " " + (m.html||""));
+      var _otp = m.otp || detectOtp((m.subject||"") + " " + (m.body||"") + " " + (m.html||""));
       if(_otp){
-        markOtp(state.address, _otp); renderHistory();
+        var _svc = m.service || "";
+        markOtp(state.address, _otp, _svc); renderHistory();
         $("readerBody").insertAdjacentHTML("afterbegin",
-          '<div class="otp-bar">🔑 <span>OTP detected:</span> <b>'+esc(_otp)+'</b>'+
+          '<div class="otp-bar">🔑 <span>'+( _svc ? "OTP for <b>"+esc(_svc)+"</b>:" : "OTP detected:")+'</span> <b>'+esc(_otp)+'</b>'+
           '<button class="pill" id="otpCopyBtn">Copy OTP</button></div>');
         var _b = $("otpCopyBtn");
         if(_b) _b.onclick = function(){ navigator.clipboard.writeText(_otp).then(function(){ toast("OTP copied: " + _otp, "ok"); }).catch(function(){}); };
