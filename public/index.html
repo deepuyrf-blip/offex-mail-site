@@ -314,6 +314,9 @@
   .promo-skip{display:block;width:100%;margin-top:10px;background:none;border:none;color:var(--muted2);font-size:13px;
     font-weight:600;cursor:pointer;font-family:inherit;padding:8px}
   .promo-skip:hover{color:var(--text)}
+  .otp-badge{display:inline-block;margin-inline-start:6px;background:var(--chip);border:1px solid var(--border2);color:var(--accent);font-size:11px;font-weight:800;padding:2px 8px;border-radius:999px;vertical-align:middle}
+  .otp-bar{margin:0 0 12px;padding:10px 12px;border:1px solid var(--border2);border-radius:12px;background:var(--chip);display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:14px}
+  .otp-bar b{font-size:17px;letter-spacing:1px;color:var(--accent)}
   .reward-status{min-height:16px;margin-top:10px;font-size:12px;line-height:1.5;color:var(--muted2);text-align:center}
   button.promo-cta{border:none;cursor:pointer;font:inherit;font-weight:800}
   button.promo-cta:disabled{opacity:.6;cursor:wait}
@@ -609,6 +612,20 @@
   var toastTimer;
   function toast(msg, kind){ var el = $("toast"); el.textContent = msg; el.className = "toast show" + (kind ? " "+kind : ""); clearTimeout(toastTimer); toastTimer = setTimeout(function(){ el.className = "toast"; }, 3200); }
   function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+  function detectOtp(txt){
+    if(!txt) return null;
+    var t = String(txt);
+    var m = t.match(/(?:otp|code|pin|verification|verify|passcode|password|security)[^0-9]{0,24}(\d{4,8})/i);
+    if(m) return m[1];
+    m = t.match(/\b(\d{4,8})\b/);
+    return m ? m[1] : null;
+  }
+  function markOtp(addr, otp){
+    if(!addr || !otp) return;
+    var h = getHistory();
+    for(var i=0;i<h.length;i++){ if(h[i].address === addr){ h[i].otp = otp; h[i].otp_at = Math.floor(Date.now()/1000); } }
+    saveHistory(h);
+  }
   function timeAgo(ts){
     if(!ts) return "";
     var s = Math.max(0, Math.floor(Date.now()/1000) - ts);
@@ -639,7 +656,7 @@
       return '<div class="hist'+active+'" data-addr="'+esc(x.address)+'">'+
         '<div class="h-av">'+esc(initial)+'</div>'+
         '<div class="h-body"><div class="h-addr">'+esc(x.address)+'</div>'+
-        '<div class="h-meta">'+esc(timeAgo(x.created_at))+' • '+esc(cnt)+'</div></div>'+
+        '<div class="h-meta">'+esc(timeAgo(x.created_at))+' • '+esc(cnt)+(x.otp ? ' • 🔑 OTP '+esc(x.otp) : '')+'</div></div>'+
         '<button class="h-del" data-del="'+esc(x.address)+'" title="Delete">🗑️</button></div>';
     }).join("");
     Array.prototype.forEach.call(list.querySelectorAll(".hist"), function(el){
@@ -773,7 +790,7 @@
       return '<button class="msg'+(freshIds[m.id] ? " new" : "")+'" data-id="'+m.id+'">'+
         '<div class="av">'+esc(initial)+'</div>'+
         '<div class="body"><div class="from">'+esc(m.sender || "—")+'</div>'+
-        '<div class="subj">'+esc(m.subject || "(no subject)")+'</div></div>'+
+        '<div class="subj">'+esc(m.subject || "(no subject)")+(detectOtp(m.subject) ? '<span class="otp-badge">🔑 '+esc(detectOtp(m.subject))+'</span>' : '')+'</div></div>'+
         '<div class="time">'+esc(timeAgo(m.received_at))+'</div></button>';
     }).join("");
     Array.prototype.forEach.call(list.querySelectorAll(".msg"), function(el){
@@ -791,6 +808,15 @@
       $("rSubject").textContent = m.subject || "(no subject)";
       $("rFrom").textContent = (m.sender || "—") + "  →  " + (m.recipient || "");
       showTab("html");
+      var _otp = detectOtp((m.subject||"") + " " + (m.body||"") + " " + (m.html||""));
+      if(_otp){
+        markOtp(state.address, _otp); renderHistory();
+        $("readerBody").insertAdjacentHTML("afterbegin",
+          '<div class="otp-bar">🔑 <span>OTP detected:</span> <b>'+esc(_otp)+'</b>'+
+          '<button class="pill" id="otpCopyBtn">Copy OTP</button></div>');
+        var _b = $("otpCopyBtn");
+        if(_b) _b.onclick = function(){ navigator.clipboard.writeText(_otp).then(function(){ toast("OTP copied: " + _otp, "ok"); }).catch(function(){}); };
+      }
     }).catch(function(e){ $("readerBody").textContent = e.message || "Error"; });
   }
   function showTab(which){
