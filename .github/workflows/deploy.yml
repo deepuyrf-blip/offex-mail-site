@@ -14,6 +14,21 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+      - name: Deploy ad-config Worker (offex-ads)
+        working-directory: ad-worker
+        run: |
+          npx --yes wrangler@3 kv:namespace create AD_CONFIG --json > /tmp/kv.json 2>/dev/null || true
+          KV_ID=$(python3 -c "import json;print(json.load(open('/tmp/kv.json'))['id'])" 2>/dev/null || true)
+          if [ -z "$KV_ID" ]; then
+            npx --yes wrangler@3 kv:namespace list --json > /tmp/kvl.json 2>/dev/null || true
+            KV_ID=$(python3 -c "import json;d=json.load(open('/tmp/kvl.json'));print([x['id'] for x in d if 'AD_CONFIG' in x.get('title','')][0])" 2>/dev/null || true)
+          fi
+          echo "KV_ID=$KV_ID"
+          sed "s/__KV_ID__/$KV_ID/" wrangler.toml > wrangler.run.toml
+          npx --yes wrangler@3 deploy --config wrangler.run.toml
+          if [ -n "${{ secrets.ADMIN_KEY }}" ]; then
+            echo "${{ secrets.ADMIN_KEY }}" | npx --yes wrangler@3 secret put ADMIN_KEY --config wrangler.run.toml
+          fi
       - name: Deploy Offex Mail (temp mail)
         run: |
           npx --yes wrangler@3 pages project create offex-mail --production-branch=main || true
@@ -26,10 +41,6 @@ jobs:
           npx --yes wrangler@3 pages deploy ad --project-name=audio --branch=main
       - name: Verify
         run: |
-          H=$(curl -sL --max-time 30 https://tempmail.offexmail.online/)
-          echo "MAIL monetag (want 0)   : $(echo "$H" | grep -c 'quge5')"
-          echo "MAIL adsterra (want 0)  : $(echo "$H" | grep -c 'highperformanceformat\|profitableratecpmnetwork')"
-          echo "MAIL ad slot hidden     : $(echo "$H" | grep -c 'id=.adSlot. style=.display:none.')"
-          echo "MAIL page loads (200)   : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://tempmail.offexmail.online/)"
-          echo "MAIL reward gate intact : $(echo "$H" | grep -c 'id=.rewardOv.')"
-          echo "AUDIO monetag (want 0)  : $(curl -sL --max-time 30 https://offexmail.online/ | grep -c 'quge5')"
+          echo "worker GET mail : $(curl -s --max-time 30 'https://offex-ads.deepu-yrf.workers.dev/?site=mail')"
+          echo "worker GET audio: $(curl -s --max-time 30 'https://offex-ads.deepu-yrf.workers.dev/?site=audio')"
+          echo "MAIL page       : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://tempmail.offexmail.online/)"
