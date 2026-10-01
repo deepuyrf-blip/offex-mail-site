@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://offexmail.online/sitemap.xml
