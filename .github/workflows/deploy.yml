@@ -16,5 +16,11 @@ jobs:
           node-version: 20
       - name: Create Pages project (ignore if it exists)
         run: npx --yes wrangler@3 pages project create offex-mail --production-branch=main || true
+      - name: Store HF token for the Function
+        run: echo "${{ secrets.HF_TOKEN }}" | npx --yes wrangler@3 pages secret put HF_TOKEN --project-name=offex-mail
       - name: Deploy to Cloudflare Pages
         run: npx --yes wrangler@3 pages deploy public --project-name=offex-mail --branch=main
+      - name: Verify HF token is accepted by the Space
+        run: |
+          code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 40 -H "Authorization: Bearer ${{ secrets.HF_TOKEN }}" https://factblink514-compiled.hf.space/api/status)
+          echo "Space /api/status with token -> HTTP $code"
