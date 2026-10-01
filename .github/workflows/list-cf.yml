@@ -5,32 +5,9 @@ jobs:
   list:
     runs-on: ubuntu-latest
     steps:
-      - name: FULL SYSTEM HEALTH CHECK
+      - name: Probe Bg space
         run: |
-          M=$(curl -sL --max-time 30 https://tempmail.offexmail.online/)
-          A=$(curl -sL --max-time 30 https://offexmail.online/)
-          echo "=========== MAIL SITE ==========="
-          echo "load                : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://tempmail.offexmail.online/)"
-          echo "reward gate         : $(echo "$M" | grep -c 'id=.rewardOv.')"
-          echo "promo popup         : $(echo "$M" | grep -c 'id=.promoOv.')"
-          echo "auto-open-once fix  : $(echo "$M" | grep -c 'autoOpened')"
-          echo "FAQ schema          : $(echo "$M" | grep -c 'FAQPage')"
-          echo "Monetag (want 0)    : $(echo "$M" | grep -c 'quge5')"
-          echo "Adsterra (want 0)   : $(echo "$M" | grep -c 'highperformanceformat\|profitableratecpmnetwork')"
-          echo "api proxy /api/status: $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://tempmail.offexmail.online/api/status)"
-          echo "sw.js stub          : $(curl -s --max-time 20 https://tempmail.offexmail.online/sw.js | grep -c 'unregister')"
-          echo "robots.txt          : $(curl -s -o /dev/null -w '%{http_code}' --max-time 20 https://tempmail.offexmail.online/robots.txt)"
-          echo "sitemap.xml         : $(curl -s -o /dev/null -w '%{http_code}' --max-time 20 https://tempmail.offexmail.online/sitemap.xml)"
-          echo "=========== AUDIO SITE ==========="
-          echo "load                : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://offexmail.online/)"
-          echo "AdSense tag         : $(echo "$A" | grep -c 'adsbygoogle')"
-          echo "Monetag (want 0)    : $(echo "$A" | grep -c 'quge5')"
-          echo "guides linked       : $(curl -sL --max-time 30 https://offexmail.online/blog.html | grep -c 'record-clean-voice')"
-          echo "new guide page      : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://offexmail.online/clean-interview-audio)"
-          echo "about page          : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://offexmail.online/about.html)"
-          echo "privacy page        : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://offexmail.online/privacy.html)"
-          echo "sitemap urls        : $(curl -s --max-time 20 https://offexmail.online/sitemap.xml | grep -c '<loc>')"
-          echo "sw.js stub          : $(curl -s --max-time 20 https://offexmail.online/sw.js | grep -c 'unregister')"
-          echo "tool proxy /hf/     : $(curl -s -o /dev/null -w '%{http_code}' --max-time 40 https://offexmail.online/hf/)"
-          echo "=========== ADS WORKER ==========="
-          echo "worker /ping        : $(curl -s --max-time 20 'https://offex-ads.deepu-yrf.workers.dev/ping')"
+          echo "root      : $(curl -s -o /dev/null -w '%{http_code}' --max-time 40 https://factblink514-bg.hf.space/)"
+          echo "health    : $(curl -s --max-time 30 https://factblink514-bg.hf.space/health)"
+          echo "root body : $(curl -sL --max-time 40 https://factblink514-bg.hf.space/ | head -c 300)"
+          echo "title     : $(curl -sL --max-time 40 https://factblink514-bg.hf.space/ | grep -o '<title>[^<]*</title>')"
