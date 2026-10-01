@@ -5,45 +5,17 @@ jobs:
   list:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Test free proxies against YouTube
+      - name: Verify backend OTP field
         run: |
-          pip install -q -U yt-dlp requests
-          python3 - <<'PYEOF'
-          import requests, subprocess, random
-          srcs = [
-            "https://raw.githubusercontent.com/TheSpeedX/PROXY-List/master/http.txt",
-            "https://raw.githubusercontent.com/monosans/proxy-list/main/proxies/http.txt",
-            "https://raw.githubusercontent.com/clarketm/proxy-list/master/proxy-list-raw.txt",
-          ]
-          proxies = []
-          for u in srcs:
-              try:
-                  r = requests.get(u, timeout=20)
-                  proxies += [l.strip() for l in r.text.splitlines() if l.strip() and ":" in l]
-              except Exception:
-                  pass
-          proxies = list(dict.fromkeys(proxies))
-          print("fetched proxies:", len(proxies))
-          random.seed(7); random.shuffle(proxies)
-          ok = 0; tested = 0
-          for p in proxies[:14]:
-              tested += 1
-              try:
-                  r = subprocess.run(
-                      ["yt-dlp","--proxy",f"http://{p}","--skip-download","--print","%(title)s",
-                       "--socket-timeout","7","--retries","1","https://youtu.be/eARvryCEIKU"],
-                      capture_output=True, text=True, timeout=30)
-                  out = ((r.stdout or "") + (r.stderr or "")).strip().splitlines()
-                  last = out[-1][:75] if out else "(no output)"
-                  if r.returncode == 0:
-                      ok += 1; print("WORKS  ", p, "->", last)
-                  else:
-                      print("fail   ", p, "->", last)
-              except Exception:
-                  print("timeout", p)
-              if ok >= 2: break
-          print("=== tested:", tested, "| working:", ok, "===")
-          PYEOF
+          echo "mail site      : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://tempmail.offexmail.online/)"
+          echo "api/status     : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://tempmail.offexmail.online/api/status)"
+          echo "--- create inbox + check otp key ---"
+          INBOX=$(curl -s --max-time 30 -X POST https://tempmail.offexmail.online/api/inbox -H 'content-type: application/json' -d '{}')
+          echo "inbox resp: $(echo "$INBOX" | head -c 200)"
+          ADDR=$(echo "$INBOX" | python3 -c "import sys,json;print(json.load(sys.stdin).get('address',''))" 2>/dev/null)
+          echo "address: $ADDR"
+          if [ -n "$ADDR" ]; then
+            MSGS=$(curl -s --max-time 30 "https://tempmail.offexmail.online/api/inbox/$ADDR/messages")
+            echo "messages resp: $(echo "$MSGS" | head -c 300)"
+            echo "has otp key  : $(echo "$MSGS" | grep -c 'otp')"
+          fi
