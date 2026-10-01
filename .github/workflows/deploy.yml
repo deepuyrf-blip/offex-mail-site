@@ -14,24 +14,22 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Deploy Offex Mail (temp mail site)
+      - name: Deploy Offex Mail (temp mail)
         run: |
           npx --yes wrangler@3 pages project create offex-mail --production-branch=main || true
           echo "${{ secrets.HF_TOKEN }}" | npx --yes wrangler@3 pages secret put HF_TOKEN --project-name=offex-mail
           npx --yes wrangler@3 pages deploy public --project-name=offex-mail --branch=main
-      - name: Deploy Offex Audio (with Monetag sw.js, keeping AdSense)
+      - name: Deploy Offex Audio
         run: |
           mkdir -p ad
-          cp audio/index.html audio/about.html audio/blog.html audio/contact.html audio/privacy.html audio/terms.html ad/
-          cp audio/clean-background-noise-voice-recordings.html audio/podcast-editing-workflow-for-beginners.html ad/
-          cp audio/remove-silence-from-audio-guide.html audio/voice-bgm-separation-explained.html ad/
-          cp audio/_worker.js audio/favicon.svg audio/robots.txt audio/sitemap.xml audio/ads.txt audio/sw.js ad/
-          echo "== deploying these files =="; ls -la ad
+          cp audio/*.html audio/_worker.js audio/favicon.svg audio/robots.txt audio/sitemap.xml audio/ads.txt audio/sw.js audio/promo.js ad/
+          ls ad
           npx --yes wrangler@3 pages deploy ad --project-name=audio --branch=main
       - name: Verify
         run: |
-          echo "offexmail root    : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://offexmail.online/)"
-          echo "offexmail sw.js   : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://offexmail.online/sw.js)"
-          echo "offexmail about   : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://offexmail.online/about.html)"
-          echo "adsense meta kept : $(curl -s --max-time 30 https://offexmail.online/ | grep -c 'ca-pub-7802179098119853')"
-          echo "tempmail sw.js    : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://tempmail.offexmail.online/sw.js)"
+          echo "mail promo popup : $(curl -sL --max-time 30 https://tempmail.offexmail.online/ | grep -c 'id=\"promoOv\"')"
+          echo "mail monetag tag : $(curl -sL --max-time 30 https://tempmail.offexmail.online/ | grep -c 'quge5.com/88/tag.min.js')"
+          echo "audio promo.js   : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://offexmail.online/promo.js)"
+          echo "audio page promo : $(curl -sL --max-time 30 https://offexmail.online/ | grep -c 'promo.js')"
+          echo "audio blog promo : $(curl -sL --max-time 30 https://offexmail.online/blog | grep -c 'promo.js')"
+          echo "audio monetag tag: $(curl -sL --max-time 30 https://offexmail.online/ | grep -c 'quge5.com/88/tag.min.js')"
