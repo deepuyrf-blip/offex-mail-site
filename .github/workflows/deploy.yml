@@ -26,9 +26,11 @@ jobs:
           npx --yes wrangler@3 pages deploy ad --project-name=audio --branch=main
       - name: Verify
         run: |
-          H=$(curl -sL --max-time 30 https://tempmail.offexmail.online/)
-          echo "MAIL auto-open-once fix : $(echo "$H" | grep -c 'autoOpened')"
-          echo "MAIL reward gate        : $(echo "$H" | grep -c 'id=.rewardOv.')"
-          echo "MAIL promo popup        : $(echo "$H" | grep -c 'id=.promoOv.')"
-          echo "MAIL page               : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://tempmail.offexmail.online/)"
-          echo "AUDIO page              : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://offexmail.online/)"
+          M=$(curl -sL --max-time 30 https://tempmail.offexmail.online/)
+          echo "MAIL load        : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://tempmail.offexmail.online/)"
+          echo "MAIL adsterra(0) : $(echo "$M" | grep -c 'highperformanceformat\|profitableratecpmnetwork')"
+          echo "MAIL monetag(0)  : $(echo "$M" | grep -c 'quge5')"
+          echo "MAIL autoOpened  : $(echo "$M" | grep -c 'autoOpened')"
+          echo "MAIL reward gate : $(echo "$M" | grep -c 'id=.rewardOv.')"
+          echo "MAIL api/status  : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://tempmail.offexmail.online/api/status)"
+          echo "AUDIO load       : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://offexmail.online/)"
