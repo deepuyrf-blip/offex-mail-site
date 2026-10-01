@@ -4,17 +4,33 @@ on:
 jobs:
   list:
     runs-on: ubuntu-latest
-    env:
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      CLOUDFLARE_ACCOUNT_ID: d33504e28650ba4603dc9cafc46d0ec9
     steps:
-      - name: Debug KV namespace create
+      - name: FULL SYSTEM HEALTH CHECK
         run: |
-          echo "--- wrangler version ---"
-          npx --yes wrangler@3 --version
-          echo "--- kv:namespace create (stderr shown) ---"
-          npx --yes wrangler@3 kv:namespace create AD_CONFIG --json 2>&1 | head -40
-          echo "--- kv namespace list ---"
-          npx --yes wrangler@3 kv namespace list --json 2>&1 | head -20
-          echo "--- token verify ---"
-          curl -s --max-time 20 "https://api.cloudflare.com/client/v4/user/tokens/verify" -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" | head -c 400
+          M=$(curl -sL --max-time 30 https://tempmail.offexmail.online/)
+          A=$(curl -sL --max-time 30 https://offexmail.online/)
+          echo "=========== MAIL SITE ==========="
+          echo "load                : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://tempmail.offexmail.online/)"
+          echo "reward gate         : $(echo "$M" | grep -c 'id=.rewardOv.')"
+          echo "promo popup         : $(echo "$M" | grep -c 'id=.promoOv.')"
+          echo "auto-open-once fix  : $(echo "$M" | grep -c 'autoOpened')"
+          echo "FAQ schema          : $(echo "$M" | grep -c 'FAQPage')"
+          echo "Monetag (want 0)    : $(echo "$M" | grep -c 'quge5')"
+          echo "Adsterra (want 0)   : $(echo "$M" | grep -c 'highperformanceformat\|profitableratecpmnetwork')"
+          echo "api proxy /api/status: $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://tempmail.offexmail.online/api/status)"
+          echo "sw.js stub          : $(curl -s --max-time 20 https://tempmail.offexmail.online/sw.js | grep -c 'unregister')"
+          echo "robots.txt          : $(curl -s -o /dev/null -w '%{http_code}' --max-time 20 https://tempmail.offexmail.online/robots.txt)"
+          echo "sitemap.xml         : $(curl -s -o /dev/null -w '%{http_code}' --max-time 20 https://tempmail.offexmail.online/sitemap.xml)"
+          echo "=========== AUDIO SITE ==========="
+          echo "load                : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://offexmail.online/)"
+          echo "AdSense tag         : $(echo "$A" | grep -c 'adsbygoogle')"
+          echo "Monetag (want 0)    : $(echo "$A" | grep -c 'quge5')"
+          echo "guides linked       : $(curl -sL --max-time 30 https://offexmail.online/blog.html | grep -c 'record-clean-voice')"
+          echo "new guide page      : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://offexmail.online/clean-interview-audio)"
+          echo "about page          : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://offexmail.online/about.html)"
+          echo "privacy page        : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://offexmail.online/privacy.html)"
+          echo "sitemap urls        : $(curl -s --max-time 20 https://offexmail.online/sitemap.xml | grep -c '<loc>')"
+          echo "sw.js stub          : $(curl -s --max-time 20 https://offexmail.online/sw.js | grep -c 'unregister')"
+          echo "tool proxy /hf/     : $(curl -s -o /dev/null -w '%{http_code}' --max-time 40 https://offexmail.online/hf/)"
+          echo "=========== ADS WORKER ==========="
+          echo "worker /ping        : $(curl -s --max-time 20 'https://offex-ads.deepu-yrf.workers.dev/ping')"
