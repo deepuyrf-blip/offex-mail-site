@@ -23,12 +23,8 @@ jobs:
       - name: Verify
         run: |
           SP="https://factblink514-compiled.hf.space/api/status"
-          echo "1) Space WITH token    : $(curl -s -o /dev/null -w '%{http_code}' --max-time 45 -H "Authorization: Bearer ${{ secrets.HF_TOKEN }}" $SP)"
-          echo "2) Space WITHOUT token : $(curl -s -o /dev/null -w '%{http_code}' --max-time 45 $SP)"
-          echo "3) via website proxy   : $(curl -s -o /dev/null -w '%{http_code}' --max-time 60 https://offex-mail.pages.dev/api/status)"
-          P=$(curl -s --max-time 40 https://offex-mail.pages.dev/)
-          echo "4) page has feature text: $(echo "$P" | grep -c 'deliverable addresses')"
-          echo "5) page has FAQ text    : $(echo "$P" | grep -c 'No account, no payment, no limits')"
-          echo "6) page has history     : $(echo "$P" | grep -c 'histList')"
-          echo "7) i18n.js served       : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://offex-mail.pages.dev/i18n.js)"
-          echo "8) i18n languages       : $(curl -s --max-time 30 https://offex-mail.pages.dev/i18n.js | grep -c 'code:')"
+          echo "Space WITH token : $(curl -s -o /dev/null -w '%{http_code}' --max-time 45 -H "Authorization: Bearer ${{ secrets.HF_TOKEN }}" $SP)"
+          echo "via website proxy: $(curl -s -o /dev/null -w '%{http_code}' --max-time 60 https://offex-mail.pages.dev/api/status)"
+          echo "ads.js served    : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://offex-mail.pages.dev/ads.js)"
+          echo "ads.txt served   : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://offex-mail.pages.dev/ads.txt)"
+          echo "page has ad hook : $(curl -s --max-time 30 https://offex-mail.pages.dev/ | grep -c 'ads.js')"
