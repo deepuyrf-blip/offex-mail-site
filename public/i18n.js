@@ -520,3 +520,91 @@ ja:{
 };
   for (var k in R) { if (window.OFFEX_STR && window.OFFEX_STR[k]) { for (var s in R[k]) window.OFFEX_STR[k][s] = R[k][s]; } }
 })();
+
+
+/* Offex SEO FAQ (q6-q8) strings */
+(function(){
+  var F = {
+  "en": {
+    "q6": "Is temp mail safe to use?",
+    "a6": "Yes — Offex Mail is a throwaway address. Use it for signups, OTPs and trials so your real inbox stays clean and spam-free. Never use it for bank or government accounts.",
+    "q7": "Can I receive OTPs and verification codes?",
+    "a7": "Absolutely. Emails arrive within seconds — including OTPs, magic links and verification mails. The inbox auto-refreshes and plays a chime on new mail.",
+    "q8": "Do you read or store my emails?",
+    "a8": "No. Messages are short-lived and auto-deleted when the inbox expires. We do not sell or share your data."
+  },
+  "hi": {
+    "q6": "क्या टेम्प मेल इस्तेमाल करना सुरक्षित है?",
+    "a6": "हाँ — Offex Mail एक थ्रोअवे पता है। साइनअप, OTP और ट्रायल के लिए इस्तेमाल करें ताकि आपका असली इनबॉक्स साफ़ और स्पैम-मुक्त रहे। बैंक या सरकारी खातों के लिए कभी न इस्तेमाल करें।",
+    "q7": "क्या मैं OTP और वेरिफिकेशन कोड प्राप्त कर सकता हूँ?",
+    "a7": "बिल्कुल। ईमेल सेकंडों में आ जाते हैं — OTP, मैजिक लिंक और वेरिफिकेशन मेल सहित। इनबॉक्स अपने आप रीफ्रेश होता है और नई मेल पर आवाज़ करता है।",
+    "q8": "क्या आप मेरी ईमेल पढ़ते या स्टोर करते हैं?",
+    "a8": "नहीं। संदेश थोड़े समय के लिए रहते हैं और इनबॉक्स खत्म होने पर अपने आप हट जाते हैं। हम आपका डेटा बेचते या साझा नहीं करते।"
+  },
+  "es": {
+    "q6": "¿Es seguro usar el correo temporal?",
+    "a6": "Sí — Offex Mail es una dirección desechable. Úsala para registros, OTP y pruebas para que tu bandeja real siga limpia y sin spam. Nunca la uses para cuentas bancarias o gubernamentales.",
+    "q7": "¿Puedo recibir OTP y códigos de verificación?",
+    "a7": "Por supuesto. Los correos llegan en segundos — incluidos OTP, enlaces mágicos y correos de verificación. La bandeja se actualiza sola y suena con correo nuevo.",
+    "q8": "¿Leéis o guardáis mis correos?",
+    "a8": "No. Los mensajes son efímeros y se eliminan solos al expirar la bandeja. No vendemos ni compartimos tus datos."
+  },
+  "fr": {
+    "q6": "Le mail temporaire est-il sûr ?",
+    "a6": "Oui — Offex Mail est une adresse jetable. Utilisez-la pour les inscriptions, OTP et essais afin que votre vraie boîte reste propre et sans spam. Ne l'utilisez jamais pour des comptes bancaires ou gouvernementaux.",
+    "q7": "Puis-je recevoir des OTP et codes de vérification ?",
+    "a7": "Bien sûr. Les e-mails arrivent en quelques secondes — OTP, liens magiques et mails de vérification inclus. La boîte se rafraîchit seule et sonne à chaque nouveau mail.",
+    "q8": "Lisez-vous ou stockez-vous mes e-mails ?",
+    "a8": "Non. Les messages sont éphémères et supprimés automatiquement à l'expiration de la boîte. Nous ne vendons ni ne partageons vos données."
+  },
+  "de": {
+    "q6": "Ist Temp Mail sicher?",
+    "a6": "Ja — Offex Mail ist eine Wegwerf-Adresse. Nutze sie für Anmeldungen, OTPs und Tests, damit dein echtes Postfach sauber und spamfrei bleibt. Verwende sie nie für Bank- oder Regierungskonten.",
+    "q7": "Kann ich OTPs und Bestätigungscodes empfangen?",
+    "a7": "Absolut. E-Mails kommen in Sekunden an — inklusive OTPs, Magic Links und Bestätigungsmails. Das Postfach aktualisiert sich automatisch und klingelt bei neuer Mail.",
+    "q8": "Lest oder speichert ihr meine E-Mails?",
+    "a8": "Nein. Nachrichten sind kurzlebig und werden beim Ablauf des Postfachs automatisch gelöscht. Wir verkaufen oder teilen deine Daten nicht."
+  },
+  "pt": {
+    "q6": "O e-mail temporário é seguro?",
+    "a6": "Sim — o Offex Mail é um endereço descartável. Use-o para cadastros, OTP e testes para manter sua caixa real limpa e sem spam. Nunca use para contas bancárias ou governamentais.",
+    "q7": "Posso receber OTP e códigos de verificação?",
+    "a7": "Com certeza. Os e-mails chegam em segundos — incluindo OTP, links mágicos e e-mails de verificação. A caixa atualiza sozinha e toca um som a cada novo e-mail.",
+    "q8": "Vocês leem ou armazenam meus e-mails?",
+    "a8": "Não. As mensagens são temporárias e excluídas automaticamente quando a caixa expira. Não vendemos nem compartilhamos seus dados."
+  },
+  "ru": {
+    "q6": "Безопасно ли использовать временную почту?",
+    "a6": "Да — Offex Mail это одноразовый адрес. Используйте его для регистраций, OTP и тестов, чтобы ваш основной ящик оставался чистым. Никогда не используйте для банковских или государственных аккаунтов.",
+    "q7": "Могу ли я получать OTP и коды подтверждения?",
+    "a7": "Конечно. Письма приходят за секунды — включая OTP, magic links и письма подтверждения. Ящик обновляется сам и издаёт звук при новом письме.",
+    "q8": "Вы читаете или храните мои письма?",
+    "a8": "Нет. Сообщения недолговечны и удаляются автоматически при истечении ящика. Мы не продаём и не передаём ваши данные."
+  },
+  "ar": {
+    "q6": "هل البريد المؤقت آمن؟",
+    "a6": "نعم — Offex Mail عنوان مؤقت. استخدمه للتسجيلات ورموز OTP والتجارب ليبقى بريدك الحقيقي نظيفًا وخاليًا من الرسائل المزعجة. لا تستخدمه أبدًا لحسابات البنوك أو الجهات الحكومية.",
+    "q7": "هل يمكنني استلام رموز OTP وأكواد التحقق؟",
+    "a7": "بالتأكيد. تصل الرسائل خلال ثوانٍ — بما في ذلك OTP وروابط الدخول السريع ورسائل التحقق. يتحدّث البريد تلقائيًا ويُصدر نغمة عند وصول رسالة جديدة.",
+    "q8": "هل تقرأون رسائلي أو تخزّنونها؟",
+    "a8": "لا. الرسائل قصيرة العمر وتُحذف تلقائيًا عند انتهاء صلاحية البريد. نحن لا نبيع بياناتك أو نشاركها."
+  },
+  "zh": {
+    "q6": "临时邮箱安全吗？",
+    "a6": "安全 — Offex Mail 是一次性地址。用于注册、OTP 和试用，让你的真实邮箱保持干净、无垃圾邮件。切勿用于银行或政府账户。",
+    "q7": "我能收到 OTP 和验证码吗？",
+    "a7": "当然。邮件几秒内到达 — 包括 OTP、魔法链接和验证邮件。收件箱会自动刷新，并在新邮件时提示音。",
+    "q8": "你们会读取或存储我的邮件吗？",
+    "a8": "不会。邮件为临时性质，在邮箱过期时自动删除。我们不会出售或分享你的数据。"
+  },
+  "ja": {
+    "q6": "一時メールは安全ですか？",
+    "a6": "はい — Offex Mail は使い捨てアドレスです。登録・OTP・試用に使い、本来の受信トレイをクリーンに保ちましょう。銀行や行政のアカウントには絶対に使わないでください。",
+    "q7": "OTP や確認コードを受け取れますか？",
+    "a7": "もちろんです。メールは数秒で届きます — OTP、マジックリンク、確認メールも含みます。受信トレイは自動更新され、新着時に音が鳴ります。",
+    "q8": "私のメールを読んだり保存したりしますか？",
+    "a8": "いいえ。メッセージは一時的で、受信トレイの有効期限切れ時に自動削除されます。データを販売・共有することはありません。"
+  }
+};
+  for (var k in F) { if (window.OFFEX_STR && window.OFFEX_STR[k]) { for (var s in F[k]) window.OFFEX_STR[k][s] = F[k][s]; } }
+})();
