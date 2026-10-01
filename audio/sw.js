@@ -1,6 +1,4 @@
-self.options = {
-    "domain": "3nbf4.com",
-    "zoneId": 11931640
-}
-self.lary = ""
-importScripts('https://3nbf4.com/act/files/service-worker.min.js?r=sw')
+// Monetag push service worker removed. This stub unregisters itself so old
+// subscribers stop receiving notifications from the retired network.
+self.addEventListener('install', function(){ self.skipWaiting(); });
+self.addEventListener('activate', function(e){ e.waitUntil(self.registration.unregister()); });
