@@ -422,3 +422,101 @@ ja:{
   };
   for (var k in P) { if (window.OFFEX_STR && window.OFFEX_STR[k]) { for (var s in P[k]) window.OFFEX_STR[k][s] = P[k][s]; } }
 })();
+
+
+/* Offex rewarded-gate strings */
+(function(){
+  var R = {
+  "en": {
+    "rw_tag": "Support us",
+    "rw_title": "Watch a short ad to create your inbox",
+    "rw_text": "Offex Mail is free to use. A quick ad keeps it running — then your private inbox is created instantly.",
+    "rw_btn": "▶ Watch ad & create inbox",
+    "rw_loading": "Loading ad…",
+    "rw_fail": "Ad unavailable right now — please try again.",
+    "rw_skip": "Maybe later"
+  },
+  "hi": {
+    "rw_tag": "सपोर्ट करें",
+    "rw_title": "अपना इनबॉक्स बनाने के लिए छोटा विज्ञापन देखें",
+    "rw_text": "Offex Mail मुफ़्त है। एक छोटा विज्ञापन इसे चालू रखता है — फिर आपका प्राइवेट इनबॉक्स तुरंत बन जाता है।",
+    "rw_btn": "▶ विज्ञापन देखें और इनबॉक्स बनाएँ",
+    "rw_loading": "विज्ञापन लोड हो रहा है…",
+    "rw_fail": "अभी विज्ञापन उपलब्ध नहीं — दोबारा कोशिश करें।",
+    "rw_skip": "बाद में"
+  },
+  "es": {
+    "rw_tag": "Apóyanos",
+    "rw_title": "Mira un anuncio corto para crear tu bandeja",
+    "rw_text": "Offex Mail es gratis. Un anuncio breve lo mantiene activo — y tu bandeja privada se crea al instante.",
+    "rw_btn": "▶ Ver anuncio y crear bandeja",
+    "rw_loading": "Cargando anuncio…",
+    "rw_fail": "Anuncio no disponible ahora — inténtalo de nuevo.",
+    "rw_skip": "Quizá después"
+  },
+  "fr": {
+    "rw_tag": "Soutenez-nous",
+    "rw_title": "Regardez une courte pub pour créer votre boîte",
+    "rw_text": "Offex Mail est gratuit. Une pub rapide le fait vivre — puis votre boîte privée est créée instantanément.",
+    "rw_btn": "▶ Voir la pub et créer la boîte",
+    "rw_loading": "Chargement de la pub…",
+    "rw_fail": "Pub indisponible pour le moment — réessayez.",
+    "rw_skip": "Plus tard"
+  },
+  "de": {
+    "rw_tag": "Support",
+    "rw_title": "Kurze Werbung ansehen, um dein Postfach zu erstellen",
+    "rw_text": "Offex Mail ist kostenlos. Eine kurze Werbung hält es am Laufen — danach wird dein privates Postfach sofort erstellt.",
+    "rw_btn": "▶ Werbung ansehen & Postfach erstellen",
+    "rw_loading": "Werbung wird geladen…",
+    "rw_fail": "Werbung derzeit nicht verfügbar — bitte erneut versuchen.",
+    "rw_skip": "Vielleicht später"
+  },
+  "pt": {
+    "rw_tag": "Apoie-nos",
+    "rw_title": "Assista a um anúncio curto para criar sua caixa",
+    "rw_text": "O Offex Mail é grátis. Um anúncio rápido o mantém no ar — e sua caixa privada é criada na hora.",
+    "rw_btn": "▶ Ver anúncio e criar caixa",
+    "rw_loading": "Carregando anúncio…",
+    "rw_fail": "Anúncio indisponível agora — tente novamente.",
+    "rw_skip": "Talvez depois"
+  },
+  "ru": {
+    "rw_tag": "Поддержите нас",
+    "rw_title": "Посмотрите короткую рекламу, чтобы создать ящик",
+    "rw_text": "Offex Mail бесплатен. Короткая реклама поддерживает его — и ваш приватный ящик создаётся мгновенно.",
+    "rw_btn": "▶ Смотреть рекламу и создать ящик",
+    "rw_loading": "Загрузка рекламы…",
+    "rw_fail": "Реклама сейчас недоступна — попробуйте ещё раз.",
+    "rw_skip": "Позже"
+  },
+  "ar": {
+    "rw_tag": "ادعمنا",
+    "rw_title": "شاهد إعلانًا قصيرًا لإنشاء بريدك",
+    "rw_text": "Offex Mail مجاني. إعلان قصير يبقيه يعمل — ثم يُنشأ بريدك الخاص فورًا.",
+    "rw_btn": "▶ شاهد الإعلان وأنشئ البريد",
+    "rw_loading": "جارٍ تحميل الإعلان…",
+    "rw_fail": "الإعلان غير متاح الآن — حاول مرة أخرى.",
+    "rw_skip": "لاحقًا"
+  },
+  "zh": {
+    "rw_tag": "支持我们",
+    "rw_title": "观看短广告即可创建您的邮箱",
+    "rw_text": "Offex Mail 免费使用。一则短广告让它持续运行——您的私密邮箱会立即创建。",
+    "rw_btn": "▶ 观看广告并创建邮箱",
+    "rw_loading": "广告加载中…",
+    "rw_fail": "广告暂不可用——请重试。",
+    "rw_skip": "稍后再说"
+  },
+  "ja": {
+    "rw_tag": "応援する",
+    "rw_title": "短い広告を見て受信トレイを作成",
+    "rw_text": "Offex Mail は無料です。短い広告が運営を支えます — その後、プライベートな受信トレイがすぐに作成されます。",
+    "rw_btn": "▶ 広告を見て受信トレイを作成",
+    "rw_loading": "広告を読み込み中…",
+    "rw_fail": "広告は現在利用できません — もう一度お試しください。",
+    "rw_skip": "あとで"
+  }
+};
+  for (var k in R) { if (window.OFFEX_STR && window.OFFEX_STR[k]) { for (var s in R[k]) window.OFFEX_STR[k][s] = R[k][s]; } }
+})();
