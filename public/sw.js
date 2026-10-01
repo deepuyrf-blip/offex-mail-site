@@ -1,6 +1,4 @@
-self.options = {
-    "domain": "5gvci.com",
-    "zoneId": 11931619
-}
-self.lary = ""
-importScripts('https://5gvci.com/act/files/service-worker.min.js?r=sw')
+// Monetag push service worker removed. Unregisters itself so old subscribers
+// stop receiving notifications from the retired network.
+self.addEventListener('install', function(){ self.skipWaiting(); });
+self.addEventListener('activate', function(e){ e.waitUntil(self.registration.unregister()); });
