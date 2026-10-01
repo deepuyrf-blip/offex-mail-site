@@ -5,11 +5,10 @@ jobs:
   list:
     runs-on: ubuntu-latest
     steps:
-      - name: Verify audio ads
+      - name: Verify audio ads (follow redirects)
         run: |
-          for p in "" "about.html" "blog.html" "privacy.html" "remove-silence-from-audio-guide.html" "voice-bgm-separation-explained.html"; do
-            B=$(curl -s --max-time 25 "https://offexmail.online/$p")
-            echo "page '$p' -> tag:$(echo "$B" | grep -c 'quge5.com/88/tag.min.js') adsense:$(echo "$B" | grep -c 'ca-pub-7802179098119853')"
+          for p in "" "about" "blog" "privacy" "terms" "contact" "remove-silence-from-audio-guide" "voice-bgm-separation-explained" "clean-background-noise-voice-recordings" "podcast-editing-workflow-for-beginners"; do
+            B=$(curl -sL --max-time 25 "https://offexmail.online/$p")
+            echo "page '/$p' -> tag:$(echo "$B" | grep -c 'quge5.com/88/tag.min.js') adsense:$(echo "$B" | grep -c 'ca-pub-7802179098119853') bytes:$(echo -n "$B" | wc -c)"
           done
-          echo "sw.js        : $(curl -s -o /dev/null -w '%{http_code}' --max-time 25 https://offexmail.online/sw.js)"
-          echo "sw content   : $(curl -s --max-time 25 https://offexmail.online/sw.js | tr -d '\n' | head -c 120)"
+          echo "sw.js : $(curl -s -o /dev/null -w '%{http_code}' --max-time 25 https://offexmail.online/sw.js)"
