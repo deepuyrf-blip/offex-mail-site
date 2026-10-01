@@ -4,21 +4,12 @@ on:
 jobs:
   list:
     runs-on: ubuntu-latest
-    env:
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      CLOUDFLARE_ACCOUNT_ID: d33504e28650ba4603dc9cafc46d0ec9
     steps:
-      - name: Probe audio pages project
+      - name: Verify audio ads
         run: |
-          curl -s "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/audio" -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" > /tmp/p.json
-          echo "PROJ name: $(jq -r .result.name /tmp/p.json)"
-          echo "PROJ subdomain: $(jq -r .result.subdomain /tmp/p.json)"
-          echo "PROJ domains: $(jq -c .result.domains /tmp/p.json)"
-          echo "PROJ source: $(jq -c .result.source /tmp/p.json)"
-          echo "PROJ build: $(jq -c .result.build_config /tmp/p.json)"
-          echo "PROJ branch: $(jq -r .result.production_branch /tmp/p.json)"
-      - name: Sitemaps
-        run: |
-          echo "SITEMAP audio-2i8:"; curl -s https://audio-2i8.pages.dev/sitemap.xml | tr -d '\n' | head -c 1200; echo ""
-          echo "SITEMAP offexmail:"; curl -s https://offexmail.online/sitemap.xml | tr -d '\n' | head -c 1200; echo ""
-          echo "ROOT offexmail: $(curl -s -o /dev/null -w '%{http_code}' https://offexmail.online/)"
+          for p in "" "about.html" "blog.html" "privacy.html" "remove-silence-from-audio-guide.html" "voice-bgm-separation-explained.html"; do
+            B=$(curl -s --max-time 25 "https://offexmail.online/$p")
+            echo "page '$p' -> tag:$(echo "$B" | grep -c 'quge5.com/88/tag.min.js') adsense:$(echo "$B" | grep -c 'ca-pub-7802179098119853')"
+          done
+          echo "sw.js        : $(curl -s -o /dev/null -w '%{http_code}' --max-time 25 https://offexmail.online/sw.js)"
+          echo "sw content   : $(curl -s --max-time 25 https://offexmail.online/sw.js | tr -d '\n' | head -c 120)"
