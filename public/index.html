@@ -417,11 +417,19 @@
     </div>
   </section>
 
-    <!-- Ad slot — DISABLED. Adsterra's tags triggered an on-load redirect on some devices,
-       so all third-party ad scripts are removed until a clean, non-intrusive format is chosen. -->
-  <div class="ad-slot" id="adSlot" style="display:none">
+  <!-- Ad slot — Adsterra display banner + native banner (no popunder, no social bar) -->
+  <div class="ad-slot" id="adSlot">
     <div class="ad-label">Advertisement</div>
-    <div class="ad-box" id="adSlotBox"></div>
+    <div class="ad-box" id="adSlotBox">
+      <div class="ad-wide" id="adWide">
+        <script type="text/javascript">
+          atOptions = {'key':'6c44d2b4578b39bd7dbdc98dd8c55526','format':'iframe','height':90,'width':728,'params':{}};
+        </script>
+        <script type="text/javascript" src="//www.highperformanceformat.com/6c44d2b4578b39bd7dbdc98dd8c55526/invoke.js"></script>
+      </div>
+      <script async="async" data-cfasync="false" src="https://pl31603284.profitableratecpmnetwork.com/46e23dde5b65676f5e89786d44071b56/invoke.js"></script>
+      <div id="container-46e23dde5b65676f5e89786d44071b56"></div>
+    </div>
   </div>
 
   <section class="block wrap" id="features">
@@ -525,7 +533,7 @@
 (function(){
   "use strict";
   var $ = function(id){ return document.getElementById(id); };
-  var state = { address:null, messages:[], expiresAt:0, timer:null, poll:null, current:null, seen:{}, firstLoad:true, selectedId:null };
+  var state = { address:null, messages:[], expiresAt:0, timer:null, poll:null, current:null, seen:{}, firstLoad:true, selectedId:null, autoOpened:false };
   var lang = "en";
 
   /* ---------- i18n ---------- */
@@ -660,13 +668,13 @@
   $("clearHist").onclick = function(){ if(confirm(t("history_clear")+"?")){ saveHistory([]); renderHistory(); } };
 
   function resetView(){
-    state.address=null; state.messages=[]; state.seen={}; state.firstLoad=true; state.selectedId=null;
+    state.address = null; state.messages = []; state.seen = {}; state.firstLoad = true; state.selectedId = null; state.autoOpened = false;
     try{ localStorage.removeItem("offex_last_addr"); }catch(e){}
     $("addrBox").classList.remove("show"); renderMessages([]);
     if(state.poll) clearInterval(state.poll); setStatus(t("ready"));
   }
   function switchInbox(addr){
-    state.address = addr; state.messages = []; state.seen = {}; state.firstLoad = true; state.selectedId = null;
+    state.address = addr; state.messages = []; state.seen = {}; state.firstLoad = true; state.selectedId = null; state.autoOpened = false;
     try{ localStorage.setItem("offex_last_addr", addr); }catch(e){}
     $("addrText").textContent = addr; $("addrBox").classList.add("show");
     renderMessages([]); startPolling(); loadMessages(true); tickExpiry(); renderHistory();
@@ -706,7 +714,7 @@
     setStatus("…");
     api("/inbox", { method:"POST", body: JSON.stringify(custom ? { custom: custom } : {}) })
       .then(function(d){
-        state.address = d.address; state.expiresAt = d.expires_at; state.messages = []; state.seen = {}; state.firstLoad = true; state.selectedId = null;
+        state.address = d.address; state.expiresAt = d.expires_at; state.messages = []; state.seen = {}; state.firstLoad = true; state.selectedId = null; state.autoOpened = false;
         try{ localStorage.setItem("offex_last_addr", d.address); }catch(e){}
         $("addrText").textContent = d.address; $("addrBox").classList.add("show");
         upsertHistory(d.address, d.expires_at); renderHistory();
@@ -720,12 +728,21 @@
     if(!msgs || !msgs.length) return;
     var readerOpen = $("reader").classList.contains("show");
     var hasNew = !!(fresh && fresh.length);
-    if(readerOpen && !hasNew) return;
+    /* Auto-open only once per inbox. After that, open only when genuinely new mail arrives
+       and the reader is closed — so it never re-opens on every poll. */
+    if(!hasNew){
+      if(state.autoOpened) return;
+      if(readerOpen) return;
+    } else if(readerOpen){
+      /* new mail while reading: leave the reader alone */
+      return;
+    }
     var saved = null;
     try{ saved = localStorage.getItem("offex_sel_" + state.address); }catch(e){}
     var target = null;
     if(!hasNew && saved && msgs.some(function(m){ return String(m.id) === String(saved); })) target = saved;
     else target = String(msgs[0].id);
+    state.autoOpened = true;
     if(target) openMessage(target);
   }
 
