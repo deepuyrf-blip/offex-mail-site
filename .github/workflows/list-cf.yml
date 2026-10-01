@@ -8,15 +8,42 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Test yt-dlp youtube clients
+      - name: Test free proxies against YouTube
         run: |
-          pip install -q -U yt-dlp
-          echo "yt-dlp: $(yt-dlp --version)"
-          URL="https://youtu.be/eARvryCEIKU"
-          for C in android ios tv_embedded web_safari mweb web; do
-            OUT=$(yt-dlp --skip-download --print "%(title)s | %(duration)s s" --extractor-args "youtube:player_client=$C" "$URL" 2>&1 | head -2)
-            echo "--- $C ---"
-            echo "$OUT" | head -2
-          done
-          echo "=== Bg space root ==="
-          echo "$(curl -s -o /dev/null -w '%{http_code}' --max-time 40 https://factblink514-bg.hf.space/)"
+          pip install -q -U yt-dlp requests
+          python3 - <<'PYEOF'
+          import requests, subprocess, random
+          srcs = [
+            "https://raw.githubusercontent.com/TheSpeedX/PROXY-List/master/http.txt",
+            "https://raw.githubusercontent.com/monosans/proxy-list/main/proxies/http.txt",
+            "https://raw.githubusercontent.com/clarketm/proxy-list/master/proxy-list-raw.txt",
+          ]
+          proxies = []
+          for u in srcs:
+              try:
+                  r = requests.get(u, timeout=20)
+                  proxies += [l.strip() for l in r.text.splitlines() if l.strip() and ":" in l]
+              except Exception:
+                  pass
+          proxies = list(dict.fromkeys(proxies))
+          print("fetched proxies:", len(proxies))
+          random.seed(7); random.shuffle(proxies)
+          ok = 0; tested = 0
+          for p in proxies[:14]:
+              tested += 1
+              try:
+                  r = subprocess.run(
+                      ["yt-dlp","--proxy",f"http://{p}","--skip-download","--print","%(title)s",
+                       "--socket-timeout","7","--retries","1","https://youtu.be/eARvryCEIKU"],
+                      capture_output=True, text=True, timeout=30)
+                  out = ((r.stdout or "") + (r.stderr or "")).strip().splitlines()
+                  last = out[-1][:75] if out else "(no output)"
+                  if r.returncode == 0:
+                      ok += 1; print("WORKS  ", p, "->", last)
+                  else:
+                      print("fail   ", p, "->", last)
+              except Exception:
+                  print("timeout", p)
+              if ok >= 2: break
+          print("=== tested:", tested, "| working:", ok, "===")
+          PYEOF
