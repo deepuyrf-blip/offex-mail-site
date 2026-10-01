@@ -5,16 +5,13 @@ jobs:
   list:
     runs-on: ubuntu-latest
     steps:
-      - name: Verify rewarded gate live
+      - name: AdSense readiness health check
         run: |
-          H=$(curl -sL --max-time 30 https://tempmail.offexmail.online/)
-          echo "i18n v3 tag      : $(echo "$H" | grep -c 'i18n.js?v=3')"
-          echo "rewardOv modal   : $(echo "$H" | grep -c 'id=\"rewardOv\"')"
-          echo "rewardBtn        : $(echo "$H" | grep -c 'id=\"rewardBtn\"')"
-          echo "OFFEX_REWARDED   : $(echo "$H" | grep -c 'OFFEX_REWARDED')"
-          echo "offexRewardedAd  : $(echo "$H" | grep -c 'offexRewardedAd')"
-          echo "promoOv still ok : $(echo "$H" | grep -c 'id=\"promoOv\"')"
-          I=$(curl -s --max-time 30 'https://tempmail.offexmail.online/i18n.js?v=3')
-          echo "i18n rw_tag      : $(echo "$I" | grep -c 'rw_tag')"
-          echo "i18n rw_title    : $(echo "$I" | grep -c 'rw_title')"
-          echo "i18n size        : $(echo "$I" | wc -c)"
+          echo "site root        : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://offexmail.online/)"
+          echo "about page       : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://offexmail.online/about.html)"
+          echo "privacy page     : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://offexmail.online/privacy.html)"
+          echo "contact page     : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://offexmail.online/contact.html)"
+          echo "tool proxy /hf/  : $(curl -s -o /dev/null -w '%{http_code}' --max-time 40 https://offexmail.online/hf/)"
+          echo "hf space stage   : $(curl -s --max-time 30 https://huggingface.co/api/spaces/hydui/ytvideo | python3 -c \"import sys,json;d=json.load(sys.stdin);print(d.get('runtime',{}).get('stage','?'))\" 2>/dev/null)"
+          echo "robots.txt       : $(curl -s -o /dev/null -w '%{http_code}' --max-time 20 https://offexmail.online/robots.txt)"
+          echo "sitemap.xml      : $(curl -s -o /dev/null -w '%{http_code}' --max-time 20 https://offexmail.online/sitemap.xml)"
