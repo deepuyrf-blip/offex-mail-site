@@ -26,8 +26,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 
-<!-- Monetag ad tag (zone 289235) -->
-<script src="https://quge5.com/88/tag.min.js" data-zone="289235" async data-cfasync="false"></script>
+<!-- Monetag removed (Oct 2026): its popunder/onclick caused click-anywhere redirects.
+     Replaced with Adsterra display banner + native banner, both contained in an ad box. -->
 
 <script type="application/ld+json">
 {
@@ -321,7 +321,10 @@
   /* ads */
   .ad-slot{max-width:1180px;margin:26px auto;padding:0 20px;text-align:center}
   .ad-slot .ad-label{font-size:9.5px;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted2);margin-bottom:8px}
-  .ad-slot .ad-box{border:1px dashed var(--border2);border-radius:14px;min-height:90px;display:grid;place-items:center;color:var(--muted2);font-size:12px}
+  .ad-slot .ad-box{border:1px solid var(--border2);border-radius:14px;padding:12px 10px;background:var(--surface2);display:flex;flex-direction:column;align-items:center;gap:14px;overflow:hidden}
+  .ad-slot .ad-wide{max-width:100%;overflow:hidden;line-height:0}
+  .ad-slot #container-46e23dde5b65676f5e89786d44071b56{width:100%;min-height:90px}
+  @media(max-width:840px){.ad-slot .ad-wide{display:none}}
 </style>
 </head>
 <body>
@@ -414,10 +417,19 @@
     </div>
   </section>
 
-  <!-- Ad slot (Monetag vignette / native). Stays hidden until enabled in /ads.js -->
-  <div class="ad-slot" id="adSlot" style="display:none">
+  <!-- Ad slot — Adsterra display banner + native banner (no popunder, no social bar) -->
+  <div class="ad-slot" id="adSlot">
     <div class="ad-label">Advertisement</div>
-    <div class="ad-box" id="adSlotBox">Ad space</div>
+    <div class="ad-box" id="adSlotBox">
+      <div class="ad-wide" id="adWide">
+        <script type="text/javascript">
+          atOptions = {'key':'6c44d2b4578b39bd7dbdc98dd8c55526','format':'iframe','height':90,'width':728,'params':{}};
+        </script>
+        <script type="text/javascript" src="//www.highperformanceformat.com/6c44d2b4578b39bd7dbdc98dd8c55526/invoke.js"></script>
+      </div>
+      <script async="async" data-cfasync="false" src="https://pl31603284.profitableratecpmnetwork.com/46e23dde5b65676f5e89786d44071b56/invoke.js"></script>
+      <div id="container-46e23dde5b65676f5e89786d44071b56"></div>
+    </div>
   </div>
 
   <section class="block wrap" id="features">
