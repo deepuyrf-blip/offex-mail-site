@@ -483,7 +483,7 @@
   </div>
 </div>
 
-<script src="/i18n.js"></script>
+<script src="/i18n.js?v=2"></script>
 <script>
 (function(){
   "use strict";
@@ -494,8 +494,8 @@
   /* ---------- i18n ---------- */
   function t(k){ var d = (window.OFFEX_STR && window.OFFEX_STR[lang]) || {}; return d[k] || (window.OFFEX_STR.en[k] || k); }
   function applyI18n(){
-    Array.prototype.forEach.call(document.querySelectorAll("[data-i18n]"), function(el){ el.textContent = t(el.getAttribute("data-i18n")); });
-    Array.prototype.forEach.call(document.querySelectorAll("[data-i18n-html]"), function(el){ el.innerHTML = t(el.getAttribute("data-i18n-html")); });
+    Array.prototype.forEach.call(document.querySelectorAll("[data-i18n]"), function(el){ var k = el.getAttribute("data-i18n"); var v = t(k); if(v && v !== k) el.textContent = v; });
+    Array.prototype.forEach.call(document.querySelectorAll("[data-i18n-html]"), function(el){ var k = el.getAttribute("data-i18n-html"); var v = t(k); if(v && v !== k) el.innerHTML = v; });
     Array.prototype.forEach.call(document.querySelectorAll("[data-i18n-ph]"), function(el){ el.setAttribute("placeholder", t(el.getAttribute("data-i18n-ph"))); });
     document.documentElement.setAttribute("lang", lang);
     document.documentElement.setAttribute("dir", lang === "ar" ? "rtl" : "ltr");
