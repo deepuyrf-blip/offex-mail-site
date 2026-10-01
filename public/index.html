@@ -488,7 +488,7 @@
 (function(){
   "use strict";
   var $ = function(id){ return document.getElementById(id); };
-  var state = { address:null, messages:[], expiresAt:0, timer:null, poll:null, current:null, seen:{}, firstLoad:true };
+  var state = { address:null, messages:[], expiresAt:0, timer:null, poll:null, current:null, seen:{}, firstLoad:true, selectedId:null };
   var lang = "en";
 
   /* ---------- i18n ---------- */
@@ -623,12 +623,14 @@
   $("clearHist").onclick = function(){ if(confirm(t("history_clear")+"?")){ saveHistory([]); renderHistory(); } };
 
   function resetView(){
-    state.address=null; state.messages=[]; state.seen={}; state.firstLoad=true;
+    state.address=null; state.messages=[]; state.seen={}; state.firstLoad=true; state.selectedId=null;
+    try{ localStorage.removeItem("offex_last_addr"); }catch(e){}
     $("addrBox").classList.remove("show"); renderMessages([]);
     if(state.poll) clearInterval(state.poll); setStatus(t("ready"));
   }
   function switchInbox(addr){
-    state.address = addr; state.messages = []; state.seen = {}; state.firstLoad = true;
+    state.address = addr; state.messages = []; state.seen = {}; state.firstLoad = true; state.selectedId = null;
+    try{ localStorage.setItem("offex_last_addr", addr); }catch(e){}
     $("addrText").textContent = addr; $("addrBox").classList.add("show");
     renderMessages([]); startPolling(); loadMessages(true); tickExpiry(); renderHistory();
   }
@@ -641,13 +643,27 @@
     setStatus("…");
     api("/inbox", { method:"POST", body: JSON.stringify(custom ? { custom: custom } : {}) })
       .then(function(d){
-        state.address = d.address; state.expiresAt = d.expires_at; state.messages = []; state.seen = {}; state.firstLoad = true;
+        state.address = d.address; state.expiresAt = d.expires_at; state.messages = []; state.seen = {}; state.firstLoad = true; state.selectedId = null;
+        try{ localStorage.setItem("offex_last_addr", d.address); }catch(e){}
         $("addrText").textContent = d.address; $("addrBox").classList.add("show");
         upsertHistory(d.address, d.expires_at); renderHistory();
         renderMessages([]); toast(t("t_created"), "ok"); startPolling(); tickExpiry(); $("customName").value = "";
       })
       .catch(function(e){ toast(e.message || "Error", "err"); setStatus(t("ready")); })
       .then(function(){ btn.disabled = false; btn.textContent = t("btn_create"); });
+  }
+
+  function maybeAutoOpen(msgs, fresh){
+    if(!msgs || !msgs.length) return;
+    var readerOpen = $("reader").classList.contains("show");
+    var hasNew = !!(fresh && fresh.length);
+    if(readerOpen && !hasNew) return;
+    var saved = null;
+    try{ saved = localStorage.getItem("offex_sel_" + state.address); }catch(e){}
+    var target = null;
+    if(!hasNew && saved && msgs.some(function(m){ return String(m.id) === String(saved); })) target = saved;
+    else target = String(msgs[0].id);
+    if(target) openMessage(target);
   }
 
   function loadMessages(silent){
@@ -661,6 +677,7 @@
         if(d.expires_at) state.expiresAt = d.expires_at;
         updateHistCount(state.address, msgs.length); renderHistory();
         renderMessages(msgs, fresh);
+        maybeAutoOpen(msgs, fresh);
         if(!state.firstLoad && fresh.length){
           playDing(); flashTitle();
           var app = $("app"); app.classList.remove("flash"); void app.offsetWidth; app.classList.add("flash");
@@ -693,6 +710,8 @@
   }
 
   function openMessage(id){
+    state.selectedId = String(id);
+    try{ if(state.address) localStorage.setItem("offex_sel_" + state.address, String(id)); }catch(e){}
     $("overlay").classList.add("show"); $("reader").classList.add("show");
     $("readerBody").innerHTML = '<div style="text-align:center;padding:30px"><span class="spinner"></span></div>';
     api("/message/" + id).then(function(m){
@@ -762,6 +781,9 @@
   if(!window.OFFEX_STR[lang]) lang = "en";
   applyTheme(document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light");
   buildLangSelect(); applyI18n(); renderHistory();
+  var _lastAddr = null;
+  try{ _lastAddr = localStorage.getItem("offex_last_addr"); }catch(e){}
+  if(_lastAddr && getHistory().some(function(x){ return x.address === _lastAddr; })){ switchInbox(_lastAddr); }
   api("/status").then(function(s){ if(s && s.domain) $("domainSuffix").textContent = "@" + s.domain; }).catch(function(){});
   document.addEventListener("click", unlockAudio, { once:true });
 
