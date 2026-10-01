@@ -24,24 +24,11 @@ jobs:
           mkdir -p ad
           cp audio/*.html audio/_worker.js audio/favicon.svg audio/robots.txt audio/sitemap.xml audio/ads.txt audio/sw.js audio/promo.js ad/
           npx --yes wrangler@3 pages deploy ad --project-name=audio --branch=main
-      - name: Deploy ad-config Worker (offex-ads)
-        continue-on-error: true
-        working-directory: ad-worker
-        run: |
-          OUT=$(npx --yes wrangler@3 kv:namespace create AD_CONFIG 2>&1 || true)
-          KV_ID=$(echo "$OUT" | grep -oE 'id = "[a-f0-9]{32}"' | grep -oE '[a-f0-9]{32}' | head -1)
-          if [ -z "$KV_ID" ]; then
-            OUT2=$(npx --yes wrangler@3 kv namespace list 2>&1 || true)
-            KV_ID=$(echo "$OUT2" | grep -oE '"id"[: ]+"[a-f0-9]{32}"' | grep -oE '[a-f0-9]{32}' | head -1)
-          fi
-          echo "KV_ID=$KV_ID"
-          sed "s/__KV_ID__/$KV_ID/" wrangler.toml > wrangler.run.toml
-          echo "--- generated wrangler.run.toml ---"
-          cat wrangler.run.toml
-          npx --yes wrangler@3 deploy --config wrangler.run.toml
       - name: Verify
         run: |
-          echo "MAIL page : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://tempmail.offexmail.online/)"
-          echo "AUDIO page: $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://offexmail.online/)"
-          echo "worker ping : $(curl -s --max-time 25 'https://offex-ads.deepu-yrf.workers.dev/ping')"
-          echo "worker mail : $(curl -s --max-time 25 'https://offex-ads.deepu-yrf.workers.dev/?site=mail')"
+          H=$(curl -sL --max-time 30 https://tempmail.offexmail.online/)
+          echo "MAIL auto-open-once fix : $(echo "$H" | grep -c 'autoOpened')"
+          echo "MAIL reward gate        : $(echo "$H" | grep -c 'id=.rewardOv.')"
+          echo "MAIL promo popup        : $(echo "$H" | grep -c 'id=.promoOv.')"
+          echo "MAIL page               : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://tempmail.offexmail.online/)"
+          echo "AUDIO page              : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://offexmail.online/)"
