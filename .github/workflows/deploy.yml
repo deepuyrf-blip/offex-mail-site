@@ -26,12 +26,10 @@ jobs:
           npx --yes wrangler@3 pages deploy ad --project-name=audio --branch=main
       - name: Verify
         run: |
-          H=$(curl -sL --max-time 30 https://offexmail.online/)
-          echo "AUDIO monetag (want 0) : $(echo "$H" | grep -c 'quge5')"
-          echo "AUDIO adsense (want 1) : $(echo "$H" | grep -c 'adsbygoogle')"
-          echo "AUDIO about words      : $(curl -sL --max-time 30 https://offexmail.online/about.html | sed 's/<[^>]*>/ /g' | wc -w)"
-          echo "AUDIO new guide        : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://offexmail.online/clean-interview-audio)"
-          echo "AUDIO blog->guides     : $(curl -sL --max-time 30 https://offexmail.online/blog.html | grep -c 'record-clean-voice')"
-          echo "AUDIO sw stub          : $(curl -s --max-time 30 https://offexmail.online/sw.js | grep -c 'unregister')"
-          echo "AUDIO sitemap urls     : $(curl -s --max-time 30 https://offexmail.online/sitemap.xml | grep -c '<loc>')"
-          echo "MAIL monetag (want 1)  : $(curl -sL --max-time 30 https://tempmail.offexmail.online/ | grep -c 'quge5')"
+          H=$(curl -sL --max-time 30 https://tempmail.offexmail.online/)
+          echo "MAIL monetag (want 0)   : $(echo "$H" | grep -c 'quge5')"
+          echo "MAIL adsterra banner    : $(echo "$H" | grep -c 'highperformanceformat')"
+          echo "MAIL adsterra native    : $(echo "$H" | grep -c 'profitableratecpmnetwork')"
+          echo "MAIL ad slot visible    : $(echo "$H" | grep -c 'id=.adSlot.')"
+          echo "MAIL sw stub            : $(curl -s --max-time 30 https://tempmail.offexmail.online/sw.js | grep -c 'unregister')"
+          echo "AUDIO monetag (want 0)  : $(curl -sL --max-time 30 https://offexmail.online/ | grep -c 'quge5')"
