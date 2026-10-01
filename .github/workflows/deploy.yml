@@ -23,13 +23,10 @@ jobs:
         run: |
           mkdir -p ad
           cp audio/*.html audio/_worker.js audio/favicon.svg audio/robots.txt audio/sitemap.xml audio/ads.txt audio/sw.js audio/promo.js ad/
-          ls ad
           npx --yes wrangler@3 pages deploy ad --project-name=audio --branch=main
       - name: Verify
         run: |
+          echo "mail i18n v2 tag : $(curl -sL --max-time 30 https://tempmail.offexmail.online/ | grep -c 'i18n.js?v=2')"
           echo "mail promo popup : $(curl -sL --max-time 30 https://tempmail.offexmail.online/ | grep -c 'id=\"promoOv\"')"
-          echo "mail monetag tag : $(curl -sL --max-time 30 https://tempmail.offexmail.online/ | grep -c 'quge5.com/88/tag.min.js')"
-          echo "audio promo.js   : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://offexmail.online/promo.js)"
-          echo "audio page promo : $(curl -sL --max-time 30 https://offexmail.online/ | grep -c 'promo.js')"
-          echo "audio blog promo : $(curl -sL --max-time 30 https://offexmail.online/blog | grep -c 'promo.js')"
-          echo "audio monetag tag: $(curl -sL --max-time 30 https://offexmail.online/ | grep -c 'quge5.com/88/tag.min.js')"
+          echo "audio promo v1   : $(curl -sL --max-time 30 https://offexmail.online/ | grep -c 'promo.js?v=1')"
+          echo "audio promo.js   : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 'https://offexmail.online/promo.js?v=1')"
