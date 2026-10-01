@@ -404,3 +404,21 @@ ja:{
  lang_pick:"言語"
 }
 };
+
+
+/* ---- cross-promo strings (promotes Offex Audio) ---- */
+(function(){
+  var P = {
+    en:{ p_tag:"100% Free", p_title:"Free Online Audio Tools", p_text:"Remove silence, clean noise and split voice from music — right in your browser. Free, no signup.", p_cta:"\ud83c\udfb5 Try Offex Audio \u2192", p_skip:"Maybe later" },
+    hi:{ p_tag:"100% \u092e\u0941\u095e\u094d\u0924", p_title:"\u092b\u094d\u0930\u0940 \u0911\u0928\u0932\u093e\u0907\u0928 \u0911\u0921\u093f\u092f\u094b \u091f\u0942\u0932\u094d\u0938", p_text:"\u0938\u093e\u0907\u0932\u0947\u0902\u0938 \u0939\u091f\u093e\u090f\u0902, \u0936\u094b\u0930 \u0938\u093e\u095e \u0915\u0930\u0947\u0902 \u0914\u0930 \u0935\u0949\u0907\u0938 \u0915\u094b \u092e\u094d\u092f\u0942\u095b\u093f\u0915 \u0938\u0947 \u0905\u0932\u0917 \u0915\u0930\u0947\u0902 \u2014 \u0938\u0940\u0927\u0947 \u0905\u092a\u0928\u0947 \u092c\u094d\u0930\u093e\u0909\u095b\u0930 \u092e\u0947\u0902\u0964 \u092b\u094d\u0930\u0940, \u092c\u093f\u0928\u093e \u0938\u093e\u0907\u0928\u0905\u092a\u0964", p_cta:"\ud83c\udfb5 Offex Audio \u0906\u095b\u092e\u093e\u090f\u0902 \u2192", p_skip:"\u092c\u093e\u0926 \u092e\u0947\u0902" },
+    es:{ p_tag:"100% Gratis", p_title:"Herramientas de audio gratis", p_text:"Elimina silencios, limpia ruido y separa la voz de la música — directo en tu navegador. Gratis, sin registro.", p_cta:"\ud83c\udfb5 Probar Offex Audio \u2192", p_skip:"Quizá más tarde" },
+    fr:{ p_tag:"100% Gratuit", p_title:"Outils audio gratuits", p_text:"Supprimez les silences, nettoyez le bruit et séparez la voix de la musique — directement dans votre navigateur. Gratuit, sans inscription.", p_cta:"\ud83c\udfb5 Essayer Offex Audio \u2192", p_skip:"Plus tard" },
+    de:{ p_tag:"100% Kostenlos", p_title:"Kostenlose Audio-Tools", p_text:"Stille entfernen, Rauschen bereinigen und Stimme von Musik trennen — direkt im Browser. Kostenlos, ohne Anmeldung.", p_cta:"\ud83c\udfb5 Offex Audio testen \u2192", p_skip:"Später" },
+    pt:{ p_tag:"100% Grátis", p_title:"Ferramentas de áudio grátis", p_text:"Remova silêncios, limpe ruído e separe a voz da música — direto no navegador. Grátis, sem cadastro.", p_cta:"\ud83c\udfb5 Testar Offex Audio \u2192", p_skip:"Mais tarde" },
+    ru:{ p_tag:"100% Бесплатно", p_title:"Бесплатные аудиоинструменты", p_text:"Убирайте паузы, очищайте шум и отделяйте голос от музыки — прямо в браузере. Бесплатно, без регистрации.", p_cta:"\ud83c\udfb5 Попробовать Offex Audio \u2192", p_skip:"Позже" },
+    ar:{ p_tag:"مجاني 100%", p_title:"أدوات صوتية مجانية", p_text:"أزل الصمت، نظّف الضوضاء، وافصل الصوت عن الموسيقى — مباشرة في متصفحك. مجانًا وبدون تسجيل.", p_cta:"\ud83c\udfb5 جرّب Offex Audio \u2190", p_skip:"لاحقًا" },
+    zh:{ p_tag:"100% 免费", p_title:"免费在线音频工具", p_text:"去除静音、清理噪音、分离人声与背景音乐 —— 直接在浏览器中完成。免费，无需注册。", p_cta:"\ud83c\udfb5 试用 Offex Audio \u2192", p_skip:"稍后再说" },
+    ja:{ p_tag:"100% 無料", p_title:"無料オンライン音声ツール", p_text:"無音の除去、ノイズ除去、ボーカルとBGMの分離をブラウザで。無料・登録不要。", p_cta:"\ud83c\udfb5 Offex Audio を試す \u2192", p_skip:"あとで" }
+  };
+  for (var k in P) { if (window.OFFEX_STR && window.OFFEX_STR[k]) { for (var s in P[k]) window.OFFEX_STR[k][s] = P[k][s]; } }
+})();
