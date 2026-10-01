@@ -1,12 +1,11 @@
 /**
  * offex-ads — ad configuration service for the Offex sites.
  *
- *   GET  /?site=mail|audio        -> { enabled, code, label }   (public, CORS *)
- *   POST /?site=mail|audio        -> update config              (needs x-admin-key)
+ *   GET  /?site=mail|audio   -> { enabled, code, label }    (public, CORS *)
+ *   GET  /ping               -> { ok: true }                (no KV, health)
+ *   POST /?site=mail|audio   -> update config               (needs x-admin-key)
  *
- * Config is stored in Workers KV (binding AD_CONFIG), keyed by site.
- * The sites fetch this at load time and inject whatever ad code is configured,
- * so ads can be turned on/off (or changed) from the admin panel with no redeploy.
+ * Config lives in Workers KV (binding AD_CONFIG), keyed by site.
  */
 
 const CORS = {
@@ -32,39 +31,45 @@ function siteKey(url) {
 
 export default {
   async fetch(request, env) {
-    const url = new URL(request.url);
+    try {
+      const url = new URL(request.url);
 
-    if (request.method === "OPTIONS") return new Response(null, { headers: CORS });
+      if (request.method === "OPTIONS") return new Response(null, { headers: CORS });
 
-    const key = siteKey(url);
-
-    if (request.method === "GET") {
-      let cfg = null;
-      try { cfg = await env.AD_CONFIG.get(key, "json"); } catch (e) { cfg = null; }
-      return json(cfg || DEFAULT_CFG);
-    }
-
-    if (request.method === "POST") {
-      const provided = request.headers.get("x-admin-key") || "";
-      const expected = env.ADMIN_KEY || "";
-      if (!expected || provided !== expected) {
-        return json({ ok: false, error: "unauthorized" }, 401);
+      if (url.pathname === "/ping") {
+        return json({ ok: true, kv: !!env.AD_CONFIG, hasKey: !!env.ADMIN_KEY, ts: Date.now() });
       }
-      let body;
-      try { body = await request.json(); } catch (e) { return json({ ok: false, error: "bad json" }, 400); }
-      const cfg = {
-        enabled: !!body.enabled,
-        code: String(body.code || "").slice(0, 20000),
-        label: String(body.label || "Advertisement").slice(0, 80),
-      };
-      try {
-        await env.AD_CONFIG.put(key, JSON.stringify(cfg));
-      } catch (e) {
-        return json({ ok: false, error: "kv write failed: " + String(e).slice(0, 120) }, 500);
-      }
-      return json({ ok: true, site: key, cfg });
-    }
 
-    return json({ ok: false, error: "method not allowed" }, 405);
+      const key = siteKey(url);
+      const kv = env.AD_CONFIG;
+
+      if (request.method === "GET") {
+        if (!kv) return json({ ...DEFAULT_CFG, _warn: "AD_CONFIG binding missing" });
+        let cfg = null;
+        try { cfg = await kv.get(key, "json"); } catch (e) { cfg = null; }
+        return json(cfg || DEFAULT_CFG);
+      }
+
+      if (request.method === "POST") {
+        const provided = request.headers.get("x-admin-key") || "";
+        const expected = env.ADMIN_KEY || "";
+        if (!expected) return json({ ok: false, error: "ADMIN_KEY not set on worker" }, 500);
+        if (provided !== expected) return json({ ok: false, error: "unauthorized" }, 401);
+        let body;
+        try { body = await request.json(); } catch (e) { return json({ ok: false, error: "bad json" }, 400); }
+        const cfg = {
+          enabled: !!body.enabled,
+          code: String(body.code || "").slice(0, 20000),
+          label: String(body.label || "Advertisement").slice(0, 80),
+        };
+        if (!kv) return json({ ok: false, error: "AD_CONFIG binding missing" }, 500);
+        await kv.put(key, JSON.stringify(cfg));
+        return json({ ok: true, site: key, cfg });
+      }
+
+      return json({ ok: false, error: "method not allowed" }, 405);
+    } catch (e) {
+      return json({ ok: false, error: String(e), stack: String((e && e.stack) || "").slice(0, 400) }, 200);
+    }
   },
 };
