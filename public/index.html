@@ -766,6 +766,9 @@
         if(d.expires_at) state.expiresAt = d.expires_at;
         updateHistCount(state.address, msgs.length); renderHistory();
         renderMessages(msgs, fresh);
+        var _otpChanged = false;
+        msgs.forEach(function(m){ if(m.otp){ markOtp(state.address, m.otp, m.service); _otpChanged = true; } });
+        if(_otpChanged) renderHistory();
         maybeAutoOpen(msgs, fresh);
         if(!state.firstLoad && fresh.length){
           playDing(); flashTitle();
@@ -790,7 +793,7 @@
       return '<button class="msg'+(freshIds[m.id] ? " new" : "")+'" data-id="'+m.id+'">'+
         '<div class="av">'+esc(initial)+'</div>'+
         '<div class="body"><div class="from">'+esc(m.sender || "—")+'</div>'+
-        '<div class="subj">'+esc(m.subject || "(no subject)")+(detectOtp(m.subject) ? '<span class="otp-badge">🔑 '+(m.service ? esc(m.service)+' ' : '')+esc(detectOtp(m.subject))+'</span>' : '')+'</div></div>'+
+        '<div class="subj">'+esc(m.subject || "(no subject)")+((m.otp || detectOtp(m.subject)) ? '<span class="otp-badge">🔑 '+(m.service ? esc(m.service)+' ' : '')+esc(m.otp || detectOtp(m.subject))+'</span>' : '')+'</div></div>'+
         '<div class="time">'+esc(timeAgo(m.received_at))+'</div></button>';
     }).join("");
     Array.prototype.forEach.call(list.querySelectorAll(".msg"), function(el){
