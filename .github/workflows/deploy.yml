@@ -20,15 +20,10 @@ jobs:
         run: echo "${{ secrets.HF_TOKEN }}" | npx --yes wrangler@3 pages secret put HF_TOKEN --project-name=offex-mail
       - name: Deploy to Cloudflare Pages
         run: npx --yes wrangler@3 pages deploy public --project-name=offex-mail --branch=main
-      - name: Add custom domain tempmail.offexmail.online
-        run: |
-          echo "== add =="
-          curl -s -X POST "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/offex-mail/domains" -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H "Content-Type: application/json" -d '{"name":"tempmail.offexmail.online"}' | head -c 600; echo ""
-          echo "== list =="
-          curl -s "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/offex-mail/domains" -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" | head -c 900; echo ""
       - name: Verify
         run: |
-          echo "sw.js on pages.dev   : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://offex-mail.pages.dev/sw.js)"
-          echo "custom domain root   : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://tempmail.offexmail.online/)"
-          echo "sw.js on custom      : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://tempmail.offexmail.online/sw.js)"
-          echo "api via custom       : $(curl -s -o /dev/null -w '%{http_code}' --max-time 45 https://tempmail.offexmail.online/api/status)"
+          echo "custom root        : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://tempmail.offexmail.online/)"
+          echo "sw.js on custom    : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://tempmail.offexmail.online/sw.js)"
+          echo "api via custom     : $(curl -s -o /dev/null -w '%{http_code}' --max-time 45 https://tempmail.offexmail.online/api/status)"
+          echo "tag in page        : $(curl -s --max-time 30 https://tempmail.offexmail.online/ | grep -c 'quge5.com/88/tag.min.js')"
+          echo "sw zone id         : $(curl -s --max-time 30 https://tempmail.offexmail.online/sw.js | grep -o 'zoneId.*')"
