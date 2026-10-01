@@ -277,6 +277,30 @@
   .reveal{opacity:0;transform:translateY(22px);transition:.65s cubic-bezier(.2,.8,.2,1)}
   .reveal.in{opacity:1;transform:none}
 
+  /* cross-promo popup (promotes Offex Audio) */
+  .promo-ov{position:fixed;inset:0;z-index:300;background:rgba(8,10,20,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+    display:flex;align-items:center;justify-content:center;padding:18px;opacity:0;pointer-events:none;transition:opacity .25s}
+  .promo-ov.on{opacity:1;pointer-events:auto}
+  .promo-card{position:relative;width:100%;max-width:420px;background:var(--reader);border:1px solid var(--border2);border-radius:22px;
+    padding:26px 24px 22px;text-align:center;color:var(--text);box-shadow:var(--shadow2);
+    transform:translateY(14px) scale(.98);transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+  .promo-ov.on .promo-card{transform:none}
+  .promo-x{position:absolute;top:10px;inset-inline-end:10px;width:34px;height:34px;border-radius:10px;cursor:pointer;
+    background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-size:15px;font-family:inherit}
+  .promo-x:hover{border-color:var(--danger);color:var(--danger)}
+  .promo-emoji{font-size:40px;line-height:1;margin-bottom:12px}
+  .promo-tag{display:inline-block;font-size:11px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--accent);
+    background:var(--chip);border:1px solid var(--border2);padding:5px 12px;border-radius:999px;margin-bottom:14px}
+  .promo-card h3{margin:0 0 10px;font-size:19px;font-weight:800;letter-spacing:-.3px}
+  .promo-card p{margin:0 0 18px;font-size:14px;line-height:1.6;color:var(--muted)}
+  .promo-cta{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;background:var(--grad);color:#fff;
+    font-weight:800;font-size:15px;text-decoration:none;padding:14px 18px;border-radius:14px;
+    box-shadow:0 12px 28px rgba(109,77,255,.35);transition:transform .16s}
+  .promo-cta:hover{transform:translateY(-2px)}
+  .promo-skip{display:block;width:100%;margin-top:10px;background:none;border:none;color:var(--muted2);font-size:13px;
+    font-weight:600;cursor:pointer;font-family:inherit;padding:8px}
+  .promo-skip:hover{color:var(--text)}
+
   /* ads */
   .ad-slot{max-width:1180px;margin:26px auto;padding:0 20px;text-align:center}
   .ad-slot .ad-label{font-size:9.5px;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted2);margin-bottom:8px}
@@ -446,6 +470,18 @@
 </aside>
 
 <div class="toast" id="toast"></div>
+
+<div class="promo-ov" id="promoOv" role="dialog" aria-modal="true">
+  <div class="promo-card">
+    <button class="promo-x" id="promoX" aria-label="Close">&#10005;</button>
+    <div class="promo-emoji">&#127925;</div>
+    <span class="promo-tag" data-i18n="p_tag">100% Free</span>
+    <h3 data-i18n="p_title">Free Online Audio Tools</h3>
+    <p data-i18n="p_text">Remove silence, clean noise and split voice from music — right in your browser. Free, no signup.</p>
+    <a class="promo-cta" href="https://offexmail.online" target="_blank" rel="noopener" data-i18n="p_cta">🎵 Try Offex Audio →</a>
+    <button class="promo-skip" id="promoSkip" data-i18n="p_skip">Maybe later</button>
+  </div>
+</div>
 
 <script src="/i18n.js"></script>
 <script>
@@ -707,6 +743,19 @@
   $("tabHtml").onclick = function(){ showTab("html"); };
   $("tabText").onclick = function(){ showTab("text"); };
   document.addEventListener("keydown", function(e){ if(e.key === "Escape") closeReader(); });
+
+  /* ---------- cross-promo (Offex Audio) ---------- */
+  (function(){
+    var KEY = "offex_mail_promo_seen";
+    try { if (sessionStorage.getItem(KEY)) return; } catch(e){}
+    var ov = $("promoOv"); if(!ov) return;
+    function close(){ ov.classList.remove("on"); try{ sessionStorage.setItem(KEY,"1"); }catch(e){} }
+    $("promoX").onclick = close;
+    $("promoSkip").onclick = close;
+    ov.addEventListener("click", function(e){ if(e.target === ov) close(); });
+    document.addEventListener("keydown", function(e){ if(e.key === "Escape") close(); });
+    setTimeout(function(){ ov.classList.add("on"); }, 2500);
+  })();
 
   /* ---------- boot ---------- */
   try{ lang = localStorage.getItem("offex_lang") || "en"; }catch(e){}
