@@ -1,0 +1,91 @@
+<!doctype html><html lang="en"><head>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7802179098119853" crossorigin="anonymous"></script>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="canonical" href="https://offexmail.online/podcast-format-settings.html">
+<meta name="description" content="Every podcast is a set of files, and those files have settings. Bitrate, sample rate, bit depth, and channel count decide how much of your voice survives…">
+<meta name="robots" content="index,follow">
+<meta property="og:title" content="Best Audio Format and Settings for Podcasts (Bitrate, Sample Rate, Mono vs Stereo)">
+<meta property="og:description" content="Every podcast is a set of files, and those files have settings. Bitrate, sample rate, bit depth, and channel count decide how much of your voice survives…">
+<meta property="og:url" content="https://offexmail.online/podcast-format-settings.html">
+<meta property="og:type" content="article"><meta property="og:site_name" content="Offex Audio">
+<title>Best Audio Format and Settings for Podcasts (Bitrate, Sample Rate, Mono vs Stereo)</title><style>:root{--ink:#15120d;--panel:#1d170f;--line:#3a2f1e;--text:#f4ede0;--muted:#ab9d84;--signal:#f4b558;--font:'Inter',system-ui,sans-serif}
+*{box-sizing:border-box}body{margin:0;background:var(--ink);color:var(--text);font:16px/1.75 var(--font);padding:24px 16px}
+main{max-width:800px;margin:auto;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:28px}
+a{color:var(--signal)}h1,h2,h3{line-height:1.3}h1{font-size:clamp(26px,4.6vw,40px);margin:0 0 8px}
+h2{font-size:22px;margin-top:34px}h3{font-size:18px;margin-top:24px}li{margin:8px 0}
+p{margin:14px 0}code{background:#2a2216;padding:2px 6px;border-radius:6px;font-size:14px}
+.top{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:28px;align-items:center}
+.muted{color:var(--muted);font-size:14px}
+footer{border-top:1px solid var(--line);margin-top:40px;padding-top:18px;color:var(--muted);font-size:13px}
+footer a{margin-right:12px;display:inline-block}
+.cta{display:inline-block;margin:10px 0 4px;background:var(--signal);color:#15120d;font-weight:700;padding:11px 20px;border-radius:12px;text-decoration:none}
+.grid{display:grid;gap:14px;grid-template-columns:1fr}
+.card{border:1px solid var(--line);border-radius:14px;padding:16px 18px;background:#191309}
+.card h3{margin:0 0 6px;font-size:17px}.card p{margin:0 0 8px;color:var(--muted);font-size:14px}
+@media(min-width:720px){.grid{grid-template-columns:1fr 1fr}}</style>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="apple-touch-icon" href="/favicon.svg">
+</head><body><main>
+<div class="top"><a href="index.html"><strong>Offex Audio</strong></a><a href="blog.html">Audio Editing Guides</a></div>
+<h1>Best Audio Format and Settings for Podcasts (Bitrate, Sample Rate, Mono vs Stereo)</h1>
+<p class="muted">Offex Audio &middot; Practical audio-editing guide</p>
+<p>Every podcast is a set of files, and those files have settings. Bitrate, sample rate, bit depth, and channel count decide how much of your voice survives the journey from your microphone to a listener's earbuds. Get them wrong and you either waste bandwidth on data nobody can hear, or throw away detail you cannot get back. This guide explains each setting in plain terms, gives you concrete numbers to use, and shows why the answer is almost always the same: record high, edit in a lossless or high-bitrate format, and export a compact but clean file. The advice applies whether you edit in Audacity, Reaper, Audition, Logic, or a browser tool.</p>
+<h2>The Four Settings That Matter</h2>
+<h3>Bitrate (kbps)</h3>
+<p>Bitrate is how much data the file uses per second, measured in kilobits per second. Higher bitrate means more detail, but also larger files. For spoken-word podcasts delivered as MP3 or AAC, 128 kbps is the widely accepted sweet spot for stereo, and 96 kbps is fine for mono. Going to 64 kbps starts to smear sibilants — the "s" and "sh" sounds — and can make a voice sound like it is underwater. Going above 192 kbps for a spoken podcast is mostly wasted data; listeners on earbuds and car speakers cannot reliably tell the difference.</p>
+<p>The important rule: record and edit at a higher quality than you publish. If you publish 128 kbps MP3, record at 24-bit and edit in WAV, then export the MP3 once, at the end. Every time you convert between lossy formats, you lose a little quality, and those losses stack up. Convert once.</p>
+<h3>Sample Rate (kHz)</h3>
+<p>Sample rate is how many times per second the audio is measured, in kilohertz. The standard choices are 44.1 kHz and 48 kHz. 44.1 kHz comes from the CD era; 48 kHz is the video and broadcast standard. Both capture everything a human can hear, since hearing tops out near 20 kHz and the sampling theorem needs a rate above twice the highest frequency.</p>
+<p>Record at 48 kHz. It is the safer default: it matches video if you ever post to YouTube, it gives headroom for any pitch or time processing, and the file size difference over 44.1 kHz is trivial. Do not record at 96 kHz unless you have a specific reason; it doubles your file size for no audible benefit on voice.</p>
+<h3>Bit Depth (16-bit vs 24-bit)</h3>
+<p>Bit depth sets the dynamic range — the gap between the quietest and loudest sound a file can hold without distortion. 16-bit gives about 96 dB of range, which is plenty for playback. 24-bit gives about 144 dB, which matters when recording, because it lets you keep peaks well below the ceiling and still capture quiet detail cleanly.</p>
+<p>Record at 24-bit. It costs only disk space and buys a large safety margin against clipping and a lower noise floor. Export at 16-bit for MP3 or WAV deliverables, since that is the standard playback depth.</p>
+<h3>Mono vs Stereo</h3>
+<p>This is the setting podcasters overthink most. A single person speaking into one microphone produces a mono signal — one channel. Recording it as stereo just duplicates the same audio into left and right, doubling the file size for no benefit. For a solo podcast, mono is correct, and it sounds perfectly natural on headphones and speakers alike.</p>
+<p>Stereo makes sense when you have two or more distinct sources positioned across the field: two hosts on separate microphones, an interview where each person sits on a different side, or a show with a music bed and sound effects you want to spread. In those cases, stereo keeps each voice in its own space and lets the music sit around them.</p>
+<p>There is one strong practical argument for mono even with multiple voices: mono files are half the size and play correctly on every device, including single-speaker smart speakers and cheap earbuds where a hard-panned stereo mix can leave one voice almost inaudible. If you record a two-person interview in stereo, you can always fold it to mono on export — but if a listener's device sums stereo badly, a wide mix can suffer.</p>
+<h2>A Recommended Settings Cheat Sheet</h2>
+<ul>
+<li>Recording: 48 kHz, 24-bit, mono for solo, stereo for multi-mic sessions.</li>
+<li>Editing: work in WAV or another lossless format at the recording settings.</li>
+<li>Export for publishing: 128 kbps MP3 (stereo) or 96 kbps MP3 (mono), 44.1 kHz, 16-bit.</li>
+<li>Loudness target: about −16 LUFS integrated for a stereo podcast, or −19 LUFS for mono, with true peaks no higher than −1 dBTP.</li>
+</ul>
+<p>LUFS stands for Loudness Units Full Scale, a measure of perceived loudness rather than peak level. Streaming platforms normalise playback, so matching the common targets keeps your show at a comfortable, consistent volume next to others. Peaking around −1 dBTP (true peak) leaves a little room so lossy encoding does not push the file into distortion.</p>
+<h3>Why These Numbers</h3>
+<p>128 kbps stereo is not arbitrary. It is the point where a good encoder, working on speech, keeps artefacts below the threshold most listeners notice. Below it, the encoder has to throw away detail it cannot hide; above it, you are storing data the ear discards. The −16 LUFS target exists because the major platforms normalise to roughly that level; delivering much louder just gets turned down, and delivering much quieter gets turned up, in both cases with your dynamics squashed.</p>
+<h2>Choosing a Format</h2>
+<p>MP3 remains the most universally compatible format. It plays on every device and platform. AAC, usually wrapped in an .m4a file, gives slightly better quality at the same bitrate, but compatibility is marginally narrower on older hardware. If you are unsure, publish MP3 at 128 kbps stereo — nobody will complain about the format.</p>
+<p>WAV is lossless and huge, and it is the right choice for your working and archival files, not for distribution. Keep your master in WAV at 24-bit and 48 kHz so you can re-export later without going back to the raw recording. Distribute MP3 or AAC.</p>
+<p>Avoid odd formats like OGG or FLAC for the main feed unless you have checked that your host and your audience's devices support them. FLAC is lossless and useful for archiving, but few podcast apps stream it, and file sizes are large.</p>
+<h3>Metadata and Chapters</h3>
+<p>Settings are not only about sound. Add ID3 tags — title, artist, album, and cover art — before you upload, because many players read them. If your format supports chapters (MP3 with ID3v2 and AAC/M4A both do), use them; chapter markers let listeners skip to segments and make a long episode far easier to navigate. Chapter support is a genuine reason to choose M4A over MP3 for some shows.</p>
+<h2>The Full Workflow, Start to Finish</h2>
+<ol>
+<li>Record at 48 kHz, 24-bit, choosing mono or stereo based on the number of sources.</li>
+<li>Edit in WAV. Trim silence, reduce noise, and level each voice.</li>
+<li>Apply gentle compression and a high-pass filter around 80 to 100 Hz.</li>
+<li>Match loudness to −16 LUFS (stereo) or −19 LUFS (mono) with peaks at −1 dBTP.</li>
+<li>Export once, to MP3 at 128 kbps (or 96 kbps mono), 44.1 kHz, 16-bit.</li>
+<li>Add metadata and chapters.</li>
+<li>Keep the WAV master archived.</li>
+</ol>
+<p>If you want a lighter workflow, a browser tool can handle the cleanup steps — trimming silence and reducing background noise — before you set final levels and export. Offex Audio runs these steps in the browser, which is handy when you record on a laptop and just want a clean file without a full editing suite.</p>
+<h2>Common Setting Mistakes</h2>
+<ul>
+<li>Recording in mono when you have two microphones and then trying to fake stereo later. You cannot invent separation that was never captured.</li>
+<li>Publishing at 320 kbps "for quality." On speech, it changes little and doubles your hosting size.</li>
+<li>Converting MP3 to MP3 through several tools, stacking losses. Edit from the WAV master.</li>
+<li>Recording at 16-bit and hitting the ceiling on a loud laugh. Use 24-bit and keep headroom.</li>
+<li>Ignoring loudness and shipping an episode that is far quieter or louder than everything else in a listener's queue.</li>
+</ul>
+<h2>Conclusion</h2>
+<p>The right settings are simple once you know why they exist. Record at 48 kHz and 24-bit in the channel count that matches your sources, edit in WAV, target −16 LUFS for stereo or −19 LUFS for mono, and export a single MP3 at 128 kbps stereo or 96 kbps mono. These numbers are not arbitrary — they sit where speech stays clean, files stay small, and platforms stay happy. Choose mono for solo shows and stereo only when there is genuine spatial content. Archive your master, add metadata, and export once. Do that and your podcast will sound consistent, professional, and correct on every device a listener happens to use.</p>
+<a class="cta" href="index.html">Try the free tools &rarr;</a>
+<footer><a href="index.html">Tool</a><a href="blog.html">Guides</a><a href="about.html">About</a><a href="contact.html">Contact</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><br>&copy; 2026 Offex Audio &middot; Free browser audio tools &middot; Made by Deepu</footer></main>
+<script>
+(function(){if(!("serviceWorker" in navigator))return;try{
+navigator.serviceWorker.getRegistrations().then(function(rs){rs.forEach(function(r){try{r.unregister();}catch(e){}});}).catch(function(){});
+}catch(e){}})();
+</script>
+<script src="/promo.js?v=1" defer></script>
+</body></html>
