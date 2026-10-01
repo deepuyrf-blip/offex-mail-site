@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://offex-mail.pages.dev/sitemap.xml
+Sitemap: https://tempmail.offexmail.online/sitemap.xml
