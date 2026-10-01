@@ -1,0 +1,2242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7802179098119853"
+     crossorigin="anonymous"></script>
+<meta charset="UTF-8">
+<link rel="canonical" href="https://offexmail.online/">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Free online audio tools for removing silence, cleaning speech noise, and separating voice from background music. Process MP3, WAV, M4A and more in your browser.">
+<meta name="keywords" content="silence remover, remove silence from audio, remove silence from MP3, remove silence from WAV, audio enhancer, voice isolator, vocal remover, BGM remover, background noise remover, speech enhancer, online audio tools">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="author" content="Deepu">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="theme-color" content="#15120d">
+<meta name="application-name" content="Silence Remove From Audio">
+<meta property="og:type" content="website">
+<meta property="og:title" content="♾️ Silence Remove From Audio | Ultimate Free Audio Tool">
+<meta property="og:description" content="Remove silent parts from MP3 and WAV audio online with AI precision and enhance your processed audio instantly.">
+<meta property="og:site_name" content="Silence Remove From Audio">
+<meta property="og:image" content="https://offexmail.online/favicon.svg">
+<meta property="og:image:alt" content="Offex Audio logo">
+<meta name="twitter:image" content="https://offexmail.online/favicon.svg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="♾️ Silence Remove From Audio | Free Online Audio Tool">
+<meta name="twitter:description" content="Remove silence, clean speech noise, and separate voice from BGM online with live processing status and direct downloads.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%2315120d%22/><rect x=%2214%22 y=%2240%22 width=%2210%22 height=%2220%22 rx=%224%22 fill=%22%23e8a13d%22/><rect x=%2230%22 y=%2226%22 width=%2210%22 height=%2248%22 rx=%224%22 fill=%22%23e8a13d%22/><rect x=%2246%22 y=%2214%22 width=%2210%22 height=%2272%22 rx=%224%22 fill=%22%23e8a13d%22/><rect x=%2262%22 y=%2230%22 width=%2210%22 height=%2240%22 rx=%224%22 fill=%22%23e8a13d%22/><rect x=%2278%22 y=%2242%22 width=%2210%22 height=%2216%22 rx=%224%22 fill=%22%23e8a13d%22/></svg>">
+<title>Free Online Audio Tools: Remove Silence, Clean Noise & Split Voice | Offex Audio</title>
+<script type="application/ld+json">{
+  "@context":"https://schema.org",
+  "@graph":[
+    {
+      "@type":"WebApplication",
+      "name":"Silence Remove From Audio",
+      "description":"Free online audio tools for removing silence, enhancing speech and separating voice from background music.",
+      "applicationCategory":"MultimediaApplication",
+      "operatingSystem":"Web Browser",
+      "browserRequirements":"Requires JavaScript and a modern web browser",
+      "offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},
+      "author":{"@type":"Person","name":"Deepu"},
+      "featureList":["Remove silence from audio","Audio enhancement","Voice and BGM isolation","Live processing progress","Direct audio downloads"]
+    },
+    {
+      "@type":"WebSite",
+      "name":"Silence Remove From Audio",
+      "description":"Free browser-based audio cleanup and voice isolation tools.",
+      "inLanguage":"en",
+      "publisher":{"@type":"Person","name":"Deepu"}
+    },
+    {
+      "@type":"Organization",
+      "name":"Silence Remove From Audio",
+      "contactPoint":{"@type":"ContactPoint","contactType":"customer support","email":"deepu.yrf@gmail.com"}
+    }
+  ]
+}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<script type="module">
+(async () => {
+  try {
+    let mod;
+    try {
+      mod = await import("https://cdn.jsdelivr.net/npm/@gradio/client/dist/index.min.js");
+    } catch (e) {
+      mod = await import("https://unpkg.com/@gradio/client/dist/index.min.js");
+    }
+    window.GradioClient = { Client: mod.Client, handle_file: mod.handle_file };
+    window.dispatchEvent(new Event("gradio-client-ready"));
+  } catch (e) {
+    window.GradioClientError = e;
+    window.dispatchEvent(new Event("gradio-client-error"));
+  }
+})();
+</script>
+<style>
+:root {
+  --ink: #15120d;
+  --panel: #1d170f;
+  --panel-2: #241d13;
+  --raised: #2b2216;
+  --line: #3a2f1e;
+  --line-soft: #2a2317;
+  --text: #f4ede0;
+  --muted: #ab9d84;
+  --muted-2: #8a7c66;
+  --signal: #e8a13d;
+  --signal-strong: #f4b558;
+  --signal-ink: #1a1206;
+  --wave: #57c2a8;
+  --wave-strong: #7adcc0;
+  --danger: #e2604a;
+  --shadow-soft: 0 1px 0 rgba(255,255,255,.03) inset, 0 10px 24px rgba(0,0,0,.35);
+  --shadow-panel: 0 1px 0 rgba(255,255,255,.04) inset, 0 20px 44px rgba(0,0,0,.42);
+  --radius-lg: 18px;
+  --radius-md: 13px;
+  --radius-sm: 9px;
+  --font-display: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  --font-body: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+:root[data-theme="light"] {
+  --ink: #f7f4ec;
+  --panel: #ffffff;
+  --panel-2: #fbf8f1;
+  --raised: #ffffff;
+  --line: #e6ddc6;
+  --line-soft: #efe8d6;
+  --text: #241d12;
+  --muted: #7d715a;
+  --muted-2: #948a74;
+  --signal: #c47f1e;
+  --signal-strong: #a8660f;
+  --signal-ink: #fffaf0;
+  --wave: #1f8f78;
+  --wave-strong: #17705d;
+  --danger: #c14328;
+  --shadow-soft: 0 1px 0 rgba(255,255,255,.6) inset, 0 8px 20px rgba(90,70,30,.08);
+  --shadow-panel: 0 1px 0 rgba(255,255,255,.7) inset, 0 16px 34px rgba(90,70,30,.10);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { min-height: 100%; width: 100%; }
+body {
+  font-family: var(--font-body);
+  background: var(--ink);
+  color: var(--text);
+  overflow-x: hidden;
+  transition: background .25s ease, color .25s ease;
+  background-image:
+    radial-gradient(circle at 12% 0%, color-mix(in srgb, var(--signal) 10%, transparent), transparent 42%),
+    radial-gradient(circle at 88% 30%, color-mix(in srgb, var(--wave) 9%, transparent), transparent 40%);
+}
+::selection { background: var(--signal); color: var(--signal-ink); }
+:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; border-radius: 6px; }
+a { color: inherit; }
+.icon { width: 1em; height: 1em; stroke: currentColor; fill: none; display: inline-block; vertical-align: -0.14em; }
+
+.app { width: min(1120px, calc(100% - 32px)); max-width: 100%; margin: 0 auto; padding: 20px 0 56px; }
+
+/* TOP BAR */
+.top-bar {
+  display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius-lg);
+  padding: 12px 18px; margin-bottom: 16px; box-shadow: var(--shadow-soft);
+}
+.brand-box { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.brand-logo {
+  width: 34px; height: 34px; flex: none; border-radius: 10px; display: grid; place-items: center;
+  background: linear-gradient(155deg, var(--signal), var(--wave)); color: var(--signal-ink);
+}
+.brand-logo .icon { width: 18px; height: 18px; stroke-width: 2.4; }
+.brand-title { font-family: var(--font-display); font-size: 15px; font-weight: 700; color: var(--text); letter-spacing: 0.1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.top-actions { display: flex; align-items: center; gap: 8px; flex: none; }
+.badge-creator {
+  background: var(--panel-2); border: 1px solid var(--line); color: var(--muted);
+  padding: 6px 12px; border-radius: 99px; font-size: 11px; font-weight: 600; white-space: nowrap;
+}
+.ig-chip {
+  display: flex; align-items: center; gap: 6px; text-decoration: none;
+  background: var(--panel-2); border: 1px solid var(--line); color: var(--text);
+  padding: 6px 12px 6px 8px; border-radius: 99px; font-size: 12px; font-weight: 700;
+  transition: border-color .15s ease, transform .15s ease;
+}
+.ig-chip:hover { border-color: var(--signal); transform: translateY(-1px); }
+.ig-chip .icon { width: 15px; height: 15px; color: var(--signal); stroke-width: 2.1; }
+.theme-toggle {
+  width: 34px; height: 34px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel-2);
+  color: var(--text); display: grid; place-items: center; cursor: pointer; flex: none;
+}
+.theme-toggle .icon { width: 17px; height: 17px; stroke-width: 2.1; }
+.theme-toggle .icon-moon { display: none; }
+:root[data-theme="light"] .theme-toggle .icon-sun { display: none; }
+:root[data-theme="light"] .theme-toggle .icon-moon { display: block; }
+
+/* API STATUS BAR */
+.api-bar {
+  border: 1px solid var(--line); background: var(--panel);
+  border-radius: var(--radius-lg); padding: 13px 18px; margin-bottom: 16px;
+  display: flex; align-items: center; gap: 14px; box-shadow: var(--shadow-soft); flex-wrap: wrap;
+}
+.api-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--muted-2); flex: none; box-shadow: 0 0 0 4px color-mix(in srgb, var(--muted-2) 25%, transparent); }
+.api-dot.good { background: var(--wave); box-shadow: 0 0 0 4px color-mix(in srgb, var(--wave) 25%, transparent); }
+.api-dot.bad { background: var(--danger); box-shadow: 0 0 0 4px color-mix(in srgb, var(--danger) 25%, transparent); }
+.api-dot.busy { background: var(--signal); animation: pulseDot 1.2s infinite; }
+.api-info { min-width: 0; }
+.api-info h3 { font-size: 13px; font-weight: 700; color: var(--text); font-family: var(--font-display); }
+.api-info p { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.api-stats-pill {
+  margin-left: auto; background: var(--panel-2); border: 1px solid var(--line);
+  padding: 7px 14px; border-radius: var(--radius-sm); font: 600 12px var(--font-mono); text-align: right; line-height: 1.4; color: var(--muted);
+}
+.api-stats-pill b { color: var(--signal); }
+@keyframes pulseDot { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.55; transform: scale(0.85); } }
+
+/* HERO */
+.hero { text-align: center; padding: 30px 10px 26px; }
+.hero-wave { display: flex; align-items: flex-end; justify-content: center; gap: 3px; height: 76px; margin: 0 auto 22px; max-width: 480px; }
+.hero-wave span { display: block; flex: 1 1 auto; max-width: 5px; border-radius: 3px; height: var(--h, 30%); background: linear-gradient(180deg, var(--signal-strong), var(--wave)); transform: scaleY(0); transform-origin: bottom; animation: waveIn .55s cubic-bezier(.2,.8,.2,1) forwards; }
+@keyframes waveIn { to { transform: scaleY(1); } }
+.hero h1 { font-family: var(--font-display); font-size: clamp(30px, 5.4vw, 50px); font-weight: 700; letter-spacing: -0.5px; line-height: 1.1; color: var(--text); }
+.hero p { margin-top: 12px; color: var(--muted); font-size: 15px; max-width: 560px; margin-inline: auto; line-height: 1.6; }
+
+/* WORKSPACE */
+.workspace { display: flex; flex-direction: column; gap: 18px; }
+.grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; }
+.card, .enhancer-card {
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius-lg);
+  padding: 20px; box-shadow: var(--shadow-panel); min-width: 0; max-width: 100%;
+}
+.card, .drop, .output-box, .enhancer-card, .enhancer-grid, .enhancer-info { min-width: 0; max-width: 100%; }
+.drop > div { width: 100%; max-width: 100%; min-width: 0; overflow: hidden; }
+.drop strong {
+  display: -webkit-box; width: 100%; max-width: 100%; min-width: 0; overflow: hidden;
+  overflow-wrap: anywhere; word-break: break-word; white-space: normal;
+  -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; text-overflow: ellipsis;
+}
+.drop span { max-width: 100%; overflow: hidden; overflow-wrap: anywhere; word-break: break-word; }
+.output-box audio { display: block; width: 100%; max-width: 100%; }
+
+.card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; gap: 10px; }
+.card-title { font-family: var(--font-display); font-size: 15px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 9px; }
+.card-title .icon-tile { width: 26px; height: 26px; border-radius: 8px; background: var(--panel-2); border: 1px solid var(--line); display: grid; place-items: center; color: var(--signal); flex: none; }
+.card-title .icon-tile .icon { width: 14px; height: 14px; stroke-width: 2.2; }
+.badge {
+  font: 700 10.5px var(--font-mono); color: var(--muted); border: 1px solid var(--line);
+  background: var(--panel-2); padding: 5px 10px; border-radius: 99px; letter-spacing: .3px; text-transform: uppercase;
+}
+
+/* DROPZONE */
+.drop {
+  min-height: 190px; border: 1.5px dashed var(--line); border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center; text-align: center;
+  cursor: pointer; transition: border-color .2s ease, background .2s ease; background: var(--panel-2);
+  padding: 18px; position: relative; overflow: hidden;
+}
+.drop:hover, .drop.drag { border-color: var(--signal); background: color-mix(in srgb, var(--signal) 6%, var(--panel-2)); }
+.drop-icon {
+  width: 52px; height: 52px; border-radius: 14px; margin: 0 auto 12px;
+  display: grid; place-items: center; color: var(--signal);
+  background: var(--raised); border: 1px solid var(--line);
+}
+.drop-icon .icon { width: 22px; height: 22px; stroke-width: 2; }
+.drop strong { display: block; font-size: 14px; color: var(--text); margin-bottom: 4px; font-weight: 600; }
+.drop span { display: block; color: var(--muted); font-size: 12px; }
+input[type=file] { display: none; }
+.wave-canvas { width: 100%; height: 40px; margin-top: 12px; border-radius: 8px; display: none; }
+.wave-canvas.show { display: block; }
+
+/* CONTROLS */
+.controls { margin-top: 16px; }
+.label-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.label { font-size: 12.5px; color: var(--text); font-weight: 600; }
+.value { font: 700 12px var(--font-mono); color: var(--signal); }
+.custom-value-wrap { display: flex; align-items: center; gap: 9px; width: 100%; }
+.custom-value {
+  width: 100%; height: 46px; border: 1px solid var(--line); border-radius: var(--radius-sm);
+  background: var(--panel-2); color: var(--text); padding: 0 13px; font: 700 15px var(--font-mono);
+  outline: none; transition: border-color .2s ease;
+}
+.custom-value:focus { border-color: var(--signal); }
+.custom-unit {
+  flex: none; height: 46px; display: flex; align-items: center; padding: 0 13px;
+  border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--panel-2);
+  color: var(--signal); font: 700 12px var(--font-mono);
+}
+.input-hint { margin-top: 7px; color: var(--muted); font-size: 11.5px; }
+select.custom-value { -webkit-appearance: none; appearance: none; cursor: pointer;
+  background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+  background-position: calc(100% - 18px) center, calc(100% - 13px) center; background-size: 5px 5px; background-repeat: no-repeat; }
+
+/* BUTTONS */
+@keyframes removePulse { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--signal) 45%, transparent); } 70% { box-shadow: 0 0 0 12px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
+.btn-primary, .btn-secondary {
+  width: 100%; border: none; border-radius: var(--radius-sm); padding: 14px 18px; margin-top: 16px;
+  font: 700 13.5px var(--font-body); cursor: pointer; transition: transform .15s ease, filter .15s ease, opacity .15s ease;
+  letter-spacing: .1px;
+}
+.btn-primary { color: var(--signal-ink); background: linear-gradient(120deg, var(--signal-strong), var(--signal)); }
+.btn-primary:hover:not(:disabled) { transform: translateY(-1px); filter: brightness(1.05); }
+.btn-primary:active:not(:disabled) { transform: translateY(0); }
+.btn-primary.processing, .btn-secondary.processing {
+  animation: removePulse 1.6s infinite ease-in-out; background: linear-gradient(120deg, var(--signal), var(--wave));
+  color: var(--signal-ink) !important;
+}
+.btn-secondary { color: var(--text); background: var(--panel-2); border: 1px solid var(--line); }
+.btn-secondary:hover:not(:disabled) { border-color: var(--signal); color: var(--signal); }
+button:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; filter: none !important; animation: none !important; }
+
+/* METER (unified progress bar across all 3 tools) */
+.meter-track { height: 8px; margin-top: 14px; background: var(--panel-2); border: 1px solid var(--line-soft); border-radius: 99px; overflow: hidden; }
+.meter-fill { height: 100%; width: 0; border-radius: inherit; background: linear-gradient(90deg, var(--signal), var(--wave)); transition: width .35s ease; }
+
+/* PROCESSING PANEL (Remove Silence hero progress) */
+.processing-panel { display: none; min-height: 210px; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--panel-2); padding: 24px 20px; align-items: center; justify-content: center; text-align: center; }
+.processing-panel.show { display: flex; animation: fadeInUp 0.25s ease; }
+.processing-inner { width: 100%; max-width: 440px; }
+.processing-spinner { width: 42px; height: 42px; margin: 0 auto 14px; border: 4px solid var(--line); border-top-color: var(--signal); border-radius: 50%; animation: processingSpin 0.9s linear infinite; }
+@keyframes processingSpin { to { transform: rotate(360deg); } }
+.processing-title { font-family: var(--font-display); font-size: 15px; font-weight: 700; color: var(--text); }
+.processing-subtitle { margin-top: 5px; color: var(--muted); font-size: 12px; }
+.processing-meta { display: flex; justify-content: space-between; gap: 12px; margin-top: 9px; font: 700 11.5px var(--font-mono); color: var(--muted); }
+.processing-meta b { color: var(--signal); }
+.processing-status { margin-top: 13px; min-height: 18px; color: var(--muted); font: 600 11.5px var(--font-mono); }
+
+/* OUTPUT PANEL */
+.output-box { min-height: 210px; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--panel-2); display: flex; flex-direction: column; padding: 16px; justify-content: center; position: relative; overflow: hidden; gap: 10px; }
+.output-empty { margin: auto; text-align: center; color: var(--muted); font-size: 12.5px; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.output-icon { width: 38px; height: 38px; border-radius: 11px; background: var(--raised); border: 1px solid var(--line); display: grid; place-items: center; color: var(--muted); }
+.output-icon .icon { width: 17px; height: 17px; }
+audio { width: 100%; margin-top: auto; border-radius: 10px; }
+.info { margin-top: 10px; padding: 11px; border-radius: var(--radius-sm); background: var(--raised); border: 1px solid var(--line); color: var(--text); font-size: 12px; white-space: pre-line; font-family: var(--font-mono); }
+.download-btn {
+  display: none; margin-top: 10px; text-decoration: none; text-align: center; cursor: pointer;
+  border: 1px solid color-mix(in srgb, var(--wave) 45%, var(--line)); background: color-mix(in srgb, var(--wave) 12%, transparent); color: var(--wave-strong);
+  border-radius: var(--radius-sm); padding: 11px; font-size: 12.5px; font-weight: 700; transition: background .15s ease;
+}
+.download-btn:hover { background: color-mix(in srgb, var(--wave) 20%, transparent); }
+.download-btn.show { display: block; animation: fadeInUp 0.35s ease; }
+.download-btn.downloading { opacity: .7; pointer-events: none; }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ENHANCER / ISOLATION SHARED CARD */
+.enhancer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: start; }
+.enhancer-card .grid { margin-top: 0; align-items: start; }
+.enhancer-info h2 { font-family: var(--font-display); font-size: 17px; font-weight: 700; color: var(--text); margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+.enhancer-info p { color: var(--muted); font-size: 12.5px; line-height: 1.6; margin-bottom: 13px; }
+.status-text { margin-top: 10px; font-size: 12px; color: var(--signal); font-weight: 600; min-height: 18px; font-family: var(--font-mono); }
+.mini-drop { min-height: 128px; }
+
+/* LIVE CONSOLE (renamed styling, same class hooks as before) */
+.rgb-monitor, .tool-monitor { margin-top: 16px; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--ink); color: var(--text); text-align: left; overflow: hidden; }
+.rgb-monitor-head { display: flex; align-items: center; justify-content: space-between; padding: 9px 12px; border-bottom: 1px solid var(--line-soft); background: var(--panel-2); }
+.rgb-dots { display: flex; gap: 6px; }
+.rgb-dots i { width: 7px; height: 7px; border-radius: 50%; display: block; background: var(--line); }
+.rgb-monitor-title { font: 700 10.5px var(--font-mono); letter-spacing: .6px; color: var(--muted); text-transform: uppercase; }
+.rgb-live { font: 700 10px var(--font-mono); color: var(--wave); }
+.rgb-live:before { content: "●"; margin-right: 5px; animation: blink 1s infinite; }
+.rgb-live.idle { color: var(--muted-2); }
+.rgb-live.idle:before { animation: none; }
+@keyframes blink { 50% { opacity: .35; } }
+.rgb-log { height: 132px; overflow: auto; padding: 9px 12px; font: 500 11px/1.65 var(--font-mono); scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
+.rgb-log-line { white-space: pre-wrap; word-break: break-word; color: var(--muted); }
+.rgb-log-line .time { color: var(--muted-2); font-weight: 700; }
+.rgb-log-line.info { color: var(--text); }
+.rgb-log-line.ok { color: var(--wave); }
+.rgb-log-line.warn { color: var(--signal); }
+.rgb-log-line.err { color: var(--danger); font-weight: 700; }
+.rgb-stage { height: 3px; margin: 0; background: var(--line-soft); overflow: hidden; }
+.rgb-stage span { display: block; height: 100%; width: 100%; background: var(--line-soft); }
+.rgb-stage.done span { background: var(--wave); }
+.rgb-stage.error span { background: var(--danger); }
+.rgb-eta-row { display: flex; gap: 7px; flex-wrap: wrap; padding: 10px 12px; }
+.rgb-chip { padding: 6px 9px; border-radius: var(--radius-sm); background: var(--panel-2); border: 1px solid var(--line-soft); font: 700 10px var(--font-mono); color: var(--muted); }
+.rgb-chip b { color: var(--text); }
+.rgb-chip.eta b { color: var(--wave); }
+.tool-monitor .rgb-log { height: 128px; }
+.monitor-label { font: 700 9.5px var(--font-mono); letter-spacing: .8px; color: var(--muted-2); text-transform: uppercase; margin-left: 8px; }
+
+/* ENHANCE MODE PICKER */
+.enhance-modes { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin: 13px 0; }
+.enhance-mode { border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 10px 6px; background: var(--panel-2); cursor: pointer; text-align: center; transition: border-color .15s ease; position: relative; color: var(--text); }
+.enhance-mode strong { display: block; font-size: 11.5px; }
+.enhance-mode span { display: block; font-size: 9.5px; color: var(--muted); margin-top: 3px; }
+.enhance-mode.active { border-color: var(--signal); background: color-mix(in srgb, var(--signal) 12%, var(--panel-2)); }
+.enhance-mode.active strong { color: var(--signal); }
+.enhance-mode.active:after { content: "✓"; position: absolute; right: 6px; top: 4px; color: var(--wave); font-weight: 900; font-size: 10px; }
+
+/* TOAST */
+.ready-toast { position: fixed; right: 16px; top: 16px; z-index: 5000; width: min(340px, calc(100vw - 32px)); background: var(--panel); color: var(--text); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 13px 15px; box-shadow: var(--shadow-panel); display: none; align-items: center; gap: 11px; animation: toastIn .25s ease; }
+.ready-toast.show { display: flex; }
+.ready-toast .toast-icon { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: linear-gradient(135deg, var(--signal), var(--wave)); color: var(--signal-ink); flex: 0 0 auto; }
+.ready-toast .toast-icon .icon { width: 16px; height: 16px; stroke-width: 3; }
+.ready-toast .toast-body { min-width: 0; }
+.ready-toast .toast-title { font: 700 12.5px var(--font-display); }
+.ready-toast .toast-detail { font: 600 11px var(--font-mono); color: var(--muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ready-toast .toast-close { margin-left: auto; background: transparent; border: 0; color: var(--muted); cursor: pointer; padding: 3px; display: grid; }
+.ready-toast .toast-close .icon { width: 14px; height: 14px; }
+@keyframes toastIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+
+/* STATS */
+.stats-dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.stat-box { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 16px; display: flex; align-items: center; gap: 14px; box-shadow: var(--shadow-soft); }
+.stat-icon { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; background: var(--panel-2); border: 1px solid var(--line); color: var(--signal); flex: none; }
+.stat-icon .icon { width: 19px; height: 19px; stroke-width: 2; }
+.stat-content span { display: block; font: 700 10.5px var(--font-mono); color: var(--muted); text-transform: uppercase; letter-spacing: .4px; }
+.stat-content strong { display: block; font-family: var(--font-display); font-size: 22px; color: var(--text); font-weight: 700; margin-top: 2px; }
+
+/* AD SLOTS */
+.ad-slot { margin: 16px auto; text-align: center; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; overflow: hidden; min-height: 60px; background: var(--panel-2); border: 1px dashed var(--line); }
+.ad-slot { min-height: 70px; color: var(--muted-2); font-size: 11px; letter-spacing: .3px; position: relative; isolation: isolate; }
+.ad-empty-reserve { display: none; }
+
+/* SEO / CONTENT */
+.seo-content { margin-top: 22px; padding: 26px 22px; border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--panel); box-shadow: var(--shadow-soft); }
+.seo-inner { max-width: 980px; margin: 0 auto; }
+.seo-inner h2 { font-family: var(--font-display); font-size: 19px; margin: 22px 0 9px; color: var(--text); font-weight: 700; }
+.seo-inner h2:first-child { margin-top: 0; }
+.seo-inner p { font-size: 13px; line-height: 1.75; color: var(--muted); }
+.seo-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 13px; margin: 16px 0; }
+.seo-grid article { padding: 15px; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--panel-2); }
+.seo-grid h3 { font-family: var(--font-display); font-size: 13.5px; margin-bottom: 6px; color: var(--text); font-weight: 600; }
+.seo-grid p { color: var(--muted); }
+.seo-steps { padding-left: 20px; color: var(--muted); font-size: 13px; line-height: 1.9; }
+.faq-list details { border-top: 1px solid var(--line); padding: 12px 0; }
+.faq-list summary { cursor: pointer; font-weight: 700; font-size: 13.5px; color: var(--text); list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.faq-list summary::-webkit-details-marker { display: none; }
+.faq-list summary:after { content: "+"; font-family: var(--font-mono); color: var(--signal); font-size: 16px; flex: none; }
+.faq-list details[open] summary:after { content: "–"; }
+.faq-list p { margin-top: 8px; color: var(--muted); }
+@media(max-width:768px){.seo-grid{grid-template-columns:1fr}.seo-content{padding:20px 15px}}
+
+/* FOOTER */
+footer { margin-top: 30px; text-align: center; border-top: 1px solid var(--line); padding-top: 22px; }
+.footer-links { display: flex; justify-content: center; gap: 18px; margin-bottom: 12px; flex-wrap: wrap; }
+.footer-links a { color: var(--muted); text-decoration: none; font-size: 12px; font-weight: 600; transition: color .2s; cursor: pointer; }
+.footer-links a:hover { color: var(--signal); }
+.footer-ig { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); text-decoration: none; font-size: 12px; font-weight: 700; }
+.footer-ig:hover { color: var(--signal); }
+.footer-ig .icon { width: 14px; height: 14px; }
+.copyright { color: var(--muted-2); font-size: 11px; margin-top: 10px; }
+
+/* MODALS */
+.modal-overlay { position: fixed; inset: 0; background: rgba(10,8,5,0.6); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
+.modal-overlay.open { display: flex; animation: fadeInModal 0.2s ease; }
+@keyframes fadeInModal { from { opacity: 0; } to { opacity: 1; } }
+.modal-content { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius-lg); max-width: 600px; width: 100%; max-height: 85vh; overflow-y: auto; padding: 26px; box-shadow: var(--shadow-panel); position: relative; }
+.modal-close { position: absolute; top: 18px; right: 18px; background: var(--panel-2); border: 1px solid var(--line); color: var(--text); width: 30px; height: 30px; border-radius: 50%; cursor: pointer; display: grid; place-items: center; }
+.modal-close .icon { width: 13px; height: 13px; }
+.modal-close:hover { border-color: var(--signal); color: var(--signal); }
+.modal-content h2 { font-family: var(--font-display); font-size: 19px; margin-bottom: 13px; color: var(--text); }
+.modal-content p, .modal-content li { color: var(--muted); font-size: 13px; line-height: 1.7; margin-bottom: 10px; }
+.modal-content ul { padding-left: 20px; margin-bottom: 10px; }
+.modal-content a { color: var(--signal); }
+
+/* RESPONSIVE */
+@media (max-width: 980px) and (min-width: 769px) { .grid, .enhancer-grid, .stats-dashboard { grid-template-columns: minmax(0, 1fr); } }
+@media(max-width: 768px) {
+  .grid, .enhancer-grid, .stats-dashboard { grid-template-columns: 1fr; }
+  .app { width: calc(100% - 20px); padding-top: 14px; }
+  .top-bar { padding: 10px 13px; }
+  .hero { padding: 22px 5px 20px; }
+  .hero-wave { height: 60px; margin-bottom: 16px; }
+  .workspace { gap: 14px; }
+  .card, .enhancer-card { padding: 15px; border-radius: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-wave span { animation: none; transform: scaleY(1); }
+  .api-dot.busy, .rgb-live:before { animation: none; }
+  * { scroll-behavior: auto !important; }
+}
+
+/* ================= PRO MAX UI ================= */
+:root{
+  --pro-bg:#f7f5ef;--pro-panel:#fff;--pro-panel2:#fbfaf6;
+  --pro-ink:#201d18;--pro-muted:#7e776b;--pro-line:#e5dece;
+  --pro-gold:#c18a2c;--pro-gold2:#e0a646;--pro-teal:#2d9d85;--pro-teal2:#62c9b0;
+  --pro-shadow:0 18px 50px rgba(65,48,20,.10);
+}
+:root[data-theme="dark"]{
+  --pro-bg:#100f0c;--pro-panel:#171511;--pro-panel2:#1e1a14;
+  --pro-ink:#f4eee2;--pro-muted:#aaa08e;--pro-line:#3b3225;
+  --pro-gold:#e6a34a;--pro-gold2:#f4bb62;--pro-teal:#55c4ab;--pro-teal2:#79dec5;
+  --pro-shadow:0 20px 55px rgba(0,0,0,.35);
+}
+body{
+  background:radial-gradient(800px 380px at 5% 0%,rgba(225,173,82,.08),transparent 68%),
+             radial-gradient(700px 380px at 100% 18%,rgba(70,185,158,.07),transparent 65%),var(--pro-bg);
+}
+.app{width:min(1180px,calc(100% - 20px));padding-bottom:70px}
+.top-bar{background:rgba(255,255,255,.90);border-color:var(--pro-line);
+  box-shadow:0 10px 32px rgba(48,38,21,.10);backdrop-filter:blur(18px)}
+:root[data-theme="dark"] .top-bar{background:rgba(23,21,17,.90)}
+.brand-logo{background:linear-gradient(145deg,var(--pro-gold),var(--pro-teal));
+  box-shadow:0 8px 22px rgba(193,138,44,.18)}
+.ig-chip,.api-bar,.card,.enhancer-card,.seo-content,.stat-box{border-color:var(--pro-line)}
+.api-bar,.card,.enhancer-card,.seo-content,.stat-box{box-shadow:var(--pro-shadow)}
+.api-bar{background:var(--pro-panel)}
+.card,.enhancer-card{background:linear-gradient(145deg,var(--pro-panel),var(--pro-panel2))}
+.hero{padding-top:32px}
+.hero h1{font-size:clamp(34px,6vw,60px);letter-spacing:-2px;color:var(--pro-ink)}
+.hero p{max-width:690px;color:var(--pro-muted)}
+.hero h1:after{content:"";display:block;width:78px;height:3px;border-radius:99px;margin:16px auto 0;
+  background:linear-gradient(90deg,var(--pro-gold),var(--pro-teal))}
+.hero-wave{height:72px;margin-bottom:20px}
+.hero-wave span{transform-origin:center;animation:heroSong 1.15s ease-in-out infinite alternate;animation-delay:var(--delay,0ms)}
+@keyframes heroSong{0%{transform:scaleY(.30);opacity:.55}50%{transform:scaleY(1);opacity:1}100%{transform:scaleY(.48);opacity:.72}}
+.tool-switcher{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:-4px auto 18px}
+.tool-switcher a{display:inline-flex;align-items:center;gap:7px;text-decoration:none;color:var(--pro-muted);
+  background:var(--pro-panel);border:1px solid var(--pro-line);padding:8px 14px;border-radius:99px;
+  font-size:11.5px;font-weight:800;box-shadow:0 7px 20px rgba(54,43,23,.07);transition:.18s ease}
+.tool-switcher a:hover{transform:translateY(-2px);border-color:var(--pro-gold);color:var(--pro-ink)}
+.tool-switcher a:first-child{color:var(--pro-gold)}.tool-switcher a:nth-child(3){color:var(--pro-teal)}
+.drop{background:linear-gradient(180deg,var(--pro-panel2),var(--pro-panel));border-color:var(--pro-line)}
+.drop:hover,.drop.drag{border-color:var(--pro-gold);box-shadow:0 0 0 4px rgba(193,138,44,.08)}
+.drop-icon,.output-icon,.card-title .icon-tile{background:linear-gradient(145deg,var(--pro-panel2),var(--pro-panel));border-color:var(--pro-line)}
+.btn-primary{background:linear-gradient(115deg,var(--pro-gold2),var(--pro-gold));color:#fff;box-shadow:0 10px 25px rgba(193,138,44,.18)}
+.btn-secondary{background:var(--pro-panel2);border-color:var(--pro-line)}
+.meter-track{background:#eee9dd;border-color:var(--pro-line);height:8px}
+:root[data-theme="dark"] .meter-track{background:#29231a}
+.meter-fill{background:linear-gradient(90deg,var(--pro-gold),var(--pro-teal));box-shadow:0 0 15px rgba(45,157,133,.24)}
+.download-btn{border-color:rgba(45,157,133,.40);background:rgba(45,157,133,.07);color:var(--pro-teal)}
+.enhance-mode{background:var(--pro-panel2);border-color:var(--pro-line)}
+.enhance-mode.active{border-color:var(--pro-gold);background:rgba(193,138,44,.08)}
+
+/* NEW PROCESSING VISUAL — replaces console/logs */
+.rgb-monitor,.tool-monitor{position:relative;overflow:hidden;border:1px solid var(--pro-line);
+  background:radial-gradient(circle at 50% 42%,rgba(77,173,230,.11),transparent 24%),
+             radial-gradient(circle at 26% 68%,rgba(193,138,44,.07),transparent 22%),var(--pro-panel2)}
+.rgb-monitor-head{position:relative;z-index:3;background:transparent;border-bottom:0}
+.rgb-log,.rgb-stage{display:none!important}
+.ai-progress-visual{position:relative;min-height:245px;margin:0 10px 10px;border-radius:18px;overflow:hidden;isolation:isolate;
+  background:radial-gradient(circle at 50% 48%,rgba(94,179,230,.11),transparent 24%),
+             radial-gradient(circle at 26% 68%,rgba(193,138,44,.07),transparent 22%),transparent}
+.ai-progress-dots{position:absolute;inset:18px 28px;display:grid;grid-template-columns:repeat(18,1fr);
+  grid-template-rows:repeat(10,1fr);gap:9px;opacity:.75}
+.ai-progress-dots i{width:3px;height:3px;border-radius:50%;align-self:center;justify-self:center;
+  background:rgba(76,145,210,.34);box-shadow:0 0 5px rgba(76,145,210,.10);animation:dotPulse 2.4s ease-in-out infinite}
+.ai-progress-dots i:nth-child(7n){animation-delay:-.9s}.ai-progress-dots i:nth-child(11n){animation-delay:-1.5s}
+.ai-progress-dots i:nth-child(17n){animation-delay:-.4s}
+@keyframes dotPulse{0%,100%{transform:scale(.55);opacity:.22}45%{transform:scale(1.7);opacity:.95}70%{transform:scale(.9);opacity:.55}}
+.ai-orb{position:absolute;width:112px;height:112px;left:50%;top:50%;transform:translate(-50%,-50%);
+  border-radius:50%;background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.82),rgba(102,166,225,.35) 28%,rgba(62,128,205,.10) 60%,transparent 72%);
+  box-shadow:0 0 35px rgba(73,142,220,.15);animation:orbFloat 3.2s ease-in-out infinite;z-index:2}
+.ai-orb:before,.ai-orb:after{content:"";position:absolute;inset:-28px;border:1px solid rgba(83,143,211,.16);
+  border-radius:50%;animation:orbitRing 4.8s linear infinite}
+.ai-orb:after{inset:-48px;border-color:rgba(193,138,44,.12);animation-duration:7s;animation-direction:reverse}
+@keyframes orbFloat{0%,100%{transform:translate(-50%,-54%) scale(.92)}50%{transform:translate(-50%,-46%) scale(1.05)}}
+@keyframes orbitRing{to{transform:rotate(360deg)}}
+.ai-progress-center{position:absolute;z-index:5;left:50%;top:50%;transform:translate(-50%,-50%);text-align:center;min-width:150px}
+.ai-progress-percent{font:800 39px/1 'Space Grotesk',sans-serif;letter-spacing:-1px;color:var(--pro-ink)}
+.ai-progress-state{margin-top:8px;font:700 10px/1.2 'JetBrains Mono',monospace;letter-spacing:1.8px;color:var(--pro-teal);text-transform:uppercase}
+.ai-progress-sub{margin-top:7px;font-size:11px;color:var(--pro-muted)}
+.ai-scan{position:absolute;left:-20%;right:-20%;height:1px;top:45%;
+  background:linear-gradient(90deg,transparent,rgba(83,160,220,.5),transparent);animation:scanMove 2.8s ease-in-out infinite;z-index:4}
+@keyframes scanMove{0%{transform:translateY(-65px);opacity:0}25%{opacity:1}75%{opacity:1}100%{transform:translateY(65px);opacity:0}}
+.ai-progress-footer{position:absolute;z-index:6;left:16px;right:16px;bottom:13px;display:flex;justify-content:space-between;
+  gap:8px;font-size:10px;color:var(--pro-muted)}
+.ai-progress-footer b{color:var(--pro-ink)}
+.rgb-eta-row .rgb-chip:last-child{display:none}
+.processing-panel{border-color:var(--pro-line);background:var(--pro-panel)}
+.processing-spinner{display:none!important}
+.processing-title{font-weight:800;color:var(--pro-ink)}
+.processing-subtitle,.processing-status{color:var(--pro-muted)}
+@media(max-width:600px){
+  .app{width:calc(100% - 12px)}.top-bar{top:5px}.hero{padding:26px 3px 20px}
+  .hero h1{font-size:clamp(31px,9.7vw,43px);letter-spacing:-1.3px}.hero p{font-size:12.5px}
+  .hero-wave{height:60px}.tool-switcher{gap:6px}
+  .tool-switcher a{flex:1;justify-content:center;padding:8px 6px;font-size:10.5px}
+  .ai-progress-visual{min-height:220px;margin-left:4px;margin-right:4px}.ai-progress-dots{inset:15px 18px;gap:7px}
+  .ai-progress-percent{font-size:34px}
+}
+@media(prefers-reduced-motion:reduce){
+  .hero-wave span,.ai-progress-dots i,.ai-orb,.ai-orb:before,.ai-orb:after,.ai-scan{animation:none!important}
+}
+
+
+/* ---------- CLEAN PROCESSOR: no console/code-looking chrome ---------- */
+.rgb-monitor-head,
+.rgb-log,
+.rgb-stage,
+.rgb-eta-row,
+.rgb-monitor > .meter-track,
+.tool-monitor > .meter-track{
+  display:none !important;
+}
+.processing-panel .processing-inner > .processing-spinner,
+.processing-panel .processing-inner > .processing-title,
+.processing-panel .processing-inner > .processing-subtitle,
+.processing-panel .processing-inner > .meter-track,
+.processing-panel .processing-inner > .processing-meta,
+.processing-panel .processing-inner > .processing-status{
+  display:none !important;
+}
+.rgb-monitor,.tool-monitor{
+  border:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  padding:0 !important;
+  margin-top:10px !important;
+}
+.ai-progress-visual{
+  margin:0 !important;
+  min-height:255px !important;
+  border:1px solid var(--pro-line);
+  background:
+    radial-gradient(circle at 50% 48%,rgba(94,179,230,.10),transparent 24%),
+    radial-gradient(circle at 26% 68%,rgba(193,138,44,.06),transparent 22%),
+    var(--pro-panel2);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.6);
+}
+.ai-progress-visual.complete{
+  background:
+    radial-gradient(circle at 50% 48%,rgba(45,157,133,.12),transparent 25%),
+    var(--pro-panel2);
+}
+@media(max-width:600px){
+  .ai-progress-visual{min-height:235px !important}
+}
+
+
+/* HARD CLEANUP: never show old console/code-looking processing UI */
+.rgb-monitor-head,.rgb-log,.rgb-stage,.rgb-eta-row,
+.rgb-monitor-title,.rgb-dots,.monitor-label,
+.compat-progress-data,
+.processing-spinner,.processing-title,.processing-subtitle,.processing-meta,.processing-status,
+.processing-panel > .processing-inner > .meter-track{
+  display:none !important;
+}
+.clean-processing-inner{max-width:none !important;width:100% !important}
+.processing-panel{padding:10px !important;background:transparent !important;border:0 !important}
+.clean-tool-monitor{padding:0 !important;background:transparent !important;border:0 !important}
+.ai-progress-visual{display:block !important}
+.ai-progress-dots{display:grid !important}
+
+
+/* Backend ETA may contain server analytics markup; never expose that field in the visual monitor. */
+.ai-progress-footer span:nth-child(2),
+#bigRemoveEta, #bigEnhanceEta, #bigIsolateEta { display: none !important; }
+
+/* 2090 DIGITAL HUD PROCESSING BOX */
+.ai-progress-visual{
+  min-height:255px !important;
+  border:1px solid rgba(104,226,255,.42) !important;
+  border-radius:22px !important;
+  overflow:hidden !important;
+  background:
+    linear-gradient(180deg,rgba(10,22,43,.98),rgba(5,13,29,.98)),
+    radial-gradient(circle at 50% 42%,rgba(0,229,255,.16),transparent 42%) !important;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.05),inset 0 0 45px rgba(0,198,255,.08),0 18px 45px rgba(2,12,28,.20) !important;
+}
+.ai-progress-visual:before{
+  content:"SYSTEM // AUDIO CORE";
+  position:absolute;left:18px;top:15px;z-index:7;
+  color:rgba(124,232,255,.68);font:600 9px/1 'JetBrains Mono',monospace;letter-spacing:1.5px;
+}
+.ai-progress-visual:after{
+  content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(rgba(126,231,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(126,231,255,.045) 1px,transparent 1px);
+  background-size:24px 24px;mask-image:linear-gradient(to bottom,transparent 0%,#000 18%,#000 82%,transparent 100%);
+}
+.ai-progress-dots{inset:18px 22px !important;gap:8px !important;opacity:.8;z-index:2 !important}
+.ai-progress-dots i{width:3px !important;height:3px !important;background:#62ddff !important;box-shadow:0 0 7px rgba(98,221,255,.85) !important;opacity:.32 !important}
+.ai-orb{
+  width:112px !important;height:112px !important;z-index:3 !important;
+  background:radial-gradient(circle at 34% 28%,#fff 0%,#9af2ff 8%,#26a9d5 25%,rgba(23,79,151,.62) 55%,transparent 72%) !important;
+  box-shadow:0 0 24px rgba(39,211,255,.55),0 0 70px rgba(50,104,255,.26),inset 0 0 22px rgba(255,255,255,.55) !important;
+  animation:orbFloat2090 3s ease-in-out infinite !important;
+}
+.ai-orb:before,.ai-orb:after{border-color:rgba(83,225,255,.42) !important;box-shadow:0 0 12px rgba(83,225,255,.12)}
+.ai-orb:after{border-color:rgba(169,103,255,.35) !important}
+@keyframes orbFloat2090{0%,100%{transform:translate(-50%,-52%) scale(.94)}50%{transform:translate(-50%,-48%) scale(1.04)}}
+.ai-scan{z-index:4 !important;height:2px !important;background:linear-gradient(90deg,transparent,rgba(80,232,255,.9),transparent) !important;box-shadow:0 0 14px rgba(80,232,255,.75)}
+.ai-progress-center{z-index:6 !important;min-width:180px !important}
+.ai-progress-percent{
+  font:800 48px/1 'Space Grotesk',sans-serif !important;letter-spacing:-2px !important;
+  color:#e9fbff !important;text-shadow:0 0 12px rgba(81,224,255,.55),0 0 34px rgba(44,139,255,.3) !important;
+}
+.ai-progress-state{margin-top:9px !important;color:#68eaff !important;text-shadow:0 0 10px rgba(104,234,255,.58);letter-spacing:2.3px !important}
+.ai-progress-sub{margin-top:9px !important;color:rgba(225,246,255,.72) !important;font:500 12px/1.3 'JetBrains Mono',monospace !important;white-space:nowrap}
+.ai-progress-footer{z-index:8 !important;left:18px !important;right:18px !important;bottom:16px !important;padding-top:12px;border-top:1px solid rgba(100,220,255,.15);font:600 10px 'JetBrains Mono',monospace !important;color:rgba(175,225,240,.7) !important;letter-spacing:.6px}
+.ai-progress-footer b{color:#d9fbff !important;text-shadow:0 0 8px rgba(89,224,255,.55)}
+@media(max-width:600px){.ai-progress-visual{min-height:235px !important}.ai-progress-percent{font-size:43px !important}.ai-progress-sub{font-size:10px !important}.ai-progress-visual:before{font-size:8px}}
+
+/* REAL UPLOAD PROGRESS / DISABLED TOOL STATE */
+.file-uploading{color:var(--pro-teal)!important;font-family:'JetBrains Mono',monospace!important}
+.btn-primary:disabled,.btn-primary.uploading{cursor:wait!important;filter:grayscale(.25);opacity:.62;box-shadow:none!important}
+
+/* LIVE SILENCE CUT MAP */
+.silence-cut-canvas{position:absolute;inset:20px 18px 42px;width:calc(100% - 36px);height:calc(100% - 62px);z-index:3;opacity:.9;pointer-events:none}
+
+/* ===== PERFORMANCE FIXES =====
+   HUD animations (540 dots + orbs + rings) used to run forever, even when idle.
+   Now they run only while a job is processing (.fx-run is toggled in setBusy). */
+.ai-progress-dots i{box-shadow:none !important}
+.ai-progress-visual:not(.fx-run) .ai-progress-dots i,
+.ai-progress-visual:not(.fx-run) .ai-orb,
+.ai-progress-visual:not(.fx-run) .ai-orb:before,
+.ai-progress-visual:not(.fx-run) .ai-orb:after{animation:none !important}
+.ai-progress-visual:not(.fx-run) .ai-scan{display:none !important}
+.top-bar{backdrop-filter:none !important;-webkit-backdrop-filter:none !important}
+.hero-wave.paused span{animation-play-state:paused !important}
+.file-uploading{line-height:1.55}
+
+/* ===== PREMIUM UPLOAD CARD ===== */
+.up-card{width:calc(100% - 6px);max-width:360px;margin:14px auto 4px;padding:14px 15px 13px;border-radius:18px;text-align:left;cursor:default;
+  background:linear-gradient(155deg,var(--pro-panel),var(--pro-panel2));border:1px solid var(--pro-line);
+  box-shadow:0 3px 10px rgba(65,48,20,.07),inset 0 1px 0 rgba(255,255,255,.55)}
+:root[data-theme="dark"] .up-card{box-shadow:0 3px 10px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.04)}
+.up-card i,.up-card em{font-style:normal}
+.up-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.up-main{display:flex;align-items:baseline;gap:3px;min-width:0}
+.up-pct{font:700 32px/1 var(--font-display);letter-spacing:-1.2px;color:var(--pro-ink);font-variant-numeric:tabular-nums}
+.up-unit{font:700 14px/1 var(--font-display);color:var(--pro-muted)}
+.up-done-ic{display:none;width:22px;height:22px;border-radius:50%;align-self:center;margin-right:8px;flex:none;place-items:center;
+  background:linear-gradient(145deg,var(--pro-teal2),var(--pro-teal));color:#fff;box-shadow:0 4px 12px rgba(45,157,133,.35)}
+.up-done-ic svg{width:12px;height:12px}
+.up-title{display:none;font:700 15px/1.2 var(--font-display);color:var(--pro-ink)}
+.up-chip{display:inline-flex;align-items:center;gap:5px;padding:5px 10px 5px 8px;border-radius:99px;flex:none;
+  background:rgba(45,157,133,.10);border:1px solid rgba(45,157,133,.28);color:var(--pro-teal)}
+.up-chip svg{width:11px;height:11px}
+.up-speed{font:700 11.5px/1 var(--font-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.up-track{position:relative;height:8px;border-radius:99px;margin:13px 0 10px;overflow:hidden;background:color-mix(in srgb,var(--pro-line) 70%,transparent)}
+.up-fill{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:99px;overflow:hidden;
+  background:linear-gradient(90deg,var(--pro-gold2),var(--pro-gold) 40%,var(--pro-teal));transition:width .38s cubic-bezier(.22,.8,.3,1)}
+.up-card[data-phase="uploading"] .up-fill:after{content:"";position:absolute;inset:0;
+  background:linear-gradient(100deg,transparent 15%,rgba(255,255,255,.55) 50%,transparent 85%);transform:translateX(-100%);animation:upSheen 1.4s ease-in-out infinite}
+@keyframes upSheen{to{transform:translateX(100%)}}
+.up-meta{display:flex;align-items:baseline;justify-content:space-between;gap:10px;font-size:11.5px;color:var(--pro-muted);font-variant-numeric:tabular-nums}
+.up-size b{font:700 12.5px var(--font-mono);color:var(--pro-ink)}
+.up-size em{font:500 11.5px var(--font-mono)}
+.up-eta{font:600 11.5px var(--font-mono);white-space:nowrap}
+.up-note{margin-top:9px;padding:7px 10px;border-radius:10px;font-size:11.5px;line-height:1.4;color:var(--pro-gold);
+  background:rgba(193,138,44,.10);border:1px solid rgba(193,138,44,.25)}
+.up-note:empty{display:none}
+.up-card[data-phase="done"] .up-pct,.up-card[data-phase="done"] .up-unit{display:none}
+.up-card[data-phase="done"] .up-done-ic{display:grid}
+.up-card[data-phase="done"] .up-title{display:block}
+.up-card[data-phase="done"] .up-fill{width:100% !important;background:linear-gradient(90deg,var(--pro-teal),var(--pro-teal2))}
+.up-card[data-phase="warn"] .up-pct,.up-card[data-phase="warn"] .up-unit,.up-card[data-phase="warn"] .up-chip{display:none}
+.up-card[data-phase="warn"] .up-title{display:block;color:var(--pro-gold)}
+.up-card[data-phase="warn"] .up-fill{width:100% !important;opacity:.35;background:var(--pro-gold)}
+@media(prefers-reduced-motion:reduce){.up-fill:after{animation:none !important}}
+
+/* ===== PREMIUM DOWNLOAD CARD ===== */
+.dl-card{margin-top:12px;display:flex;flex-direction:column;gap:9px;width:100%}
+.dl-fmt{display:inline-flex;align-self:flex-start;padding:3px;border-radius:99px;gap:2px;
+  background:color-mix(in srgb,var(--pro-line) 55%,transparent);border:1px solid var(--pro-line)}
+.dl-fmt-btn{border:0;background:transparent;cursor:pointer;padding:5px 15px;border-radius:99px;
+  font:700 11px var(--font-mono);letter-spacing:.5px;color:var(--pro-muted);transition:color .2s ease;position:relative}
+.dl-fmt-btn.active{color:#fff}
+.dl-fmt-btn.active:before{content:"";position:absolute;inset:0;z-index:-1;border-radius:99px;
+  background:linear-gradient(120deg,var(--pro-gold2),var(--pro-teal));box-shadow:0 3px 10px rgba(45,157,133,.35)}
+.dl-btn{display:flex !important;align-items:center;gap:11px;text-decoration:none;cursor:pointer;user-select:none;
+  padding:12px 16px;border-radius:14px;position:relative;overflow:hidden;isolation:isolate;
+  border:1px solid rgba(45,157,133,.35);background:linear-gradient(155deg,rgba(45,157,133,.13),rgba(232,161,61,.08));
+  color:var(--pro-teal);font:700 13px var(--font-display);transition:transform .18s ease,box-shadow .25s ease,border-color .25s ease}
+.dl-btn:active{transform:scale(.97)}
+.dl-btn:hover{box-shadow:0 8px 22px rgba(45,157,133,.22);border-color:rgba(45,157,133,.55)}
+.dl-btn .dl-sheen{position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(100deg,transparent 35%,rgba(255,255,255,.5) 50%,transparent 65%);
+  transform:translateX(-130%);animation:dlIdleSheen 3.6s ease-in-out infinite}
+@keyframes dlIdleSheen{0%,45%{transform:translateX(-130%)}70%{transform:translateX(130%)}100%{transform:translateX(130%)}}
+.dl-btn .dl-icon{width:19px;height:19px;flex:none;color:var(--pro-teal);transition:transform .25s cubic-bezier(.34,1.56,.64,1)}
+.dl-btn:hover .dl-icon{transform:translateY(2px)}
+.dl-btn .dl-ring{position:absolute;left:11px;top:50%;width:34px;height:34px;transform:translateY(-50%) rotate(-90deg);display:none;flex:none}
+.dl-ring-bg{fill:none;stroke:rgba(45,157,133,.18);stroke-width:3}
+.dl-ring-fg{fill:none;stroke:var(--pro-teal);stroke-width:3;stroke-linecap:round;stroke-dasharray:119.4;stroke-dashoffset:119.4;transition:stroke-dashoffset .25s ease}
+.dl-btn .dl-check{width:19px;height:19px;flex:none;color:#fff;display:none}
+.dl-btn .dl-text{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dl-card[data-busy="1"] .dl-fmt{opacity:.4;pointer-events:none}
+.dl-card[data-busy="1"] .dl-btn{cursor:progress;border-color:rgba(45,157,133,.5);animation:dlPulseBorder 1.6s ease-in-out infinite}
+.dl-card[data-busy="1"] .dl-btn .dl-sheen{animation:dlBusySheen 1.1s linear infinite}
+@keyframes dlBusySheen{0%{transform:translateX(-130%)}100%{transform:translateX(130%)}}
+@keyframes dlPulseBorder{0%,100%{box-shadow:0 0 0 0 rgba(45,157,133,.28)}50%{box-shadow:0 0 0 6px rgba(45,157,133,0)}}
+.dl-card[data-busy="1"] .dl-btn .dl-ring{display:block}
+.dl-card[data-busy="1"] .dl-btn .dl-icon{display:none}
+.dl-card[data-busy="1"] .dl-btn{padding-left:52px}
+.dl-card[data-state="done"] .dl-btn{border-color:rgba(45,157,133,.6);background:linear-gradient(155deg,rgba(45,157,133,.22),rgba(45,157,133,.1))}
+.dl-card[data-state="done"] .dl-btn .dl-icon{display:none}
+.dl-card[data-state="done"] .dl-btn .dl-check{display:block;animation:dlPop .4s cubic-bezier(.34,1.56,.64,1)}
+@keyframes dlPop{0%{transform:scale(.3);opacity:0}60%{transform:scale(1.25)}100%{transform:scale(1);opacity:1}}
+.dl-card[data-state="error"] .dl-btn{border-color:rgba(193,84,44,.5);background:rgba(193,84,44,.08);color:#c1542c}
+.dl-card[data-state="error"] .dl-btn .dl-icon{color:#c1542c}
+:root[data-theme="dark"] .dl-btn{background:linear-gradient(155deg,rgba(45,157,133,.16),rgba(232,161,61,.09))}
+@media(prefers-reduced-motion:reduce){.dl-btn .dl-sheen{animation:none !important}.dl-card[data-busy="1"] .dl-btn{animation:none !important}}
+
+
+/* ===== LIVE SILENCE-CUT VIEW (Remove Silence HUD) ===== */
+.ai-progress-visual.cut-mode{min-height:318px !important}
+.ai-progress-visual.cut-mode .ai-orb,.ai-progress-visual.cut-mode .ai-scan,.ai-progress-visual.cut-mode .ai-progress-dots{display:none !important}
+.ai-progress-visual.cut-mode .silence-cut-canvas{inset:auto;left:12px;right:12px;top:62px;width:calc(100% - 24px);height:162px;opacity:1;z-index:5}
+.ai-progress-visual.cut-mode .ai-progress-center{left:auto !important;right:16px;top:12px !important;transform:none !important;text-align:right;min-width:0 !important}
+.ai-progress-visual.cut-mode .ai-progress-percent{font-size:30px !important;letter-spacing:-1px !important}
+.ai-progress-visual.cut-mode .ai-progress-state{margin-top:4px !important;letter-spacing:1.6px !important}
+.ai-progress-visual.cut-mode .ai-progress-sub{display:none !important}
+.cut-badge{position:absolute;z-index:7;left:18px;top:30px;font:600 8.5px/1 'JetBrains Mono',monospace;letter-spacing:.8px;color:rgba(124,232,255,.62)}
+.cut-stats{position:absolute;z-index:7;left:16px;right:16px;bottom:50px;display:flex;gap:8px}
+.cut-stats>div{flex:1;min-width:0;padding:6px 9px;border-radius:10px;background:rgba(120,220,255,.07);border:1px solid rgba(100,220,255,.16)}
+.cut-stats small{display:block;font:600 8px/1 'JetBrains Mono',monospace;letter-spacing:1.2px;color:rgba(160,225,245,.6)}
+.cut-stats b{display:block;margin-top:5px;font:700 12.5px/1 'JetBrains Mono',monospace;color:#e6fbff;font-variant-numeric:tabular-nums;white-space:nowrap}
+.cut-stats .rm b{color:#ff8fb0}.cut-stats .ok b{color:#68eaff}
+.cut-stats.sim .rm,.cut-stats.sim .ok{display:none}
+@media(max-width:600px){
+  .ai-progress-visual.cut-mode{min-height:300px !important}
+  .ai-progress-visual.cut-mode .silence-cut-canvas{height:146px}
+  .ai-progress-visual.cut-mode .ai-progress-percent{font-size:26px !important}
+}
+@media(max-width:600px){
+  .ai-progress-dots i:nth-child(2n){animation:none !important}
+  .ai-orb:before,.ai-orb:after{box-shadow:none !important}
+  :root{--pro-shadow:0 8px 22px rgba(65,48,20,.10)}
+  :root[data-theme="dark"]{--pro-shadow:0 8px 22px rgba(0,0,0,.35)}
+}
+
+/* ===== FUTURISTIC PREMIUM BUTTONS — VISUAL UPGRADE ONLY ===== */
+@keyframes fxShine{
+  0%{transform:translateX(-150%) skewX(-18deg);opacity:0}
+  12%{opacity:.9}
+  38%{opacity:0}
+  100%{transform:translateX(180%) skewX(-18deg);opacity:0}
+}
+@keyframes fxGlow{
+  0%,100%{box-shadow:0 0 0 rgba(232,161,61,0),0 8px 22px rgba(0,0,0,.10)}
+  50%{box-shadow:0 0 24px rgba(232,161,61,.20),0 12px 30px rgba(0,0,0,.16)}
+}
+@keyframes fxTealGlow{
+  0%,100%{box-shadow:0 0 0 rgba(45,157,133,0),0 8px 22px rgba(0,0,0,.08)}
+  50%{box-shadow:0 0 26px rgba(45,157,133,.24),0 13px 30px rgba(0,0,0,.14)}
+}
+@keyframes fxBorder{
+  0%,100%{border-color:color-mix(in srgb,var(--signal) 42%,var(--line))}
+  50%{border-color:color-mix(in srgb,var(--signal) 88%,white 4%)}
+}
+@keyframes fxFloat{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-1.5px)}
+}
+
+/* REMOVE SILENCE / MAIN ACTION */
+.btn-primary:not(:disabled){
+  position:relative!important;
+  isolation:isolate;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.18)!important;
+  background:
+    linear-gradient(110deg,#f5c36c 0%,#e8a13d 42%,#f5b95a 70%,#d88b24 100%)!important;
+  background-size:220% 100%!important;
+  box-shadow:
+    0 0 0 1px rgba(232,161,61,.12),
+    0 8px 24px rgba(193,138,44,.24),
+    inset 0 1px 0 rgba(255,255,255,.38)!important;
+  text-shadow:0 1px 8px rgba(90,55,8,.22);
+  animation:fxGlow 2.6s ease-in-out infinite,fxFloat 3s ease-in-out infinite!important;
+}
+.btn-primary:not(:disabled)::before,
+.btn-secondary:not(:disabled)::before,
+.dl-btn::after{
+  content:"";
+  position:absolute;
+  top:-40%;
+  left:0;
+  width:32%;
+  height:180%;
+  pointer-events:none;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.58),transparent);
+  filter:blur(1px);
+  animation:fxShine 3.1s ease-in-out infinite;
+}
+.btn-primary:not(:disabled)::after{
+  content:"";
+  position:absolute;
+  inset:1px;
+  border-radius:inherit;
+  pointer-events:none;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.13);
+}
+
+/* SECONDARY BUTTONS */
+.btn-secondary:not(:disabled){
+  position:relative!important;
+  isolation:isolate;
+  overflow:hidden;
+  background:linear-gradient(135deg,var(--panel-2),var(--raised),var(--panel-2))!important;
+  border:1px solid rgba(232,161,61,.45)!important;
+  box-shadow:
+    0 0 0 1px rgba(232,161,61,.06),
+    0 8px 22px rgba(0,0,0,.12),
+    inset 0 1px 0 rgba(255,255,255,.08)!important;
+  animation:fxGlow 3s ease-in-out infinite,fxFloat 3.4s ease-in-out infinite!important;
+}
+
+/* ENHANCER LIGHT / BALANCED / STRONG */
+.enhance-mode{
+  position:relative!important;
+  overflow:hidden;
+  border:1px solid color-mix(in srgb,var(--signal) 25%,var(--line))!important;
+  background:linear-gradient(145deg,var(--panel-2),var(--raised))!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 5px 16px rgba(0,0,0,.07);
+}
+.enhance-mode::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:linear-gradient(110deg,transparent 20%,rgba(255,255,255,.18) 50%,transparent 80%);
+  transform:translateX(-150%) skewX(-18deg);
+  animation:fxShine 4.5s ease-in-out infinite;
+}
+.enhance-mode:hover:not(:disabled){
+  transform:translateY(-3px) scale(1.015)!important;
+  border-color:var(--signal)!important;
+  box-shadow:
+    0 0 18px rgba(232,161,61,.18),
+    0 12px 28px rgba(0,0,0,.14),
+    inset 0 1px 0 rgba(255,255,255,.10)!important;
+}
+.enhance-mode.active{
+  border-color:var(--signal)!important;
+  background:linear-gradient(135deg,
+    color-mix(in srgb,var(--signal) 20%,var(--panel-2)),
+    color-mix(in srgb,var(--wave) 8%,var(--panel-2)))!important;
+  box-shadow:
+    0 0 0 1px rgba(232,161,61,.12),
+    0 0 22px rgba(232,161,61,.20),
+    inset 0 1px 0 rgba(255,255,255,.13)!important;
+  animation:fxGlow 2.5s ease-in-out infinite!important;
+}
+
+/* MP3 / WAV futuristic segmented control */
+.dl-fmt-btn{
+  position:relative!important;
+  z-index:1;
+  border:1px solid transparent!important;
+  background:transparent!important;
+  color:var(--muted)!important;
+  transition:transform .2s ease,color .2s ease,box-shadow .25s ease,background .25s ease!important;
+}
+.dl-fmt-btn:hover{
+  color:var(--text)!important;
+  transform:translateY(-2px)!important;
+}
+.dl-fmt-btn.active{
+  color:#fff!important;
+  background:linear-gradient(135deg,var(--signal-strong),var(--signal))!important;
+  border-color:rgba(255,255,255,.22)!important;
+  box-shadow:
+    0 0 18px rgba(232,161,61,.24),
+    0 5px 14px rgba(0,0,0,.12),
+    inset 0 1px 0 rgba(255,255,255,.25)!important;
+  text-shadow:0 1px 7px rgba(0,0,0,.18);
+}
+.dl-fmt-btn:active{transform:scale(.92)!important}
+
+/* DOWNLOAD PROCESSED AUDIO */
+.dl-btn{
+  position:relative!important;
+  isolation:isolate;
+  overflow:hidden;
+  border:1px solid rgba(45,157,133,.48)!important;
+  background:
+    linear-gradient(110deg,
+      rgba(45,157,133,.15),
+      rgba(232,161,61,.12),
+      rgba(45,157,133,.18))!important;
+  background-size:220% 100%!important;
+  box-shadow:
+    0 0 0 1px rgba(45,157,133,.06),
+    0 8px 24px rgba(45,157,133,.12),
+    inset 0 1px 0 rgba(255,255,255,.18)!important;
+  animation:fxTealGlow 2.8s ease-in-out infinite!important;
+}
+.dl-btn::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:linear-gradient(110deg,transparent 18%,rgba(255,255,255,.34) 50%,transparent 82%);
+  transform:translateX(-150%) skewX(-18deg);
+  animation:fxShine 3.2s ease-in-out infinite;
+}
+.dl-btn:hover{
+  transform:translateY(-3px) scale(1.012)!important;
+  border-color:var(--wave)!important;
+  box-shadow:
+    0 0 26px rgba(45,157,133,.25),
+    0 14px 30px rgba(0,0,0,.14),
+    inset 0 1px 0 rgba(255,255,255,.22)!important;
+}
+.dl-btn:active{transform:translateY(0) scale(.97)!important}
+
+/* THEME / SMALL ACTION BUTTONS */
+.theme-toggle,
+.modal-close,
+.toast-close{
+  position:relative;
+  overflow:hidden;
+}
+.theme-toggle:hover,
+.modal-close:hover,
+.toast-close:hover{
+  transform:translateY(-2px) scale(1.05);
+  border-color:var(--signal)!important;
+  box-shadow:0 0 18px rgba(232,161,61,.20);
+}
+.theme-toggle:active,
+.modal-close:active,
+.toast-close:active{transform:scale(.9)}
+
+/* Processing state */
+.btn-primary.processing,
+.btn-secondary.processing{
+  background:linear-gradient(110deg,var(--signal),var(--wave),var(--signal))!important;
+  background-size:220% 100%!important;
+  animation:fxTealGlow 1.1s ease-in-out infinite,fxShine 1.5s linear infinite!important;
+}
+
+/* Keyboard focus */
+.btn-primary:focus-visible,
+.btn-secondary:focus-visible,
+.enhance-mode:focus-visible,
+.dl-fmt-btn:focus-visible,
+.dl-btn:focus-visible{
+  outline:2px solid var(--signal)!important;
+  outline-offset:3px!important;
+  box-shadow:0 0 0 4px rgba(232,161,61,.18),0 0 24px rgba(232,161,61,.22)!important;
+}
+
+@media(prefers-reduced-motion:reduce){
+  .btn-primary:not(:disabled),
+  .btn-secondary:not(:disabled),
+  .enhance-mode,
+  .enhance-mode.active,
+  .dl-btn{animation:none!important}
+  .btn-primary:not(:disabled)::before,
+  .btn-secondary:not(:disabled)::before,
+  .enhance-mode::before,
+  .dl-btn::before{animation:none!important}
+}
+
+</style>
+<meta property="og:url" content="https://offexmail.online/">
+
+
+
+
+
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="apple-touch-icon" href="/favicon.svg">
+</head>
+
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<defs>
+<symbol id="icon-wave" viewBox="0 0 24 24"><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="2" y1="10" x2="2" y2="14"/><line x1="6.5" y1="6" x2="6.5" y2="18"/><line x1="11" y1="2" x2="11" y2="22"/><line x1="15.5" y1="7" x2="15.5" y2="17"/><line x1="20" y1="4" x2="20" y2="20"/></g></symbol>
+<symbol id="icon-upload" viewBox="0 0 24 24"><path d="M12 16V4M12 4l-4.5 4.5M12 4l4.5 4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="icon-cut" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="6" cy="18" r="3" fill="none" stroke="currentColor" stroke-width="2"/><line x1="8.5" y1="8" x2="20" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="8.5" y1="16" x2="20" y2="5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+<symbol id="icon-sparkle" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3z" fill="currentColor"/><path d="M19 15l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7.7-2z" fill="currentColor"/></symbol>
+<symbol id="icon-split" viewBox="0 0 24 24"><path d="M12 3v6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M12 9c0 3-4 3-4 7M12 9c0 3 4 3 4 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8" cy="19" r="1.6" fill="currentColor"/><circle cx="16" cy="19" r="1.6" fill="currentColor"/></symbol>
+<symbol id="icon-download" viewBox="0 0 24 24"><path d="M12 4v11m0 0l-4-4m4 4l4-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 18v1a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+<symbol id="icon-instagram" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.3" cy="6.7" r="1.1" fill="currentColor"/></symbol>
+<symbol id="icon-sun" viewBox="0 0 24 24"><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4" fill="none"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4" y1="12" x2="2" y2="12"/><line x1="22" y1="12" x2="20" y2="12"/><line x1="5" y1="5" x2="6.5" y2="6.5"/><line x1="17.5" y1="17.5" x2="19" y2="19"/><line x1="5" y1="19" x2="6.5" y2="17.5"/><line x1="17.5" y1="6.5" x2="19" y2="5"/></g></symbol>
+<symbol id="icon-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z" fill="currentColor"/></symbol>
+<symbol id="icon-close" viewBox="0 0 24 24"><line x1="5" y1="5" x2="19" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="19" y1="5" x2="5" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+<symbol id="icon-check" viewBox="0 0 24 24"><path d="M4 12l5 5L20 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="icon-mic" viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="12" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M5 11a7 7 0 0 0 14 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="18" x2="12" y2="22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="8" y1="22" x2="16" y2="22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+<symbol id="icon-music" viewBox="0 0 24 24"><path d="M9 18V5l10-2v13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="6.5" cy="18" r="2.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="16.5" cy="16" r="2.5" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+<symbol id="icon-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M16 8.2a3.2 3.2 0 1 1 0 6.4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M21 20c0-2.6-1.8-4.8-4.2-5.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+<symbol id="icon-eye" viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+</defs>
+</svg>
+
+<div class="app">
+
+  <!-- TOP BRAND BAR -->
+  <div class="top-bar">
+    <div class="brand-box">
+      <span class="brand-logo"><svg class="icon"><use href="#icon-wave"></use></svg></span>
+      <span class="brand-title">Silence Remove From Audio</span>
+    </div>
+    <div class="top-actions">
+      <a class="ig-chip" href="https://www.instagram.com/offexyt" target="_blank" rel="noopener noreferrer">
+        <svg class="icon"><use href="#icon-instagram"></use></svg> @offexyt
+      </a>
+      <span class="badge-creator">Made by Deepu</span>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle light and dark theme">
+        <svg class="icon icon-sun"><use href="#icon-sun"></use></svg>
+        <svg class="icon icon-moon"><use href="#icon-moon"></use></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- API & STATS BAR -->
+  <div class="api-bar" id="apiBar">
+    <div class="api-dot busy" id="apiDot"></div>
+    <div class="api-info">
+      <h3 id="apiTitle">Connecting to Server...</h3>
+      <p id="apiDetail">Establishing secure connection with backend cloud storage</p>
+    </div>
+    <div class="api-stats-pill" id="apiPill">
+      Online: <b id="topOnline">—</b> | Total: <b id="topVisits">—</b>
+    </div>
+  </div>
+
+  <!-- HERO SECTION -->
+  <div class="hero">
+    <div class="hero-wave" id="heroWave" aria-hidden="true"></div>
+    <h1>Cut the silence. Keep the signal.</h1>
+    <p>Free browser-based audio cleanup — remove dead air, clean up noisy speech, and split vocals from music, with a live console showing exactly what the backend is doing.</p>
+  </div>
+
+  <!-- QUICK TOOL NAV -->
+<nav class="tool-switcher" aria-label="Audio tools">
+  <a href="#removeTool">🔇 <span>Silence</span></a>
+  <a href="#enhanceTool">✨ <span>Enhancer</span></a>
+  <a href="#isolateTool">🎙️ <span>Voice / BGM</span></a>
+</nav>
+
+  <!-- WORKSPACE -->
+  <div class="workspace">
+    <div class="grid">
+      <!-- INPUT CARD -->
+      <section class="card" id="removeTool">
+        <div class="card-head">
+          <div class="card-title"><span class="icon-tile"><svg class="icon"><use href="#icon-cut"></use></svg></span> Remove Silence</div>
+          <div class="badge">MP3 / WAV</div>
+        </div>
+
+        <label class="drop" id="dropZone" for="fileInput">
+          <div>
+            <div class="drop-icon"><svg class="icon"><use href="#icon-upload"></use></svg></div>
+            <strong id="fileText">Drop your audio file here</strong>
+            <span id="fileSub">or click to browse from device</span>
+          </div>
+        </label>
+        <input id="fileInput" type="file" accept="audio/*,.mp3,.wav,.m4a,.ogg,.flac">
+        <canvas class="wave-canvas" id="removeWave" width="320" height="40"></canvas>
+
+        <div class="controls">
+          <div class="label-row">
+            <label class="label" for="seconds">Keep Silence Upto</label>
+            <span class="value">Seconds</span>
+          </div>
+          <div class="custom-value-wrap">
+            <input id="seconds" class="custom-value" type="number"
+                   min="0" max="10" step="0.01" value="0.02"
+                   inputmode="decimal" aria-label="Silence duration in seconds">
+            <span class="custom-unit">sec</span>
+          </div>
+          <div class="input-hint">Apni value enter karein (default: 0.02 sec)</div>
+        </div>
+
+        <button class="btn-primary" id="removeBtn" disabled data-normal="🔇 Remove Silence">🔇 Remove Silence</button>
+      </section>
+
+      <!-- OUTPUT CARD -->
+      <section class="card">
+        <div class="card-head">
+          <div class="card-title"><span class="icon-tile"><svg class="icon"><use href="#icon-wave"></use></svg></span> Processing Result</div>
+          <div class="badge" id="resultBadge">Waiting</div>
+        </div>
+
+        
+<div class="processing-panel" id="processingPanel" aria-live="polite">
+  <div class="processing-inner clean-processing-inner">
+    <div class="ai-progress-visual cut-mode" id="removeVisual">
+      <div class="ai-progress-dots"></div>
+      <div class="ai-scan"></div>
+      <canvas id="silenceCutCanvas" class="silence-cut-canvas" aria-label="Live silence removal: original waveform on top, clean output below"></canvas>
+      <div class="cut-badge" id="cutBadge"></div>
+      <div class="cut-stats" id="cutStats" aria-hidden="true">
+        <div><small>ORIGINAL</small><b id="cutOrig">—</b></div>
+        <div class="rm"><small>REMOVED</small><b id="cutRemoved">—</b></div>
+        <div class="ok"><small>CLEAN</small><b id="cutClean">—</b></div>
+      </div>
+      <div class="ai-orb"></div>
+      <div class="ai-progress-center">
+        <div class="ai-progress-percent" id="bigRemovePercent">0%</div>
+        <div class="ai-progress-state" id="bigRemoveState">READY</div>
+        <div class="ai-progress-sub" id="bigRemoveSub">Waiting for audio…</div>
+      </div>
+      <div class="ai-progress-footer">
+        <span>LIVE <b id="bigRemoveLive">○</b></span>
+        <span>ETA <b id="bigRemoveEta">—</b></span>
+        <span>TIME <b id="bigRemoveTime">0s</b></span>
+      </div>
+    </div>
+
+    <div class="compat-progress-data" aria-hidden="true">
+      <span id="processingLabel">Processing</span>
+      <span id="processingTime">0.0s</span>
+      <span id="processingStatus">Connecting to processing server...</span>
+      <span id="rgbLiveState">LIVE</span>
+      <span id="rgbElapsed">0s</span>
+      <span id="rgbEta">—</span>
+      <span id="rgbStageName">IDLE</span>
+      <span id="rgbPercent">0%</span>
+      <span id="rgbStage"></span>
+      <span id="processingFill"></span>
+    </div>
+  </div>
+</div>
+
+        <div class="output-box">
+          <div class="output-empty" id="outputEmpty">
+            <div class="output-icon"><svg class="icon"><use href="#icon-wave"></use></svg></div>
+            Your processed audio will appear here
+          </div>
+          <audio id="outputAudio" controls style="display:none"></audio>
+          <div class="info" id="durationInfo" style="display:none"></div>
+          <div class="dl-card" data-kind="remove">
+            <div class="dl-fmt" role="group" aria-label="Choose format">
+              <button type="button" class="dl-fmt-btn active" data-fmt="mp3">MP3</button>
+              <button type="button" class="dl-fmt-btn" data-fmt="wav">WAV</button>
+            </div>
+            <a id="downloadLink" class="download-btn dl-btn" href="#" role="button" data-label="Download Processed Audio">
+              <span class="dl-sheen"></span>
+              <svg class="dl-ring" viewBox="0 0 44 44" aria-hidden="true"><circle class="dl-ring-bg" cx="22" cy="22" r="19"/><circle class="dl-ring-fg" cx="22" cy="22" r="19"/></svg>
+              <svg class="dl-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12.5M7.5 11l4.5 4.5L16.5 11M5 20h14"/></svg>
+              <svg class="dl-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+              <span class="dl-text">Download Processed Audio</span>
+            </a>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ENHANCER SECTION -->
+    <div class="enhancer-card" id="enhanceTool">
+      <div class="enhancer-grid">
+        <div class="enhancer-info">
+          <h2><span class="icon-tile"><svg class="icon"><use href="#icon-sparkle"></use></svg></span> Audio Enhancer Suite</h2>
+          <p>Is tool ke liye alag audio upload karein. Ye Remove Silence ke output par depend nahi karta.</p>
+          <label class="drop mini-drop" id="enhanceDropZone" for="enhanceFileInput">
+            <div>
+              <div class="drop-icon"><svg class="icon"><use href="#icon-upload"></use></svg></div>
+              <strong id="enhanceFileText">Enhancer ke liye audio upload karein</strong>
+              <span id="enhanceFileSub">MP3, WAV, M4A, OGG, FLAC — click or drag & drop</span>
+            </div>
+          </label>
+          <input id="enhanceFileInput" type="file" accept="audio/*,.mp3,.wav,.m4a,.ogg,.flac,.aac">
+          <canvas class="wave-canvas" id="enhanceWave" width="320" height="40"></canvas>
+          <div class="monitor-label">Noise Cleaning Mode</div>
+          <div class="enhance-modes" id="enhanceModes" role="radiogroup" aria-label="Enhancement mode">
+            <button type="button" class="enhance-mode" data-mode="Light" role="radio" aria-checked="false"><strong>LIGHT</strong><span>Natural cleanup</span></button>
+            <button type="button" class="enhance-mode active" data-mode="Balanced" role="radio" aria-checked="true"><strong>BALANCED</strong><span>Best all-round</span></button>
+            <button type="button" class="enhance-mode" data-mode="Strong" role="radio" aria-checked="false"><strong>STRONG</strong><span>Heavy noise</span></button>
+          </div>
+          <input type="hidden" id="enhanceStrength" value="Balanced">
+          <button class="btn-secondary" id="enhanceBtn" disabled data-normal="✨ Enhance Audio">✨ Enhance Audio</button>
+          <div class="status-text" id="enhanceStatus">Pehle enhancer ke liye audio upload karein...</div>
+          
+<div class="tool-monitor clean-tool-monitor" id="enhanceMonitor" aria-live="polite">
+  <div class="ai-progress-visual" id="enhanceVisual">
+    <div class="ai-progress-dots"></div>
+    <div class="ai-scan"></div>
+    <div class="ai-orb"></div>
+    <div class="ai-progress-center">
+      <div class="ai-progress-percent" id="bigEnhancePercent">0%</div>
+      <div class="ai-progress-state" id="bigEnhanceState">READY</div>
+      <div class="ai-progress-sub" id="bigEnhanceSub">Waiting for audio…</div>
+    </div>
+    <div class="ai-progress-footer">
+      <span>LIVE <b id="bigEnhanceLive">○</b></span>
+      <span>ETA <b id="bigEnhanceEta">—</b></span>
+      <span>TIME <b id="bigEnhanceTime">0s</b></span>
+    </div>
+  </div>
+  <div class="compat-progress-data" aria-hidden="true">
+    <span id="enhanceStatus"></span>
+    <span id="enhanceLiveState">LIVE</span>
+    <span id="enhanceElapsed">0s</span>
+    <span id="enhanceEta">—</span>
+    <span id="enhanceStageName">IDLE</span>
+    <span id="enhancePercent">0%</span>
+    <span id="enhanceStage"></span>
+  </div>
+</div>
+<div class="output-box" style="min-height: 180px;">
+          <audio id="enhancedAudio" controls style="display:none"></audio>
+          <div class="output-empty" id="enhancedEmpty"><div class="output-icon"><svg class="icon"><use href="#icon-sparkle"></use></svg></div>Enhanced audio will appear here</div>
+          <div class="dl-card" data-kind="enhance">
+            <div class="dl-fmt" role="group" aria-label="Choose format">
+              <button type="button" class="dl-fmt-btn active" data-fmt="mp3">MP3</button>
+              <button type="button" class="dl-fmt-btn" data-fmt="wav">WAV</button>
+            </div>
+            <a id="enhancedDownload" class="download-btn dl-btn" href="#" role="button" data-label="Download Enhanced Audio">
+              <span class="dl-sheen"></span>
+              <svg class="dl-ring" viewBox="0 0 44 44" aria-hidden="true"><circle class="dl-ring-bg" cx="22" cy="22" r="19"/><circle class="dl-ring-fg" cx="22" cy="22" r="19"/></svg>
+              <svg class="dl-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12.5M7.5 11l4.5 4.5L16.5 11M5 20h14"/></svg>
+              <svg class="dl-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+              <span class="dl-text">Download Enhanced Audio</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VOICE / BGM ISOLATION SECTION -->
+    <div class="enhancer-card" id="isolateTool">
+      <div class="card-head" style="margin-bottom:14px;">
+        <div class="card-title"><span class="icon-tile"><svg class="icon"><use href="#icon-split"></use></svg></span> Voice / BGM Isolation</div>
+        <div class="badge">AI Stem Split</div>
+      </div>
+      <p style="color:var(--muted); font-size:12.5px; line-height:1.6; margin-bottom:14px;">
+        Is tool ke liye bhi alag original audio upload karein. Voice-only aur BGM-only dono files ek saath milengi.
+      </p>
+      <div class="grid">
+        <section>
+          <label class="drop mini-drop" id="isolateDropZone" for="isolateFileInput">
+            <div>
+              <div class="drop-icon"><svg class="icon"><use href="#icon-upload"></use></svg></div>
+              <strong id="isolateFileText">Isolation ke liye audio upload karein</strong>
+              <span id="isolateFileSub">MP3, WAV, M4A, OGG, FLAC — click or drag & drop</span>
+            </div>
+          </label>
+          <input id="isolateFileInput" type="file" accept="audio/*,.mp3,.wav,.m4a,.ogg,.flac,.aac">
+          <canvas class="wave-canvas" id="isolateWave" width="320" height="40"></canvas>
+          <div class="controls" style="margin-top:14px;">
+            <div class="label-row">
+              <label class="label" for="separationModel">Separation Quality</label>
+              <span class="value" id="separationModelValue">High quality</span>
+            </div>
+            <select id="separationModel" class="custom-value" style="width:100%; cursor:pointer;">
+              <option value="High quality">High quality (best result, thoda slow)</option>
+              <option value="Faster">Faster (quick result)</option>
+            </select>
+            <div class="input-hint">Pehle upar audio file upload karein, phir isolate karein.</div>
+          </div>
+          <button class="btn-primary" id="isolateBtn" disabled data-normal="🎙️ Isolate Voice & BGM">🎙️ Isolate Voice & BGM</button>
+          <div class="status-text" id="separationStatus">Upload audio to start...</div>
+          
+<div class="tool-monitor clean-tool-monitor" id="isolateMonitor" aria-live="polite">
+  <div class="ai-progress-visual" id="isolateVisual">
+    <div class="ai-progress-dots"></div>
+    <div class="ai-scan"></div>
+    <div class="ai-orb"></div>
+    <div class="ai-progress-center">
+      <div class="ai-progress-percent" id="bigIsolatePercent">0%</div>
+      <div class="ai-progress-state" id="bigIsolateState">READY</div>
+      <div class="ai-progress-sub" id="bigIsolateSub">Waiting for audio…</div>
+    </div>
+    <div class="ai-progress-footer">
+      <span>LIVE <b id="bigIsolateLive">○</b></span>
+      <span>ETA <b id="bigIsolateEta">—</b></span>
+      <span>TIME <b id="bigIsolateTime">0s</b></span>
+    </div>
+  </div>
+  <div class="compat-progress-data" aria-hidden="true">
+    <span id="separationStatus"></span>
+    <span id="isolateLiveState">LIVE</span>
+    <span id="isolateElapsed">0s</span>
+    <span id="isolateEta">—</span>
+    <span id="isolateStageName">IDLE</span>
+    <span id="isolatePercent">0%</span>
+    <span id="isolateStage"></span>
+  </div>
+</div>
+</section>
+
+        <section>
+          <div class="output-box" style="min-height:120px; margin-bottom:14px;">
+            <div class="output-empty" id="vocalsEmpty"><div class="output-icon"><svg class="icon"><use href="#icon-mic"></use></svg></div>Voice only will appear here</div>
+            <audio id="vocalsAudio" controls style="display:none"></audio>
+            <div class="dl-card" data-kind="vocals">
+            <div class="dl-fmt" role="group" aria-label="Choose format">
+              <button type="button" class="dl-fmt-btn active" data-fmt="mp3">MP3</button>
+              <button type="button" class="dl-fmt-btn" data-fmt="wav">WAV</button>
+            </div>
+            <a id="vocalsDownload" class="download-btn dl-btn" href="#" role="button" data-label="Download Voice Only">
+              <span class="dl-sheen"></span>
+              <svg class="dl-ring" viewBox="0 0 44 44" aria-hidden="true"><circle class="dl-ring-bg" cx="22" cy="22" r="19"/><circle class="dl-ring-fg" cx="22" cy="22" r="19"/></svg>
+              <svg class="dl-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12.5M7.5 11l4.5 4.5L16.5 11M5 20h14"/></svg>
+              <svg class="dl-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+              <span class="dl-text">Download Voice Only</span>
+            </a>
+          </div>
+          </div>
+          <div class="output-box" style="min-height:120px;">
+            <div class="output-empty" id="bgmEmpty"><div class="output-icon"><svg class="icon"><use href="#icon-music"></use></svg></div>BGM only will appear here</div>
+            <audio id="bgmAudio" controls style="display:none"></audio>
+            <div class="dl-card" data-kind="bgm">
+            <div class="dl-fmt" role="group" aria-label="Choose format">
+              <button type="button" class="dl-fmt-btn active" data-fmt="mp3">MP3</button>
+              <button type="button" class="dl-fmt-btn" data-fmt="wav">WAV</button>
+            </div>
+            <a id="bgmDownload" class="download-btn dl-btn" href="#" role="button" data-label="Download BGM Only">
+              <span class="dl-sheen"></span>
+              <svg class="dl-ring" viewBox="0 0 44 44" aria-hidden="true"><circle class="dl-ring-bg" cx="22" cy="22" r="19"/><circle class="dl-ring-fg" cx="22" cy="22" r="19"/></svg>
+              <svg class="dl-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12.5M7.5 11l4.5 4.5L16.5 11M5 20h14"/></svg>
+              <svg class="dl-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+              <span class="dl-text">Download BGM Only</span>
+            </a>
+          </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- BOTTOM REAL-TIME STATS DASHBOARD -->
+    <div class="stats-dashboard">
+      <div class="stat-box">
+        <div class="stat-icon"><svg class="icon"><use href="#icon-users"></use></svg></div>
+        <div class="stat-content">
+          <span>Real-Time Active Users</span>
+          <strong id="liveUsers">0</strong>
+        </div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-icon"><svg class="icon"><use href="#icon-eye"></use></svg></div>
+        <div class="stat-content">
+          <span>Total Visitors Count</span>
+          <strong id="totalVisits">0</strong>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <section class="seo-content" aria-labelledby="guide-title">
+    <div class="seo-inner">
+      <h2 id="guide-title">Free Online Audio Tools</h2>
+      <p>Silence Remove From Audio is a free online audio utility for creators, students, podcasters and everyday users. You can remove unwanted silent sections, reduce background noise, enhance speech, and separate voice from background music without installing desktop audio software.</p>
+      <div class="seo-grid">
+        <article><h3>Remove Silence From MP3 &amp; WAV</h3><p>Upload an audio file, choose how much silence to keep, and process the recording. The tool is useful for spoken recordings, podcasts, lectures and voice clips where long pauses need to be shortened.</p></article>
+        <article><h3>Enhance Speech Audio</h3><p>Choose Light, Balanced or Strong noise cleaning. The enhancer uses CPU-based processing and normalization to make supported speech recordings cleaner and easier to listen to.</p></article>
+        <article><h3>Isolate Voice &amp; BGM</h3><p>Use Voice / BGM Isolation when you need a vocal-only track or a background-music track. High Quality and Faster modes use the same CPU-compatible HTDemucs model with different processing settings.</p></article>
+      </div>
+      <h2>How It Works</h2>
+      <ol class="seo-steps"><li>Choose the audio tool you need.</li><li>Upload your MP3, WAV or another supported audio file.</li><li>Select the processing option and start the job.</li><li>Watch the live status, elapsed time, progress and estimated remaining time.</li><li>Preview and download the processed result directly.</li></ol>
+      <h2>Frequently Asked Questions</h2>
+      <div class="faq-list">
+        <details><summary>Is the audio tool free?</summary><p>Yes. The tools on this page are provided as free browser-based utilities. Processing availability can depend on server capacity.</p></details>
+        <details><summary>What audio formats can I upload?</summary><p>The interface accepts common audio formats including MP3, WAV, M4A, OGG, FLAC and AAC when supported by the processing backend.</p></details>
+        <details><summary>Does it work on Android and mobile browsers?</summary><p>Yes. The interface is responsive and designed to work in modern mobile and desktop browsers. Processing itself runs on the connected backend.</p></details>
+        <details><summary>Are my audio files public?</summary><p>No public audio gallery is provided. Uploaded and processed files may be retained privately for administration and operations according to the site's configured retention policy.</p></details>
+        <details><summary>Why can processing take longer than the ETA?</summary><p>The ETA is an estimate. CPU load, file duration, model initialization, server queueing and the selected processing mode can change the actual completion time. The live monitor updates as processing information becomes available.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-links">
+      <a href="blog.html">Blog</a>
+      <a href="about.html">About Us</a>
+      <a href="terms.html">Terms &amp; Conditions</a>
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="contact.html">Contact Us</a>
+      <a class="footer-ig" href="https://www.instagram.com/offexyt" target="_blank" rel="noopener noreferrer"><svg class="icon"><use href="#icon-instagram"></use></svg> @offexyt</a>
+    </div>
+    <div class="copyright">© 2026 Silence Remove From Audio · Made with Deepu · All Rights Reserved.</div>
+  </footer>
+
+</div>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="aboutModal">
+  <div class="modal-content" id="about">
+    <button class="modal-close" onclick="closeModal('aboutModal')"><svg class="icon"><use href="#icon-close"></use></svg></button>
+    <h2>About Us</h2>
+    <p><strong>Silence Remove From Audio</strong> is a browser-based audio utility platform created by Deepu. It provides practical tools for creators, students, podcasters and everyday users who need to clean or separate audio without installing desktop software.</p>
+    <p>Current tools include silence removal, speech/noise enhancement and voice/BGM separation. Processing is performed by our connected audio-processing backend and results are returned to the browser for playback and download.</p>
+    <p>We focus on simple controls, transparent processing status and useful results rather than complicated audio-editing workflows.</p>
+  </div>
+</div>
+
+<div class="modal-overlay" id="termsModal">
+  <div class="modal-content" id="terms">
+    <button class="modal-close" onclick="closeModal('termsModal')"><svg class="icon"><use href="#icon-close"></use></svg></button>
+    <h2>Terms & Conditions</h2>
+    <p>By using this website, you agree to use the service lawfully and responsibly.</p>
+    <ul>
+      <li><strong>Acceptable use:</strong> Do not upload material you do not have permission to process, or use the service for unlawful activity.</li>
+      <li><strong>Uploads:</strong> You are responsible for the audio files you submit and for having the rights necessary to process them.</li>
+      <li><strong>Processing:</strong> Audio is processed by a remote backend. Processing time and availability can vary with file length, server load and network conditions.</li>
+      <li><strong>Results:</strong> Automated audio processing can introduce artifacts. Always review downloaded results before publishing or using them commercially.</li>
+      <li><strong>Availability:</strong> We may perform maintenance or temporarily limit processing. No uninterrupted-service guarantee is made.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="modal-overlay" id="privacyModal">
+  <div class="modal-content" id="privacy">
+    <button class="modal-close" onclick="closeModal('privacyModal')"><svg class="icon"><use href="#icon-close"></use></svg></button>
+    <h2>Privacy Policy</h2>
+    <p>We collect limited technical information needed to operate the service. Anonymous visitor activity may be counted to display basic usage statistics. We do not intentionally collect IP addresses as part of the visitor counter.</p>
+    <p>When you upload audio, the file is sent to our processing backend. Processed audio and source files may be retained in a private administrator archive for operational purposes and are subject to the configured retention period. Do not upload confidential or sensitive recordings unless you are comfortable with remote processing.</p>
+    <p>We do not sell uploaded audio recordings. We may use essential hosting, security and infrastructure providers to operate the website and processing service.</p>
+    <p>For privacy questions or deletion requests, contact <a href="mailto:deepu.yrf@gmail.com">deepu.yrf@gmail.com</a>.</p>
+  </div>
+</div>
+
+<div class="modal-overlay" id="contactModal">
+  <div class="modal-content" id="contact">
+    <button class="modal-close" onclick="closeModal('contactModal')"><svg class="icon"><use href="#icon-close"></use></svg></button>
+    <h2>Contact Us</h2>
+    <p>For support, bug reports, feature requests, privacy questions or business enquiries, email:</p>
+    <p><strong><a href="mailto:deepu.yrf@gmail.com">deepu.yrf@gmail.com</a></strong></p>
+    <p>Please include the tool name, a short description of the problem and (when useful) the exact error message.</p>
+  </div>
+</div>
+
+<div class="ready-toast" id="readyToast" role="status" aria-live="assertive">
+  <div class="toast-icon"><svg class="icon"><use href="#icon-check"></use></svg></div>
+  <div class="toast-body"><div class="toast-title" id="toastTitle">Ready for Download</div><div class="toast-detail" id="toastDetail">Your processed audio is ready.</div></div>
+  <button class="toast-close" id="toastClose" type="button" aria-label="Close"><svg class="icon"><use href="#icon-close"></use></svg></button>
+</div>
+
+<script>
+const CONFIG={
+  SPACE:"Hydui/YtVideo",
+  SPACE_URL:location.origin+"/hf",
+  DIRECT_SPACE_URL:"https://hydui-ytvideo.hf.space",
+  PROCESS_ENDPOINT:"/process_audio",
+  ENHANCE_ENDPOINT:"/enhance_audio",
+  ISOLATE_ENDPOINT:"/isolate_voice_bgm",
+  STATS_ENDPOINT:"/visitor_heartbeat"
+};
+let client=null,activeSpaceURL=CONFIG.SPACE_URL,removeFile=null,enhanceFile=null,isolateFile=null,processedState=null,visitorStatsTimer=null,connectingPromise=null;
+let processEndpoint=CONFIG.PROCESS_ENDPOINT,enhanceEndpoint=CONFIG.ENHANCE_ENDPOINT,isolateEndpoint=CONFIG.ISOLATE_ENDPOINT,visitorStatsEndpoint=CONFIG.STATS_ENDPOINT;
+let busy={remove:false,enhance:false,isolate:false};
+let clocks={remove:null,enhance:null,isolate:null};
+let starts={remove:0,enhance:0,isolate:0};
+let downloadBusy={remove:false,enhance:false,vocals:false,bgm:false};
+let processedAudioURL=null;
+const $=id=>document.getElementById(id);
+let visitorId=localStorage.getItem("silence_remove_visitor_id");
+if(!visitorId){visitorId=(crypto.randomUUID?crypto.randomUUID():"v_"+Date.now()+"_"+Math.random().toString(36).slice(2));localStorage.setItem("silence_remove_visitor_id",visitorId)}
+function apiStatus(type,title,detail){$("apiDot").className="api-dot "+type;$("apiTitle").textContent=title;$("apiDetail").textContent=detail}
+function findEndpoint(api,wanted){const list=api&&(api.named_endpoints||api.endpoints||[]);if(!Array.isArray(list))return null;for(const item of list){const name=typeof item==="string"?item:(item.api_name||item.name||item.endpoint);if(name&&String(name).toLowerCase().includes(wanted.toLowerCase()))return String(name).startsWith("/")?String(name):"/"+String(name)}return null}
+function nowClock(){return new Date().toLocaleTimeString([], {hour12:false})}
+const M={remove:{log:"rgbLog",status:"processingStatus",stage:"rgbStageName",live:"rgbLiveState",eta:"rgbEta",percent:"rgbPercent",elapsed:"rgbElapsed",bar:"processingFill",stageBar:"rgbStage",panel:"processingPanel",label:"processingLabel",time:"processingTime"},enhance:{log:"enhanceLog",status:"enhanceStatus",stage:"enhanceStageName",live:"enhanceLiveState",eta:"enhanceEta",percent:"enhancePercent",elapsed:"enhanceElapsed",stageBar:"enhanceStage"},isolate:{log:"isolateLog",status:"separationStatus",stage:"isolateStageName",live:"isolateLiveState",eta:"isolateEta",percent:"isolatePercent",stageBar:"isolateStage"}};
+function cleanStatusText(value,fallback="Processing…"){
+  const raw=String(value??"").trim();
+  if(!raw)return fallback;
+  if(/successful processing job|not verified unique people|uploaded and processed audio|stats-card/i.test(raw))return fallback;
+  const plain=raw.replace(/<[^>]*>/g," ").replace(/\s+/g," ").trim();
+  return /successful processing job|not verified unique people|uploaded and processed audio|stats-card/i.test(plain)?fallback:plain||fallback;
+}
+function esc(v){return String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c]))}
+function clearLogs(kind){const box=$(M[kind].log);if(box)box.innerHTML=""}
+function addLog(kind,message,type="info"){const map=M[kind];if(map&&$(map.status)&&message&&/error|failed|fatal/i.test(String(message)))$(map.status).textContent="Processing issue — checking backend…";}
+function setMonitor(kind,{stage="PROCESSING",percent=null,eta=null,status=null,live=true}={}){
+  const m=M[kind];
+  if(status&&$(m.status))$(m.status).textContent=cleanStatusText(status);
+  if($(m.stage))$(m.stage).textContent=stage;
+  if($(m.live)){$(m.live).textContent=live?"LIVE":"IDLE";$(m.live).classList.toggle("idle",!live)}
+  if(percent!=null){
+    const p=Math.max(0,Math.min(100,Number(percent)));
+    monitorState[kind].percent=p;
+    if($(m.bar))$(m.bar).style.width=p+"%";
+    if($(m.percent))$(m.percent).textContent=Math.round(p)+"%";
+    if(kind==="remove")cutSetTarget(p/100);
+  }
+  if(eta!==null&&$(m.eta))$(m.eta).textContent=formatBackendEta(eta);
+}
+function setMonitorDone(kind,ok=true){const m=M[kind];monitorState[kind].finished=true;if($(m.stageBar)){$(m.stageBar).classList.toggle("done",ok);$(m.stageBar).classList.toggle("error",!ok)}setMonitor(kind,{live:false,stage:ok?"COMPLETED":"ERROR",percent:ok?100:Math.max(4,monitorState[kind].percent||4),eta:ok?"0s":"—"})}
+function formatEta(seconds){if(seconds==null||!isFinite(seconds))return"—";seconds=Math.max(1,Math.round(seconds));if(seconds<60)return seconds+"s";return Math.floor(seconds/60)+"m "+String(seconds%60).padStart(2,"0")+"s"}
+function formatBackendEta(value){
+  if(value&&typeof value==="object")value=value.eta??value.seconds??value.time??"";
+  if(typeof value==="number"&&isFinite(value))return formatEta(value);
+  const raw=String(value??"").trim();
+  if(!raw||/successful processing job|stats-card|not verified unique people|administrator-only/i.test(raw))return"—";
+  const match=raw.match(/(?:eta|estimated(?:\s+remaining)?)[^0-9]*(\d+(?:\.\d+)?)[ ]*(?:s|sec|seconds)?/i)||raw.match(/(\d+(?:\.\d+)?)[ ]*(?:s|sec|seconds)\b/i);
+  return match?formatEta(Number(match[1])):"—";
+}
+const monitorState={remove:{percent:4,estimate:0,finished:false,actualAt:0},enhance:{percent:4,estimate:0,finished:false,actualAt:0},isolate:{percent:4,estimate:0,finished:false,actualAt:0}};
+const fileDurations={remove:0,enhance:0,isolate:0};
+/* ================= LIVE SILENCE-CUT VISUALISER =================
+   Top lane = original waveform, bottom lane = clean output being assembled.
+   Silent parts collapse/drop as the playhead (real backend progress) passes them. */
+let silencePreview={ready:false,file:null,duration:0,segs:[],lv:null};
+const CUT_N=200;
+const cutViz={active:false,raf:0,shown:0,target:0,passedAt:null,model:null,ctx:null,w:0,h:0,dpr:1,last:0,lastCol:0,lastPass:0,lastStats:0,keep:0.02,ro:null};
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function fmtDur(s){s=Math.max(0,Math.round(s));const h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;return h?`${h}:${String(m).padStart(2,"0")}:${String(x).padStart(2,"0")}`:`${m}:${String(x).padStart(2,"0")}`}
+function finishModel(lv,rm,duration,sim){
+  const N=lv.length,cum=new Float32Array(N+1),cumRm=new Float32Array(N+1);
+  for(let i=0;i<N;i++){cum[i+1]=cum[i]+(1-rm[i]);cumRm[i+1]=cumRm[i]+rm[i]}
+  const cd=duration>0?duration/N:0;
+  return {N,lv,rm,cum,cumRm,keptCols:cum[N],duration,cd,removedTotal:cumRm[N]*cd,sim};
+}
+function buildCutModel(keep){
+  const sp=silencePreview,N=CUT_N,cd=sp.duration/N,rmSec=new Float32Array(N);
+  for(const sg of sp.segs){
+    const len=sg.e-sg.s,r=len>0?Math.max(0,len-keep)/len:0;if(r<=0)continue;
+    const a=Math.max(0,Math.floor(sg.s/cd)),b=Math.min(N-1,Math.floor(sg.e/cd));
+    for(let i=a;i<=b;i++){const ov=Math.min(sg.e,(i+1)*cd)-Math.max(sg.s,i*cd);if(ov>0)rmSec[i]+=ov*r}
+  }
+  const rm=new Float32Array(N);for(let i=0;i<N;i++)rm[i]=Math.min(1,rmSec[i]/cd);
+  return finishModel(sp.lv,rm,sp.duration,false);
+}
+/* Large files can't be decoded in the browser, so we show an illustrative (simulated) view driven by real progress. */
+function buildSimModel(file){
+  const N=CUT_N,rnd=mulberry32((file&&file.size)||1234567),lv=new Float32Array(N),rm=new Float32Array(N);
+  let i=0;
+  while(i<N){
+    const talk=5+Math.floor(rnd()*14);
+    for(let k=0;k<talk&&i<N;k++,i++){lv[i]=Math.min(1,.28+.72*Math.abs(Math.sin(i*.83+rnd()*1.7))*(.55+.45*rnd()));rm[i]=0}
+    const pause=2+Math.floor(rnd()*4);
+    for(let k=0;k<pause&&i<N;k++,i++){lv[i]=.02+.05*rnd();rm[i]=.93}
+  }
+  return finishModel(lv,rm,fileDurations.remove||0,true);
+}
+function cutSize(){
+  const c=$("silenceCutCanvas");if(!c)return false;
+  const w=c.clientWidth,h=c.clientHeight;if(!w||!h)return false;
+  const dpr=Math.min(2,window.devicePixelRatio||1),pw=Math.round(w*dpr),ph=Math.round(h*dpr);
+  cutViz.w=w;cutViz.h=h;cutViz.dpr=dpr;
+  if(c.width!==pw)c.width=pw;if(c.height!==ph)c.height=ph;
+  cutViz.ctx=c.getContext("2d");return true;
+}
+function cutClear(){
+  cutViz.model=null;const c=$("silenceCutCanvas");
+  if(c&&c.width){const g=c.getContext("2d");g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,c.width,c.height)}
+}
+function cutBadge(){const b=$("cutBadge");if(!b||!cutViz.model)return;b.textContent=cutViz.model.sim?"◌ SIMULATED VIEW · LARGE FILE":"● WAVEFORM ANALYSED"}
+function cutStats(){
+  const v=cutViz,m=v.model;if(!m)return;
+  const col=Math.min(CUT_N,v.shown*CUT_N),ci=Math.min(CUT_N-1,Math.floor(col)),fr=col-ci;
+  const box=$("cutStats"),o=$("cutOrig"),r=$("cutRemoved"),c=$("cutClean");
+  const dur=m.sim?(fileDurations.remove||0):m.duration;
+  if(o)o.textContent=dur>0?fmtDur(dur):"—";
+  if(box)box.classList.toggle("sim",!!m.sim);
+  if(m.sim)return;
+  const rem=(m.cumRm[ci]+fr*m.rm[ci])*m.cd,clean=Math.max(0,col*m.cd-rem);
+  if(r)r.textContent="≈ −"+fmtDur(rem);
+  if(c)c.textContent=fmtDur(clean);
+}
+function cutDraw(now){
+  const v=cutViz,m=v.model,g=v.ctx;if(!m||!g||!v.w)return;
+  const W=v.w,H=v.h,N=m.N;
+  g.setTransform(v.dpr,0,0,v.dpr,0,0);g.clearRect(0,0,W,H);g.textBaseline="alphabetic";g.textAlign="left";
+  const padX=4,sx=(W-padX*2)/N,gap=8,laneH=(H-gap)/2,yA=0,yB=laneH+gap,cA=yA+laneH/2,cB=yB+laneH/2,maxH=laneH*0.32,bw=Math.max(1,sx-0.55);
+  g.fillStyle="rgba(120,210,255,.05)";g.fillRect(0,yA,W,laneH);g.fillRect(0,yB,W,laneH);
+  g.fillStyle="rgba(126,231,255,.12)";g.fillRect(padX,cA,W-padX*2,1);g.fillRect(padX,cB,W-padX*2,1);
+  let xB=padX;
+  for(let i=0;i<N;i++){
+    const rm=m.rm[i],kept=1-rm,h=Math.max(1,m.lv[i]*maxH),x=padX+i*sx,pa=v.passedAt[i];
+    const age=pa<0?-1:(now-pa)/520;
+    if(age<0){
+      g.fillStyle=rm>.35?"rgba(255,120,150,.36)":"rgba(87,170,211,.62)";
+      g.fillRect(x,cA-h,bw,h*2);
+    }else{
+      const a=age>1?1:age,e=1-(1-a)*(1-a)*(1-a),hk=h*(1-rm*e);
+      g.fillStyle="rgba(116,241,255,.95)";g.fillRect(x,cA-hk,bw,Math.max(1,hk*2));
+      if(rm>.35&&a<1){
+        const hs=h*rm,drop=e*laneH*0.34;
+        g.fillStyle="rgba(255,92,145,"+(0.85*(1-a)).toFixed(3)+")";g.fillRect(x,cA-hs+drop,bw,hs*2);
+        if(a<.14){g.fillStyle="rgba(255,255,255,.85)";g.fillRect(x-1,cA-h-2,bw+2,h*2+4)}
+      }
+      if(kept>.02){
+        const al=Math.min(1,a*3),off=(1-Math.min(1,a*2.5))*-9;
+        g.fillStyle="rgba(104,234,255,"+(0.95*al).toFixed(3)+")";
+        g.fillRect(xB,cB-h+off,Math.max(.6,kept*sx-.3),h*2);
+      }
+    }
+    xB+=kept*sx;
+  }
+  const col=Math.min(N,v.shown*N),ci=Math.min(N-1,Math.floor(col)),fr=col-ci;
+  const endX=padX+m.keptCols*sx,remNow=(m.cumRm[ci]+fr*m.rm[ci])*m.cd;
+  if(v.shown>0.02){
+    g.setLineDash([2,3]);g.strokeStyle="rgba(255,255,255,.22)";g.lineWidth=1;g.beginPath();g.moveTo(endX+.5,yB+3);g.lineTo(endX+.5,yB+laneH-3);g.stroke();g.setLineDash([]);
+    if(endX+96<W){
+      g.font="600 10px 'JetBrains Mono',monospace";g.fillStyle="rgba(255,143,176,.9)";
+      g.fillText(m.sim?"silence removed":"✂ −"+fmtDur(remNow),endX+10,cB+3);
+    }
+  }
+  if(v.shown<0.999){
+    const px=padX+col*sx,hx=padX+(m.cum[ci]+fr*(1-m.rm[ci]))*sx;
+    g.fillStyle="rgba(126,244,255,.09)";g.fillRect(px-7,yA,14,laneH);
+    g.fillStyle="rgba(126,244,255,.22)";g.fillRect(px-2.5,yA,5,laneH);
+    g.fillStyle="rgba(200,252,255,.95)";g.fillRect(px-.75,yA-2,1.5,laneH+4);
+    g.save();g.translate(px,yA+13);g.rotate(Math.PI/2);g.fillStyle="rgba(235,252,255,.95)";g.font="13px system-ui,sans-serif";g.textAlign="center";g.fillText("\u2702\uFE0E",0,4);g.restore();
+    g.fillStyle="rgba(104,234,255,.22)";g.fillRect(hx-4,yB,8,laneH);
+    g.fillStyle="rgba(200,252,255,.9)";g.fillRect(hx-.75,yB,1.5,laneH);
+  }
+  g.font="600 8.5px 'JetBrains Mono',monospace";g.fillStyle="rgba(170,232,250,.55)";g.textAlign="left";
+  g.fillText("ORIGINAL",6,yA+10);g.fillText("CLEAN OUTPUT",6,yB+10);
+}
+function cutFrame(now){
+  const v=cutViz;if(!v.active)return;
+  if(!v.ctx&&!cutSize()){v.raf=requestAnimationFrame(cutFrame);return}
+  const dt=Math.min(0.05,Math.max(0,(now-(v.last||now))/1000));v.last=now;
+  const diff=v.target-v.shown;
+  if(diff>0)v.shown=diff<0.0006?v.target:v.shown+diff*(1-Math.exp(-dt*3.2));
+  const col=Math.min(CUT_N,Math.floor(v.shown*CUT_N));
+  if(col>v.lastCol){for(let i=v.lastCol;i<col;i++)v.passedAt[i]=now+Math.min(700,(i-v.lastCol)*5);v.lastCol=col;v.lastPass=now}
+  cutDraw(now);
+  if(now-v.lastStats>120){v.lastStats=now;cutStats()}
+  const settled=Math.abs(v.target-v.shown)<0.0007&&now-v.lastPass>900;
+  if(!busy.remove&&settled){v.active=false;v.shown=v.target;cutStats();cutDraw(1e12);return}
+  v.raf=requestAnimationFrame(cutFrame);
+}
+function startCutViz(){
+  const c=$("silenceCutCanvas");if(!c)return;
+  const v=cutViz;v.keep=Math.max(0,Number($("seconds").value)||0);
+  const real=silencePreview.ready&&silencePreview.file===removeFile&&silencePreview.duration>0;
+  v.model=real?buildCutModel(v.keep):buildSimModel(removeFile);
+  v.shown=0;v.target=0.02;v.lastCol=0;v.lastPass=performance.now();v.last=0;v.passedAt=new Float64Array(CUT_N).fill(-1);
+  v.active=true;cutSize();cutBadge();cutStats();
+  if(!v.ro&&window.ResizeObserver){v.ro=new ResizeObserver(()=>{if(cutSize()&&v.model&&!v.active)cutDraw(1e12)});v.ro.observe(c)}
+  cancelAnimationFrame(v.raf);v.raf=requestAnimationFrame(cutFrame);
+}
+function cutRebuild(){
+  const v=cutViz;if(!v.active)return;
+  v.model=buildCutModel(v.keep);
+  const now=performance.now(),col=Math.floor(v.shown*CUT_N);
+  for(let i=0;i<CUT_N;i++)v.passedAt[i]=i<col?now-2000:-1;
+  v.lastCol=col;cutBadge();cutStats();
+}
+function cutSetTarget(p){if(cutViz.active)cutViz.target=Math.max(cutViz.target,Math.min(1,p))}
+function drawSilencePreview(progress){cutSetTarget(progress||0)}
+/* Shared preview decode: ONE decode per file (was 2 full decodes + a leaked AudioContext),
+   at 22.05 kHz via OfflineAudioContext (half the memory), and skipped for very long/large files. */
+const __decodeCache=new WeakMap();
+function decodeForPreview(file){
+  if(!file)return Promise.resolve(null);
+  if(__decodeCache.has(file))return __decodeCache.get(file);
+  const p=(async()=>{
+    try{
+      const OAC=window.OfflineAudioContext||window.webkitOfflineAudioContext;
+      if(!OAC)return null;
+      if(file.size>60*1024*1024)return null;
+      const dur=await readAudioDuration(file);
+      if(dur>900||(!dur&&file.size>25*1024*1024))return null;
+      const ctx=new OAC(1,1,22050);
+      const data=await file.arrayBuffer();
+      return await new Promise((res,rej)=>{const r=ctx.decodeAudioData(data,res,rej);if(r&&typeof r.then==="function")r.then(res,rej)});
+    }catch(e){console.warn("Preview decode skipped:",e);return null}
+  })();
+  __decodeCache.set(file,p);return p;
+}
+window.__decodePreview=decodeForPreview;
+async function analyzeSilencePreview(file){
+  cutClear();
+  silencePreview={ready:false,file:null,duration:0,segs:[],lv:null};
+  try{
+    const buf=await decodeForPreview(file);
+    if(!buf)return;
+    const sr=buf.sampleRate,len=buf.length,nch=buf.numberOfChannels,hop=Math.max(64,Math.round(sr*0.02));
+    const frames=Math.ceil(len/hop),rms=new Float32Array(frames),chs=[];
+    for(let c=0;c<nch;c++)chs.push(buf.getChannelData(c));
+    for(let f=0;f<frames;f++){
+      const a=f*hop,b=Math.min(len,a+hop);let sum=0,n=0;
+      for(let c=0;c<nch;c++){const d=chs[c];for(let j=a;j<b;j+=2){const q=d[j];sum+=q*q;n++}}
+      rms[f]=n?Math.sqrt(sum/n):0;
+      if((f&4095)===4095)await new Promise(r=>setTimeout(r,0));
+    }
+    const sorted=Float32Array.from(rms).sort(),ref=sorted[Math.floor(sorted.length*0.98)]||0.1;
+    const thr=Math.max(0.002,Math.min(0.018,ref*0.09)),fdur=hop/sr,minFr=Math.ceil(0.3/fdur),segs=[];
+    let st=-1;
+    for(let f=0;f<=frames;f++){
+      const quiet=f<frames&&rms[f]<thr;
+      if(quiet){if(st<0)st=f}
+      else if(st>=0){if(f-st>=minFr)segs.push({s:st*fdur,e:f*fdur});st=-1}
+    }
+    const N=CUT_N,lv=new Float32Array(N),perCol=frames/N;
+    for(let i=0;i<N;i++){const a=Math.floor(i*perCol),b=Math.max(a+1,Math.floor((i+1)*perCol));let mx=0;for(let f=a;f<b&&f<frames;f++)if(rms[f]>mx)mx=rms[f];lv[i]=Math.min(1,Math.pow(mx/(ref||1),0.65))}
+    silencePreview={ready:true,file,duration:buf.duration,segs,lv};
+    if(cutViz.active&&cutViz.model&&cutViz.model.sim&&file===removeFile)cutRebuild();
+  }catch(e){console.warn("Silence preview unavailable:",e)}
+}
+
+const uploadedFiles={remove:null,enhance:null,isolate:null};
+let uploadBusy=false;
+async function readAudioDuration(file){return await new Promise(resolve=>{try{const a=document.createElement("audio");const u=URL.createObjectURL(file);a.preload="metadata";a.onloadedmetadata=()=>{const d=Number(a.duration);URL.revokeObjectURL(u);resolve(isFinite(d)?d:0)};a.onerror=()=>{URL.revokeObjectURL(u);resolve(0)};a.src=u}catch(e){resolve(0)}})}
+function clientEstimate(kind,duration,mode=""){
+  duration=Number(duration)||0;
+  if(kind==="remove")return Math.max(3,duration*.06+3);
+  if(kind==="enhance")return Math.max(15,duration*.65+15);
+  return Math.max(35,duration*(mode==="Faster"?1.0:1.5)+35);
+}
+function startClock(kind){stopClock(kind);starts[kind]=performance.now();monitorState[kind].finished=false;clocks[kind]=setInterval(()=>{
+  const sec=(performance.now()-starts[kind])/1000;const text=sec<60?sec.toFixed(1)+"s":Math.floor(sec/60)+"m "+String(Math.floor(sec%60)).padStart(2,"0")+"s";const m=M[kind];
+  if($(m.elapsed))$(m.elapsed).textContent=text;if($(m.time))$(m.time).textContent=sec.toFixed(1)+"s";
+  const st=monitorState[kind];
+  if(!st.finished&&st.estimate>0){
+    const sinceActual=(performance.now()-st.actualAt)/1000;
+    if(sinceActual>2){
+      const predicted=Math.min(92,4+(sec/st.estimate)*88);
+      if(predicted>st.percent)setMonitor(kind,{percent:predicted,stage:"PROCESSING",live:true});
+      const remaining=st.estimate-sec;
+      if($(m.eta))$(m.eta).textContent=remaining>0?formatEta(remaining):"still processing";
+    } else if($(m.eta)&&(!$(m.eta).textContent||$(m.eta).textContent==="calculating…")){
+      $(m.eta).textContent=formatEta(Math.max(1,st.estimate-sec));
+    }
+  }
+},250)}
+function stopClock(kind){if(clocks[kind])clearInterval(clocks[kind]);clocks[kind]=null}
+function resetMonitor(kind,title,estimate=0){const m=M[kind];clearLogs(kind);if(m.panel)$(m.panel)?.classList.add("show");monitorState[kind]={percent:4,estimate:Number(estimate)||0,finished:false,actualAt:0};if($(m.bar))$(m.bar).style.width="4%";if($(m.percent))$(m.percent).textContent="4%";if($(m.eta))$(m.eta).textContent=estimate>0?formatEta(estimate):"starting…";if($(m.stage))$(m.stage).textContent="STARTING";if($(m.stageBar))$(m.stageBar).classList.remove("done","error");if($(m.live)){$(m.live).textContent="LIVE";$(m.live).classList.remove("idle")}if($(m.status))$(m.status).textContent="Connecting to processing server…";if($(m.label))$(m.label).textContent=title;startClock(kind);addLog(kind,"Job started · sending audio to backend","info");if(estimate>0)addLog(kind,`Client ETA estimate: ${formatEta(estimate)} · live recalculation enabled`,"info")}
+function safeBackendText(value,fallback=""){const raw=String(value??"").trim();if(!raw)return fallback;if(raw.includes("<")&&raw.includes(">")){const holder=document.createElement("div");holder.innerHTML=raw;return (holder.textContent||holder.innerText||"").replace(/\s+/g," ").trim()||fallback}return raw.replace(/[<>]/g,"").trim()||fallback}
+function applyBackendUpdate(data,kind){if(!Array.isArray(data))return;let status="",logs="",eta="";if(kind==="remove"){status=safeBackendText(data[4]);logs=safeBackendText(data[5]);eta=cleanStatusText(data[6],"—")}else if(kind==="enhance"){status=safeBackendText(data[2]);logs=safeBackendText(data[3]);eta=cleanStatusText(data[4],"—")}else{status=safeBackendText(data[4]);logs=safeBackendText(data[5]);eta=cleanStatusText(data[6],"—")}
+  const lines=logs?logs.split(/\r?\n/).filter(Boolean):[];const seen=window.__serverLogs?.[kind]||new Set();window.__serverLogs=window.__serverLogs||{};window.__serverLogs[kind]=seen;
+  for(const line of lines){if(!seen.has(line)){seen.add(line);addLog(kind,line,/ERROR|FATAL/i.test(line)?"err":/completed|ready/i.test(line)?"ok":"info");const pm=line.match(/(?:^|\s)(\d+(?:\.\d+)?)%\|/);if(pm){const p=Number(pm[1]);if(p>=0&&p<=100){monitorState[kind].percent=p;monitorState[kind].actualAt=performance.now();setMonitor(kind,{percent:p,stage:p>=100?"COMPLETED":"PROCESSING",live:p<100});}}}}
+  if(status){const failed=/failed|error|fatal/i.test(status),done=/completed|successfully/i.test(status);setMonitor(kind,{stage:done?"COMPLETED":failed?"ERROR":"PROCESSING",eta:eta||null,status,live:!done&&!failed})}
+  if(eta&&/\d/.test(eta)){const cleaned=eta.replace(/^Estimated remaining:\s*/i,"");$(M[kind].eta).textContent=cleaned;const match=cleaned.match(/(?:about\s+)?(\d+)s/);if(match)monitorState[kind].estimate=Math.max(monitorState[kind].estimate,((performance.now()-starts[kind])/1000)+Number(match[1]))}
+}
+async function runGradioJob(endpoint,inputs,kind,onData){if(!client)throw new Error("Backend is not connected.");window.__serverLogs=window.__serverLogs||{};window.__serverLogs[kind]=new Set();let job=client.submit(endpoint,inputs);if(job&&typeof job.on==="function"){job.on("data",data=>{applyBackendUpdate(data,kind);onData(data)});job.on("status",st=>{const text=cleanStatusText(st?.stage||st?.status||st?.message||"","");const pd=st?.progress_data?.[0]||st?.progress_data;if(pd?.progress!=null){const p=Number(pd.progress)*100;monitorState[kind].percent=Math.max(monitorState[kind].percent,p);monitorState[kind].actualAt=performance.now();setMonitor(kind,{percent:p,stage:"PROCESSING",status:cleanStatusText(text),eta:st?.eta??st?.status?.eta??null,live:true})}if(text&&!/successful processing job|not verified unique people|uploaded and processed audio|stats-card/i.test(text))addLog(kind,text,/error|failed/i.test(text)?"err":"info")})}
+  let finalData=null;
+  if(job&&job[Symbol.asyncIterator]){for await(const msg of job){if(msg?.type==="data"){finalData=msg.data;applyBackendUpdate(msg.data,kind);onData(msg.data)}else if(msg?.type==="status"&&msg.status){const st=msg.status,pd=st.progress_data?.[0]||st.progress_data;if(pd?.progress!=null){const p=Number(pd.progress)*100;monitorState[kind].percent=Math.max(monitorState[kind].percent,p);monitorState[kind].actualAt=performance.now();setMonitor(kind,{percent:p,stage:"PROCESSING",status:cleanStatusText(st.message||st.stage||"Processing…"),eta:st.eta??st.status?.eta??null,live:true})}if(st.message&&!/successful processing job|not verified unique people|uploaded and processed audio|stats-card/i.test(st.message))addLog(kind,cleanStatusText(st.message),/error|failed/i.test(st.message)?"err":"info")}}}
+  else if(job&&typeof job.result==="function"){const r=await job.result();finalData=r?.data||r;applyBackendUpdate(finalData,kind);onData(finalData)}
+  else{const r=await client.predict(endpoint,inputs);finalData=r?.data||[];applyBackendUpdate(finalData,kind);onData(finalData)}
+  return finalData||[]}
+function validAudio(file){return file&&(file.type.startsWith("audio/")||/\.(mp3|wav|m4a|ogg|flac|aac)$/i.test(file.name))}
+function fileLabel(file){return `${file.name} · ${(file.size/1024/1024).toFixed(2)} MB`}
+function setBusy(btn,b,txt){const __v={removeBtn:"removeVisual",enhanceBtn:"enhanceVisual",isolateBtn:"isolateVisual"}[btn.id];if(__v&&$(__v))$(__v).classList.toggle("fx-run",!!b);btn.disabled=b;if(b){btn.classList.add("processing");btn.textContent=txt}else{btn.classList.remove("processing");btn.textContent=btn.dataset.normal}}
+function resetResultsForNewInput(kind){if(kind==="remove"){processedState=null;processedAudioURL=null;$("outputAudio").style.display="none";$("outputEmpty").style.display="block";$("durationInfo").style.display="none";$("downloadLink").classList.remove("show");$("resultBadge").textContent="Ready"}if(kind==="enhance"){$("enhancedAudio").style.display="none";$("enhancedEmpty").style.display="block";$("enhancedDownload").classList.remove("show");$("enhanceStatus").textContent="Enhancer file ready — choose mode and click Enhance Audio."}if(kind==="isolate"){$("vocalsAudio").style.display="none";$("vocalsEmpty").style.display="block";$("vocalsDownload").classList.remove("show");$("bgmAudio").style.display="none";$("bgmEmpty").style.display="block";$("bgmDownload").classList.remove("show");$("separationStatus").textContent="Isolation file ready — click Isolate Voice & BGM."}}
+function setUploadButtonsLocked(locked){
+  uploadBusy=locked;
+  ["removeBtn","enhanceBtn","isolateBtn"].forEach(id=>{const b=$(id);if(!b)return;b.classList.toggle("uploading",locked);b.setAttribute("aria-busy",locked?"true":"false");if(locked)b.disabled=true;});
+}
+const UP_IDS={remove:"fileSub",enhance:"enhanceFileSub",isolate:"isolateFileSub"};
+const UP_HTML='<div class="up-head"><div class="up-main"><i class="up-done-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></i><b class="up-pct">0</b><small class="up-unit">%</small><em class="up-title">Uploaded</em></div><div class="up-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg><b class="up-speed">—</b></div></div><div class="up-track"><i class="up-fill"></i></div><div class="up-meta"><div class="up-size"><b class="up-done">0</b><em class="up-total"></em></div><div class="up-eta"></div></div><div class="up-note"></div>';
+function upCard(kind){
+  const sub=$(UP_IDS[kind]);if(!sub||!sub.parentNode)return null;
+  let card=sub.parentNode.querySelector(".up-card");
+  if(!card){card=document.createElement("div");card.className="up-card";card.innerHTML=UP_HTML;sub.style.display="none";sub.parentNode.appendChild(card)}
+  return card;
+}
+function renderUpload(kind,o){
+  const card=upCard(kind);if(!card)return;
+  const set=(sel,val)=>{const n=card.querySelector(sel);if(n&&val!=null)n.textContent=val};
+  if(o.phase)card.dataset.phase=o.phase;
+  if(o.pct!=null){set(".up-pct",o.pct);card.querySelector(".up-fill").style.width=o.pct+"%"}
+  if(o.done!=null)set(".up-done",fmtMB(o.done));
+  if(o.totalText!=null)set(".up-total",o.totalText);
+  if(o.speedText!=null)set(".up-speed",o.speedText);
+  if(o.title!=null)set(".up-title",o.title);
+  if(o.eta!=null)set(".up-eta",o.eta);
+  if(o.note!=null)set(".up-note",o.note);
+}
+function setUploadLabel(kind,text){renderUpload(kind,{note:text})}
+function fmtMB(b){return (b/1048576).toFixed(b>=10485760?1:2)}
+function fmtSpeed(bps){if(!isFinite(bps)||bps<=0)return"— MB/s";return bps>=1048576?(bps/1048576).toFixed(2)+" MB/s":Math.round(bps/1024)+" KB/s"}
+const lastUpload={remove:null,enhance:null,isolate:null};
+function uploadOnce(kind,file,base){
+  return new Promise((resolve,reject)=>{
+    const t0=performance.now();let lastT=t0,lastLoaded=0,speed=0,lastRender=0;
+    const xhr=new XMLHttpRequest();
+    const form=new FormData();form.append("files",file,file.name);
+    const target=base.replace(/\/$/,"")+"/gradio_api/upload";
+    /* FIX: withCredentials removed. HF Spaces reply with "Access-Control-Allow-Origin: *",
+       and browsers block that when credentials are included -> instant "network error" at 0%. */
+    xhr.open("POST",target,true);
+    xhr.upload.onprogress=e=>{
+      if(!e.lengthComputable)return;
+      const now=performance.now(),dt=(now-lastT)/1000;
+      if(dt>=0.4||e.loaded>=e.total){const inst=(e.loaded-lastLoaded)/Math.max(dt,0.001);speed=speed?speed*0.6+inst*0.4:inst;lastT=now;lastLoaded=e.loaded}
+      const pct=Math.min(100,Math.round(e.loaded/e.total*100)),done=Math.min(file.size,Math.round(file.size*e.loaded/e.total));
+      const left=speed>0?(file.size-done)/speed:null;
+      if(now-lastRender>90||pct>=100){lastRender=now;renderUpload(kind,{phase:"uploading",pct,done,totalText:" / "+fmtMB(file.size)+" MB",speedText:fmtSpeed(speed),eta:pct>=100?"finishing…":(left!=null?formatEta(left)+" left":"calculating…"),note:""})}
+    };
+    xhr.onerror=()=>reject(new Error("File upload network error ("+target+")"));
+    xhr.ontimeout=()=>reject(new Error("File upload timed out"));xhr.timeout=180000;
+    xhr.onload=()=>{lastUpload[kind]={ms:performance.now()-t0,bytes:file.size};if(xhr.status<200||xhr.status>=300)return reject(new Error(`Upload failed (HTTP ${xhr.status})`));try{const data=JSON.parse(xhr.responseText);const first=Array.isArray(data)?data[0]:data;const path=typeof first==="string"?first:(first?.path||first?.file?.path);if(!path)throw new Error("Upload server returned no file reference");resolve({path,orig_name:file.name,size:file.size,mime_type:file.type||"application/octet-stream",meta:{_type:"gradio.FileData"}})}catch(e){reject(e)}};
+    xhr.send(form);
+  });
+}
+async function uploadFileToBackend(kind,file){
+  /* Try direct HF Space first, then the current/proxy URL; 2 rounds so a sleeping Space can wake up. */
+  const targets=[...new Set([CONFIG.DIRECT_SPACE_URL,activeSpaceURL,CONFIG.SPACE_URL].filter(Boolean))];
+  let lastErr=null;
+  for(let round=0;round<2;round++){
+    for(const t of targets){
+      try{return await uploadOnce(kind,file,t)}
+      catch(e){lastErr=e;console.warn("Upload attempt failed:",t,e?.message||e)}
+    }
+    if(round===0){setUploadLabel(kind,"Server slow hai, dobara try ho raha hai…");await new Promise(r=>setTimeout(r,2500))}
+  }
+  throw lastErr||new Error("Upload failed");
+}
+function getUploadedInput(kind,file){return uploadedFiles[kind]||window.GradioClient.handle_file(file)}
+async function setUpload(kind,file){
+  if(!validAudio(file)){alert("Please choose a valid audio file (MP3, WAV, M4A, OGG, FLAC, etc.).");return}
+  if(uploadBusy)return;
+  if(kind==="remove"){removeFile=file;$("fileText").textContent=file.name;$("fileSub").textContent=fileLabel(file)}
+  if(kind==="enhance"){enhanceFile=file;$("enhanceFileText").textContent=file.name;$("enhanceFileSub").textContent=fileLabel(file)}
+  if(kind==="isolate"){isolateFile=file;$("isolateFileText").textContent=file.name;$("isolateFileSub").textContent=fileLabel(file)}
+  uploadedFiles[kind]=null;resetResultsForNewInput(kind);if(kind==="remove")analyzeSilencePreview(file);setUploadButtonsLocked(true);renderUpload(kind,{phase:"uploading",pct:0,done:0,totalText:" / "+fmtMB(file.size)+" MB",speedText:"—",eta:"starting…",note:""});
+  try{
+    uploadedFiles[kind]=await uploadFileToBackend(kind,file);{const u=lastUpload[kind],sec=u?u.ms/1000:0;renderUpload(kind,{phase:"done",pct:100,done:file.size,totalText:" MB",title:"Uploaded",speedText:sec>0?"avg "+fmtSpeed(file.size/sec):"—",eta:sec>0?"in "+(sec<60?sec.toFixed(1)+"s":formatEta(sec)):"",note:""})}
+    $(kind==="remove"?"removeBtn":kind==="enhance"?"enhanceBtn":"isolateBtn").disabled=!client;
+  }catch(error){
+    /* Fallback: pre-upload failed, so let the Gradio client upload the file itself when Process is pressed (getUploadedInput -> handle_file). */
+    uploadedFiles[kind]=null;console.error(error);
+    renderUpload(kind,{phase:"warn",title:"Will upload on Process",done:file.size,totalText:" MB",eta:"",note:"Pre-upload nahi hui — Process dabate hi file automatically upload ho jayegi."});
+  }
+  finally{setUploadButtonsLocked(false);$("removeBtn").disabled=!removeFile||!client;$("enhanceBtn").disabled=!enhanceFile||!client;$("isolateBtn").disabled=!isolateFile||!client;}
+  fileDurations[kind]=await readAudioDuration(file);
+}
+function wireDrop(zoneId,inputId,kind){const zone=$(zoneId),input=$(inputId);input.addEventListener("change",e=>{if(e.target.files?.[0])setUpload(kind,e.target.files[0])});zone.addEventListener("dragover",e=>{e.preventDefault();zone.classList.add("drag")});zone.addEventListener("dragleave",()=>zone.classList.remove("drag"));zone.addEventListener("drop",e=>{e.preventDefault();zone.classList.remove("drag");if(e.dataTransfer.files?.[0])setUpload(kind,e.dataTransfer.files[0])})}
+wireDrop("dropZone","fileInput","remove");wireDrop("enhanceDropZone","enhanceFileInput","enhance");wireDrop("isolateDropZone","isolateFileInput","isolate");
+function showReadyToast(tool,detail){$("toastTitle").textContent="Ready for Download";$("toastDetail").textContent=`${tool} · ${detail}`;$("readyToast").classList.add("show");clearTimeout(window.__toastTimer);window.__toastTimer=setTimeout(()=>$("readyToast").classList.remove("show"),5000)}
+$("toastClose").addEventListener("click",()=>$("readyToast").classList.remove("show"));
+function chooseEnhanceMode(mode){$("enhanceStrength").value=mode;document.querySelectorAll(".enhance-mode").forEach(b=>{const active=b.dataset.mode===mode;b.classList.toggle("active",active);b.setAttribute("aria-checked",active?"true":"false")});if(enhanceFile&&!busy.enhance)$("enhanceStatus").textContent=`Mode: ${mode} — ready to enhance.`}
+document.querySelectorAll(".enhance-mode").forEach(b=>b.addEventListener("click",()=>chooseEnhanceMode(b.dataset.mode)));
+async function removeSilence(){if(!client||!removeFile){alert("Remove Silence ke liye pehle audio upload karein.");return}if(busy.remove)return;const btn=$("removeBtn");busy.remove=true;setBusy(btn,true,"Processing Silence");resetMonitor("remove","REMOVE SILENCE",clientEstimate("remove",fileDurations.remove));startCutViz();$("resultBadge").textContent="Processing";apiStatus("busy","Processing Audio","Removing silence chunks on CPU…");try{const raw=Number($("seconds").value);if(!Number.isFinite(raw)||raw<0||raw>10)throw new Error("Silence value 0 se 10 seconds ke beech rakhein.");const seconds=Math.round(raw*100)/100;$("seconds").value=seconds.toFixed(2);addLog("remove",`Input: ${removeFile.name} · keep silence: ${seconds}s`,"info");const data=await runGradioJob(processEndpoint,[getUploadedInput("remove",removeFile),seconds],"remove",d=>{processedState=d?.[3]});const url=getResultURL(data?.[0])||getResultURL(data?.[1]);if(!url){const rawOut=Array.isArray(data)?data.map((x,i)=>`[${i}] ${typeof x==="string"?x:JSON.stringify(x)}`).join(" | "):JSON.stringify(data);throw new Error("API returned no processed audio file. Output: "+(rawOut||"empty"));}$("outputAudio").src=url;$("outputAudio").style.display="block";$("outputEmpty").style.display="none";if(data?.[2]){$("durationInfo").textContent=safeBackendText(data[2]);$("durationInfo").style.display="block"}processedAudioURL=url;$("downloadLink").dataset.fileUrl=url;$("downloadLink").dataset.filename=makeName(removeFile.name,"_no_silence");$("downloadLink").href="#";$("downloadLink").classList.add("show");$("resultBadge").textContent="Completed";setMonitor("remove",{stage:"COMPLETED",percent:100,eta:"0s",status:"Completed — silence removed.",live:false});setMonitorDone("remove",true);addLog("remove","✓ Processing completed successfully","ok");showReadyToast("Remove Silence","Processed audio is ready");apiStatus("good","API Connected","Silence removal completed successfully");updateVisitorStats()}catch(err){console.error(err);$("resultBadge").textContent="Error";setMonitor("remove",{stage:"ERROR",status:"Processing failed.",eta:"—",live:false});setMonitorDone("remove",false);addLog("remove","ERROR: "+(err?.message||"Silence removal failed"),"err");apiStatus("bad","Processing Error",err?.message||"Silence removal failed")}finally{busy.remove=false;stopClock("remove");setBusy(btn,false)}}
+async function enhanceAudio(){if(!client||!enhanceFile){alert("Enhance Audio ke liye pehle alag audio file upload karein.");return}if(busy.enhance)return;const btn=$("enhanceBtn");busy.enhance=true;setBusy(btn,true,"Enhancing Audio");resetMonitor("enhance","AUDIO ENHANCER",clientEstimate("enhance",fileDurations.enhance));apiStatus("busy","Enhancing Audio","Applying CPU noise reduction & normalization…");try{const strength=$("enhanceStrength").value||"Balanced";addLog("enhance",`Input: ${enhanceFile.name} · mode: ${strength} · CPU`,"info");const data=await runGradioJob(enhanceEndpoint,[getUploadedInput("enhance",enhanceFile),strength],"enhance",()=>{});const url=getResultURL(data?.[0])||getResultURL(data?.[1]);if(!url)throw new Error("API returned no enhanced audio file.");$("enhancedAudio").src=url;$("enhancedAudio").style.display="block";$("enhancedEmpty").style.display="none";$("enhancedDownload").dataset.fileUrl=url;$("enhancedDownload").dataset.filename=makeName(enhanceFile.name,"_enhanced");$("enhancedDownload").href="#";$("enhancedDownload").classList.add("show");$("enhanceStatus").textContent=safeBackendText(data?.[2],`Enhanced successfully in ${strength} mode.`);setMonitor("enhance",{stage:"COMPLETED",percent:100,eta:"0s",status:"Enhancement completed.",live:false});setMonitorDone("enhance",true);addLog("enhance","✓ Enhancement completed successfully","ok");showReadyToast("Audio Enhancer",`${strength} mode output is ready`);apiStatus("good","API Connected","Audio enhancement completed successfully");updateVisitorStats()}catch(err){console.error(err);setMonitor("enhance",{stage:"ERROR",status:"Enhancement failed.",eta:"—",live:false});setMonitorDone("enhance",false);addLog("enhance","ERROR: "+(err?.message||"Enhance Audio failed"),"err");$("enhanceStatus").textContent="Enhancement failed: "+(err?.message||"unknown error");apiStatus("bad","Enhancement Error",err?.message||"Enhance Audio failed")}finally{busy.enhance=false;stopClock("enhance");setBusy(btn,false)}}
+async function isolateVoiceBgm(){if(!client||!isolateFile){if(!isolateFile)alert("Voice / BGM Isolation ke liye pehle alag audio file upload karein.");return}if(busy.isolate)return;const btn=$("isolateBtn");busy.isolate=true;setBusy(btn,true,"Isolating Voice/BGM");resetMonitor("isolate","VOICE / BGM ISOLATION",clientEstimate("isolate",fileDurations.isolate,$("separationModel").value));apiStatus("busy","Separating Voice & BGM","Running Demucs on CPU…");$("vocalsAudio").style.display="none";$("vocalsEmpty").style.display="block";$("vocalsDownload").classList.remove("show");$("bgmAudio").style.display="none";$("bgmEmpty").style.display="block";$("bgmDownload").classList.remove("show");try{const model=$("separationModel").value;addLog("isolate",`Input: ${isolateFile.name} · quality: ${model} · CPU`,"info");const data=await runGradioJob(isolateEndpoint,[getUploadedInput("isolate",isolateFile),model],"isolate",()=>{});const vocals=getResultURL(data?.[0])||getResultURL(data?.[2]),bgm=getResultURL(data?.[1])||getResultURL(data?.[3]);if(!vocals||!bgm){const log=typeof data?.[5]==="string"?data[5]:"";throw new Error(log.split("\n").filter(x=>x.includes("ERROR:")).pop()||data?.[4]||"API returned no separated audio files.")}$("vocalsAudio").src=vocals;$("vocalsAudio").style.display="block";$("vocalsEmpty").style.display="none";$("vocalsDownload").dataset.fileUrl=vocals;$("vocalsDownload").dataset.filename=makeName(isolateFile.name,"_vocals_only");$("vocalsDownload").href="#";$("vocalsDownload").classList.add("show");$("bgmAudio").src=bgm;$("bgmAudio").style.display="block";$("bgmEmpty").style.display="none";$("bgmDownload").dataset.fileUrl=bgm;$("bgmDownload").dataset.filename=makeName(isolateFile.name,"_bgm_only");$("bgmDownload").href="#";$("bgmDownload").classList.add("show");$("separationStatus").textContent=safeBackendText(data?.[4],"Voice and BGM isolated successfully.");setMonitor("isolate",{stage:"COMPLETED",percent:100,eta:"0s",status:"Voice & BGM separation completed.",live:false});setMonitorDone("isolate",true);addLog("isolate","✓ Voice and BGM files are ready","ok");showReadyToast("Voice / BGM Isolation","Voice and BGM outputs are ready");apiStatus("good","API Connected","Voice / BGM isolation completed successfully");updateVisitorStats()}catch(err){console.error(err);setMonitor("isolate",{stage:"ERROR",status:"Isolation failed.",eta:"—",live:false});setMonitorDone("isolate",false);addLog("isolate","ERROR: "+(err?.message||"Voice / BGM isolation failed"),"err");$("separationStatus").textContent="Isolation failed: "+(err?.message||"unknown error");apiStatus("bad","Separation Error",err?.message||"Voice / BGM isolation failed")}finally{busy.isolate=false;stopClock("isolate");setBusy(btn,false)}}
+const downloadFormat={remove:"mp3",enhance:"mp3",vocals:"mp3",bgm:"mp3"};
+let __lameLoad=null;
+function loadLame(){
+  if(window.lamejs)return Promise.resolve(window.lamejs);
+  if(__lameLoad)return __lameLoad;
+  const urls=["https://cdn.jsdelivr.net/npm/[email protected]/lame.min.js","https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.0/lame.min.js"];
+  __lameLoad=(async()=>{
+    for(const u of urls){
+      try{
+        await new Promise((res,rej)=>{const s=document.createElement("script");s.src=u;s.onload=res;s.onerror=()=>rej(new Error("script load failed: "+u));document.head.appendChild(s)});
+        if(window.lamejs)return window.lamejs;
+      }catch(e){console.warn(e)}
+    }
+    throw new Error("MP3 encoder load failed");
+  })();
+  return __lameLoad;
+}
+function pickCard(link){return link.closest(".dl-card")}
+function dlSetRing(link,frac){const c=link.querySelector(".dl-ring-fg");if(c)c.style.strokeDashoffset=String(119.4*(1-Math.max(0,Math.min(1,frac))))}
+function dlSetText(link,text){const t=link.querySelector(".dl-text");if(t)t.textContent=text}
+function dlSetState(link,state){const card=pickCard(link);if(card)card.dataset.state=state}
+function dlSetBusy(link,on){const card=pickCard(link);if(card)card.dataset.busy=on?"1":"0"}
+async function fetchWithProgress(url,onProgress){
+  const r=await fetch(url,{credentials:"omit",mode:"cors"});
+  if(!r.ok)throw new Error(`HTTP ${r.status}`);
+  const total=Number(r.headers.get("content-length"))||0;
+  if(!r.body||!total)return{blob:await r.blob(),total:total||(await r.blob()).size};
+  const reader=r.body.getReader();const chunks=[];let got=0;
+  for(;;){const{done,value}=await reader.read();if(done)break;chunks.push(value);got+=value.length;if(total)onProgress(got/total)}
+  return{blob:new Blob(chunks),total:total||got};
+}
+function audioBufferToWavBlob(buf){
+  const nCh=buf.numberOfChannels,len=buf.length*nCh*2+44,ab=new ArrayBuffer(len),v=new DataView(ab);
+  const ws=(o,s)=>{for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i))};
+  ws(0,"RIFF");v.setUint32(4,36+buf.length*nCh*2,true);ws(8,"WAVE");ws(12,"fmt ");v.setUint32(16,16,true);
+  v.setUint16(20,1,true);v.setUint16(22,nCh,true);v.setUint32(24,buf.sampleRate,true);
+  v.setUint32(28,buf.sampleRate*nCh*2,true);v.setUint16(32,nCh*2,true);v.setUint16(34,16,true);
+  ws(36,"data");v.setUint32(40,buf.length*nCh*2,true);
+  const chs=[];for(let c=0;c<nCh;c++)chs.push(buf.getChannelData(c));
+  let off=44;
+  for(let i=0;i<buf.length;i++){for(let c=0;c<nCh;c++){let s=Math.max(-1,Math.min(1,chs[c][i]));v.setInt16(off,s<0?s*32768:s*32767,true);off+=2}}
+  return new Blob([ab],{type:"audio/wav"});
+}
+async function encodeToMp3(blob,onProgress){
+  const lamejs=await loadLame();
+  const ac=new(window.AudioContext||window.webkitAudioContext)();
+  let buf;
+  try{buf=await ac.decodeAudioData(await blob.arrayBuffer())}finally{ac.close&&ac.close()}
+  const nCh=Math.min(2,buf.numberOfChannels),sr=buf.sampleRate;
+  const enc=new lamejs.Mp3Encoder(nCh,sr,160);
+  const toI16=d=>{const o=new Int16Array(d.length);for(let i=0;i<d.length;i++){const s=Math.max(-1,Math.min(1,d[i]));o[i]=s<0?s*32768:s*32767}return o};
+  const L=toI16(buf.getChannelData(0)),R=nCh>1?toI16(buf.getChannelData(1)):null;
+  const block=1152,out=[];const total=L.length;
+  for(let i=0;i<total;i+=block){
+    const lc=L.subarray(i,i+block),rc=R?R.subarray(i,i+block):null;
+    const mp3buf=rc?enc.encodeBuffer(lc,rc):enc.encodeBuffer(lc);
+    if(mp3buf.length>0)out.push(mp3buf);
+    if((i/block)%40===0){onProgress(Math.min(0.98,i/total));await new Promise(r=>setTimeout(r,0))}
+  }
+  const last=enc.flush();if(last.length>0)out.push(last);
+  onProgress(1);
+  return new Blob(out,{type:"audio/mpeg"});
+}
+function triggerBlobDownload(blob,filename){
+  const blobURL=URL.createObjectURL(blob);const a=document.createElement("a");
+  a.href=blobURL;a.download=filename;a.rel="noopener";document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(blobURL),60000);
+}
+async function directDownload(id){
+  const link=$(id),kind=id==="downloadLink"?"remove":id==="enhancedDownload"?"enhance":id==="vocalsDownload"?"vocals":"bgm";
+  if(downloadBusy[kind])return;
+  const url=link.dataset.fileUrl;
+  if(!url){alert("File abhi ready nahi hai.");return}
+  const baseName=link.dataset.filename||"audio",label=link.dataset.label||"Download";
+  const wantMp3=downloadFormat[kind]==="mp3";
+  downloadBusy[kind]=true;dlSetBusy(link,true);dlSetState(link,"");dlSetRing(link,0);
+  dlSetText(link,"Fetching 0%");
+  try{
+    const{blob:srcBlob}=await fetchWithProgress(url,f=>{dlSetRing(link,f*(wantMp3?0.45:0.95));dlSetText(link,`Fetching ${Math.round(f*100)}%`)});
+    if(!srcBlob.size)throw new Error("Empty file");
+    if(!wantMp3){
+      dlSetRing(link,1);dlSetText(link,"Saving…");
+      triggerBlobDownload(srcBlob,baseName+".wav");
+    }else{
+      dlSetText(link,"Encoding MP3…");
+      let mp3Blob;
+      try{
+        mp3Blob=await encodeToMp3(srcBlob,f=>{dlSetRing(link,0.45+f*0.55);dlSetText(link,`Encoding MP3… ${Math.round(f*100)}%`)});
+      }catch(encErr){
+        console.warn("MP3 encode failed, falling back to WAV:",encErr);
+        dlSetText(link,"MP3 fail — WAV de rahe hain");
+        triggerBlobDownload(srcBlob,baseName+".wav");
+        dlSetState(link,"done");dlSetRing(link,1);dlSetText(link,"WAV Downloaded");
+        setTimeout(()=>{dlSetState(link,"");dlSetBusy(link,false);dlSetText(link,label)},2600);
+        downloadBusy[kind]=false;return;
+      }
+      triggerBlobDownload(mp3Blob,baseName+".mp3");
+    }
+    dlSetState(link,"done");dlSetRing(link,1);dlSetText(link,wantMp3?"MP3 Downloaded":"WAV Downloaded");
+    setTimeout(()=>{dlSetState(link,"");dlSetBusy(link,false);dlSetText(link,label)},2600);
+  }catch(err){
+    console.error(err);
+    dlSetState(link,"error");dlSetText(link,"Failed — tap to retry");
+    setTimeout(()=>{dlSetState(link,"");dlSetText(link,label)},2600);
+  }finally{
+    downloadBusy[kind]=false;dlSetBusy(link,false)
+  }
+}
+function initDownloadCards(){
+  document.querySelectorAll(".dl-card").forEach(card=>{
+    const kind=card.dataset.kind,link=card.querySelector(".dl-btn");
+    if(link)link.dataset.label=link.dataset.label||link.querySelector(".dl-text")?.textContent||"Download";
+    card.querySelectorAll(".dl-fmt-btn").forEach(btn=>{
+      btn.addEventListener("click",()=>{
+        if(downloadBusy[kind])return;
+        card.querySelectorAll(".dl-fmt-btn").forEach(b=>b.classList.remove("active"));
+        btn.classList.add("active");downloadFormat[kind]=btn.dataset.fmt;
+      });
+    });
+  });
+}
+document.addEventListener("DOMContentLoaded",initDownloadCards);
+if(document.readyState!=="loading")initDownloadCards();
+function getResultURL(result){
+  if(!result)return null;
+  const normalize=v=>{
+    if(!v)return null;
+    v=String(v);
+    if(/^https?:\/\//i.test(v)||v.startsWith("blob:")||v.startsWith("data:"))return v;
+    if(v.startsWith("file://"))v=v.slice(7);
+    if(v.startsWith("/"))return activeSpaceURL+"/gradio_api/file="+encodeURIComponent(v);
+    return activeSpaceURL+"/gradio_api/file="+encodeURIComponent("/"+v);
+  };
+  if(typeof result==="string")return normalize(result);
+  if(typeof result==="object"){
+    return normalize(result.url)
+      || normalize(result.path)
+      || normalize(result.name)
+      || normalize(result.orig_name)
+      || normalize(result.file?.url)
+      || normalize(result.file?.path);
+  }
+  return null;
+}
+function makeName(name,suffix){const dot=name.lastIndexOf(".");const base=dot>0?name.slice(0,dot):name;return base+suffix}
+$("removeBtn").addEventListener("click",removeSilence);$("downloadLink").addEventListener("click",e=>{e.preventDefault();directDownload("downloadLink")});$("enhanceBtn").addEventListener("click",enhanceAudio);$("enhancedDownload").addEventListener("click",e=>{e.preventDefault();directDownload("enhancedDownload")});$("isolateBtn").addEventListener("click",isolateVoiceBgm);$("vocalsDownload").addEventListener("click",e=>{e.preventDefault();directDownload("vocalsDownload")});$("bgmDownload").addEventListener("click",e=>{e.preventDefault();directDownload("bgmDownload")});$("separationModel").addEventListener("change",e=>$("separationModelValue").textContent=e.target.value);
+function openModal(id){$(id).classList.add("open")}function closeModal(id){$(id).classList.remove("open")}
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)updateVisitorStats()});window.addEventListener("gradio-client-ready",()=>connectAPI());window.addEventListener("gradio-client-error",()=>apiStatus("bad","Client Error","Failed to load Gradio JavaScript client"));if(window.GradioClient)connectAPI();
+async function updateVisitorStats(){if(!client||document.hidden)return;try{const result=await client.predict(visitorStatsEndpoint,{}),d=result?.data;let online=0,visits=0;if(Array.isArray(d)){online=Number(d[0]??0);visits=Number(d[1]??d[0]??0)}else if(d&&typeof d==="object"){online=Number(d.online??d.active??0);visits=Number(d.visits??d.total_visits??0)}$("liveUsers").textContent=online.toLocaleString();$("totalVisits").textContent=visits.toLocaleString();$("topOnline").textContent=online;$("topVisits").textContent=visits;if(!busy.remove&&!busy.enhance&&!busy.isolate)apiStatus("good","API Connected & Ready","CPU audio processing pipeline is online")}catch(e){console.warn("Visitor stats warning:",e);if(!busy.remove&&!busy.enhance&&!busy.isolate)apiStatus("bad","Connection Check Failed",e?.message||"Backend heartbeat failed")}}
+async function connectAPI(){
+  if(connectingPromise) return connectingPromise;
+  if(client) return client;
+  connectingPromise=(async()=>{
+    try{
+      apiStatus("busy","Connecting to Server…","Establishing connection with Hugging Face Space");
+      if(!window.GradioClient) throw new Error("Gradio client failed to load.");
+      const targets=[...new Set([CONFIG.SPACE_URL,CONFIG.DIRECT_SPACE_URL].filter(Boolean))];
+      let lastError=null;
+      for(let attempt=0;attempt<3&&!client;attempt++){
+        for(const target of targets){
+          try{
+            client=await Promise.race([
+              window.GradioClient.Client.connect(target),
+              new Promise((_,reject)=>setTimeout(()=>reject(new Error("Backend connection timed out.")),12000))
+            ]);
+            activeSpaceURL=target;
+            break;
+          }catch(error){lastError=error;console.warn("Backend connection attempt failed:",target,error?.message||error);}
+        }
+        if(!client&&attempt<2)await new Promise(resolve=>setTimeout(resolve,1000*(attempt+1)));
+      }
+      if(!client)throw lastError||new Error("Could not connect to the audio processing server.");
+      try{
+        const api=await client.view_api();
+        const p=findEndpoint(api,"process_audio"),e=findEndpoint(api,"enhance_audio"),iso=findEndpoint(api,"isolate_voice_bgm"),v=findEndpoint(api,"visitor_heartbeat")||findEndpoint(api,"register_visitor");
+        if(p)processEndpoint=p;if(e)enhanceEndpoint=e;if(iso)isolateEndpoint=iso;if(v)visitorStatsEndpoint=v;
+      }catch(e){console.warn("API schema lookup warning:",e)}
+      apiStatus("good","API Connected & Ready","CPU audio processing pipeline is online");
+      addLog("remove","Backend connected · CPU processing mode","ok");
+      await updateVisitorStats();
+      if(!visitorStatsTimer) visitorStatsTimer=setInterval(updateVisitorStats,15000);
+      $("removeBtn").disabled=!removeFile;$("enhanceBtn").disabled=!enhanceFile;$("isolateBtn").disabled=!isolateFile;
+      return client;
+    }catch(err){
+      console.error(err);client=null;
+      apiStatus("bad","Connection Failed","Audio server temporarily unreachable. Retrying is automatic — please wait a moment and try again.");
+      $("removeBtn").disabled=true;$("enhanceBtn").disabled=true;$("isolateBtn").disabled=true;
+      throw err;
+    }finally{connectingPromise=null;}
+  })();
+  return connectingPromise;
+}
+</script>
+<script>
+(function(){
+  "use strict";
+
+
+
+
+
+/* ---------- CLEAN realtime visual controller ---------- */
+(function(){
+  const cfg={
+    remove:{p:"rgbPercent",state:"rgbStageName",live:"rgbLiveState",eta:"rgbEta",time:"rgbElapsed",
+            bigP:"bigRemovePercent",bigS:"bigRemoveState",bigSub:"bigRemoveSub",bigLive:"bigRemoveLive",bigEta:"bigRemoveEta",bigTime:"bigRemoveTime",
+            labels:["Analyzing waveform","Removing silent sections","Rebuilding clean audio"]},
+    enhance:{p:"enhancePercent",state:"enhanceStageName",live:"enhanceLiveState",eta:"enhanceEta",time:"enhanceElapsed",
+            bigP:"bigEnhancePercent",bigS:"bigEnhanceState",bigSub:"bigEnhanceSub",bigLive:"bigEnhanceLive",bigEta:"bigEnhanceEta",bigTime:"bigEnhanceTime",
+            labels:["Analyzing voice","Cleaning background noise","Enhancing speech"]},
+    isolate:{p:"isolatePercent",state:"isolateStageName",live:"isolateLiveState",eta:"isolateEta",time:"isolateElapsed",
+            bigP:"bigIsolatePercent",bigS:"bigIsolateState",bigSub:"bigIsolateSub",bigLive:"bigIsolateLive",bigEta:"bigIsolateEta",bigTime:"bigIsolateTime",
+            labels:["Analyzing audio stems","Separating voice","Extracting BGM"]}
+  };
+  function fillDots(){
+    document.querySelectorAll(".ai-progress-dots").forEach(el=>{
+      if(el.childElementCount)return;
+      el.innerHTML=Array.from({length:180},()=>"<i></i>").join("");
+    });
+  }
+  function bind(kind){
+    const c=cfg[kind]; if(!c)return;
+    const els=Object.fromEntries(Object.entries(c).map(([k,id])=>[k,$(id)]));
+    function sync(){
+      const n=Math.max(0,Math.min(100,parseInt(els.p?.textContent||"0",10)||0));
+      const stage=(els.state?.textContent||"READY").trim();
+      els.bigP&&(els.bigP.textContent=n+"%");
+      els.bigS&&(els.bigS.textContent=n>=100?"COMPLETED":(stage||"PROCESSING"));
+      els.bigLive&&(els.bigLive.textContent=els.live?.textContent==="LIVE"?"●":"○");
+      els.bigEta&&(els.bigEta.textContent=els.eta?.textContent||"—");
+      els.bigTime&&(els.bigTime.textContent=els.time?.textContent||"0s");
+      els.bigSub&&(els.bigSub.textContent=n>=100?"Audio is ready":c.labels[n<34?0:n<72?1:2]);
+    }
+    [els.p,els.state,els.live,els.eta,els.time].forEach(el=>{
+      if(el)new MutationObserver(sync).observe(el,{childList:true,characterData:true,subtree:true});
+    });
+    sync();
+  }
+  function init(){
+    fillDots();
+    bind("remove");bind("enhance");bind("isolate");
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);else init();
+})();
+
+  /* ---------- Theme toggle (independent, purely presentational) ---------- */
+  try{
+    var root = document.documentElement;
+    var savedTheme = localStorage.getItem("silence_remove_theme");
+    root.setAttribute("data-theme", savedTheme === "dark" ? "dark" : "light");
+    var themeBtn = document.getElementById("themeToggle");
+    if(themeBtn){
+      themeBtn.addEventListener("click", function(){
+        var next = root.getAttribute("data-theme") === "light" ? "dark" : "light";
+        root.setAttribute("data-theme", next);
+        try{ localStorage.setItem("silence_remove_theme", next); }catch(e){}
+      });
+    }
+  }catch(e){ console.warn("theme toggle skipped", e); }
+
+  /* ---------- Hero waveform bars (decorative, one-time entrance) ---------- */
+  try{
+    var heroWave = document.getElementById("heroWave");
+    if(heroWave){
+      var bars = 44, html = "";
+      for(var i=0;i<bars;i++){
+        var h = 16 + Math.round(Math.abs(Math.sin(i*0.5))*58 + Math.abs(Math.sin(i*1.7))*20);
+        html += '<span style="--h:'+h+'%;animation-delay:'+(i*13)+'ms"></span>';
+      }
+      heroWave.innerHTML = html;
+    }
+  }catch(e){ console.warn("hero wave skipped", e); }
+  try{
+    var hw = document.getElementById("heroWave");
+    if(hw && "IntersectionObserver" in window){
+      new IntersectionObserver(function(en){ hw.classList.toggle("paused", !en[0].isIntersecting); }).observe(hw);
+    }
+  }catch(e){}
+
+  /* ---------- Waveform preview on upload (additive, read-only visual) ---------- */
+  function paintWaveform(canvas, file){
+    if(!canvas || !file) return;
+    try{
+      var decode = window.__decodePreview;
+      if(!decode) return;
+      decode(file).then(function(buffer){
+        if(!buffer) return;
+        try{
+          canvas.classList.add("show");
+          var raw = buffer.getChannelData(0);
+          var samples = 90;
+          var block = Math.max(1, Math.floor(raw.length / samples));
+          var peaks = [];
+          for(var i=0;i<samples;i++){
+            var start = i*block, sum = 0, count = 0;
+            for(var j=0;j<block && (start+j)<raw.length;j++){ sum += Math.abs(raw[start+j]); count++; }
+            peaks.push(count ? sum/count : 0);
+          }
+          var max = Math.max.apply(null, peaks.concat([0.001]));
+          var dpr = window.devicePixelRatio || 1;
+          var cw = canvas.clientWidth || 300, ch = canvas.clientHeight || 40;
+          canvas.width = cw*dpr; canvas.height = ch*dpr;
+          var g = canvas.getContext("2d");
+          g.setTransform(dpr,0,0,dpr,0,0);
+          g.clearRect(0,0,cw,ch);
+          var style = getComputedStyle(document.documentElement);
+          var c1 = (style.getPropertyValue("--signal")||"#e8a13d").trim() || "#e8a13d";
+          var c2 = (style.getPropertyValue("--wave")||"#57c2a8").trim() || "#57c2a8";
+          var grad = g.createLinearGradient(0,0,cw,0);
+          grad.addColorStop(0, c1); grad.addColorStop(1, c2);
+          g.fillStyle = grad;
+          var barW = cw/samples;
+          peaks.forEach(function(p, idx){
+            var norm = p/max;
+            var barH = Math.max(2, norm*ch*0.9);
+            g.fillRect(idx*barW+1, (ch-barH)/2, Math.max(1,barW-2), barH);
+          });
+        }catch(e){ console.warn("waveform draw skipped", e); }
+      });
+    }catch(e){ console.warn("waveform preview skipped", e); }
+  }
+
+  function wireWavePreview(inputId, zoneId, canvasId){
+    var input = document.getElementById(inputId);
+    var zone = document.getElementById(zoneId);
+    var canvas = document.getElementById(canvasId);
+    if(!canvas) return;
+    if(input) input.addEventListener("change", function(e){
+      var f = e.target.files && e.target.files[0];
+      if(f) paintWaveform(canvas, f);
+    });
+    if(zone) zone.addEventListener("drop", function(e){
+      var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+      if(f) paintWaveform(canvas, f);
+    });
+  }
+  wireWavePreview("fileInput","dropZone","removeWave");
+  wireWavePreview("enhanceFileInput","enhanceDropZone","enhanceWave");
+  wireWavePreview("isolateFileInput","isolateDropZone","isolateWave");
+
+  /* ---------- Mirror text percent onto enhance/isolate meter bars ---------- */
+  function mirrorMeter(percentId, fillId){
+    var percentEl = document.getElementById(percentId);
+    var fillEl = document.getElementById(fillId);
+    if(!percentEl || !fillEl) return;
+    var sync = function(){
+      var val = parseInt(percentEl.textContent, 10);
+      if(!isNaN(val)) fillEl.style.width = Math.max(0, Math.min(100, val)) + "%";
+    };
+    sync();
+    try{
+      var obs = new MutationObserver(sync);
+      obs.observe(percentEl, { childList:true, characterData:true, subtree:true });
+    }catch(e){ console.warn("meter mirror skipped", e); }
+  }
+  mirrorMeter("enhancePercent","enhanceFill");
+  mirrorMeter("isolatePercent","isolateFill");
+
+})();
+</script>
+</body>
+</html>
