@@ -7,24 +7,20 @@ permissions:
 jobs:
   diag:
     runs-on: ubuntu-latest
+    env:
+      T: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      A: d33504e28650ba4603dc9cafc46d0ec9
     steps:
-      - name: Probe after wait
+      - name: Revert fail_open to true
         run: |
           set +e
           O=/tmp/o.txt
           : > "$O"
-          sleep 150
-          for u in "https://8c04e99c.offex-mail.pages.dev/ping" "https://8c04e99c.offex-mail.pages.dev/api/status" "https://offex-mail.pages.dev/ping" "https://offex-mail.pages.dev/api/status"; do
-            echo "===== $u =====" >> "$O"
-            code=$(curl -s -o /tmp/b -w "%{http_code}" --max-time 60 "$u")
-            echo "status=$code bytes=$(wc -c </tmp/b) ctype=$(curl -s -o /dev/null -w '%{content_type}' --max-time 60 "$u")" >> "$O"
-            head -c 220 /tmp/b >> "$O"
-            echo >> "$O"
-          done
-          head -c 8000 "$O" > /tmp/iss.txt
+          curl -s -X PATCH --max-time 30 -H "Authorization: Bearer $T" -H "Content-Type: application/json" "https://api.cloudflare.com/client/v4/accounts/$A/pages/projects/offex-mail" -d '{"deployment_configs":{"production":{"fail_open":true},"preview":{"fail_open":true}}}' | python3 -c "import sys,json;d=json.load(sys.stdin);r=(d.get('result') or {}).get('deployment_configs') or {};print('ok',d.get('success'));print('prod fail_open',(r.get('production') or {}).get('fail_open'));print('preview fail_open',(r.get('preview') or {}).get('fail_open'))" >> "$O" 2>&1
+          head -c 3000 "$O" > /tmp/iss.txt
       - name: Issue
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh issue create --repo "$GITHUB_REPOSITORY" --title "cf-probe3 results" --body-file /tmp/iss.txt
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "cf-revert results" --body-file /tmp/iss.txt
