@@ -1,0 +1,64 @@
+# Offex Mail - Cloudflare Pages redirects
+# Served at https://tempmail.offexmail.online/_redirects
+
+# --- Removed service pages -> /services (301) ---
+/youtube   /services  301
+/gmail     /services  301
+/google    /services  301
+/whatsapp  /services  301
+/telegram  /services  301
+
+# --- Language variants of removed service pages -> language hub (301) ---
+/hi/youtube   /hi  301
+/hi/gmail     /hi  301
+/hi/google    /hi  301
+/hi/whatsapp  /hi  301
+/hi/telegram  /hi  301
+/es/youtube   /es  301
+/es/gmail     /es  301
+/es/google    /es  301
+/es/whatsapp  /es  301
+/es/telegram  /es  301
+/fr/youtube   /fr  301
+/fr/gmail     /fr  301
+/fr/google    /fr  301
+/fr/whatsapp  /fr  301
+/fr/telegram  /fr  301
+/de/youtube   /de  301
+/de/gmail     /de  301
+/de/google    /de  301
+/de/whatsapp  /de  301
+/de/telegram  /de  301
+/pt/youtube   /pt  301
+/pt/gmail     /pt  301
+/pt/google    /pt  301
+/pt/whatsapp  /pt  301
+/pt/telegram  /pt  301
+/ru/youtube   /ru  301
+/ru/gmail     /ru  301
+/ru/google    /ru  301
+/ru/whatsapp  /ru  301
+/ru/telegram  /ru  301
+/ar/youtube   /ar  301
+/ar/gmail     /ar  301
+/ar/google    /ar  301
+/ar/whatsapp  /ar  301
+/ar/telegram  /ar  301
+/zh/youtube   /zh  301
+/zh/gmail     /zh  301
+/zh/google    /zh  301
+/zh/whatsapp  /zh  301
+/zh/telegram  /zh  301
+/ja/youtube   /ja  301
+/ja/gmail     /ja  301
+/ja/google    /ja  301
+/ja/whatsapp  /ja  301
+/ja/telegram  /ja  301
+
+# Note: Cloudflare Pages does not support a true catch-all rule that serves
+# a custom 404 response body with 404 status for unmatched paths (for example
+# a bare "/* /404.html 404" line). Pages always returns its own 404 for
+# unmatched routes, so a catch-all fallback to the homepage is not possible
+# here. If a soft-404 fallback is wanted, deploy a custom /404.html instead,
+# or use a Cloudflare rule / Worker at the edge. The rules above therefore
+# intentionally end after the explicit redirects.

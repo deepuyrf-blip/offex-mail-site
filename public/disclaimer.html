@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Disclaimer — Offex Mail</title>
+<meta name="description" content="Offex Mail's general disclaimer: an independent service with no third-party affiliation, no professional advice, third-party links, advertising disclosure and limits on accuracy.">
+<link rel="canonical" href="https://tempmail.offexmail.online/disclaimer">
+<meta name="robots" content="index,follow">
+<meta name="theme-color" content="#6d4dff">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%236d4dff'/%3E%3Cpath d='M22 34h56v32H22z' fill='none' stroke='white' stroke-width='6' stroke-linejoin='round'/%3E%3Cpath d='M24 36l26 20 26-20' fill='none' stroke='white' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ffffff;
+  --bg-soft:#f5f4fb;
+  --card:#ffffff;
+  --card-2:#faf9ff;
+  --text:#17161f;
+  --muted:#5b5870;
+  --border:#e7e5f2;
+  --accent:#6d4dff;
+  --accent-2:#a06bff;
+  --accent-soft:#efeaff;
+  --shadow:0 1px 2px rgba(20,16,50,.05), 0 10px 30px rgba(20,16,50,.06);
+  --radius:16px;
+  --maxw:1080px;
+}
+[data-theme="dark"]{
+  --bg:#0d0c14;
+  --bg-soft:#131120;
+  --card:#171525;
+  --card-2:#1c1a2e;
+  --text:#f3f2f9;
+  --muted:#a8a4c2;
+  --border:#2a2744;
+  --accent:#8f76ff;
+  --accent-2:#bda2ff;
+  --accent-soft:#241f3d;
+  --shadow:0 1px 2px rgba(0,0,0,.45), 0 12px 34px rgba(0,0,0,.5);
+}
+*{box-sizing:border-box}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:"Inter",system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+  font-size:16.5px;
+  line-height:1.72;
+  -webkit-font-smoothing:antialiased;
+  transition:background .25s ease,color .25s ease;
+}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 20px}
+
+/* ---------- header ---------- */
+header.site{
+  position:sticky;top:0;z-index:50;
+  background:color-mix(in srgb,var(--bg) 86%,transparent);
+  backdrop-filter:saturate(150%) blur(10px);
+  border-bottom:1px solid var(--border);
+}
+.hdr{display:flex;align-items:center;gap:14px;min-height:64px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.12rem;color:var(--text);letter-spacing:-.02em}
+.brand:hover{text-decoration:none}
+.brand .logo{display:block;flex:none}
+nav.mainnav{display:flex;gap:6px;margin-left:6px;flex-wrap:wrap}
+nav.mainnav a{
+  color:var(--muted);font-weight:600;font-size:.95rem;padding:7px 11px;border-radius:10px;
+}
+nav.mainnav a:hover{color:var(--text);background:var(--accent-soft);text-decoration:none}
+.hdr-tools{display:flex;align-items:center;gap:8px;margin-left:auto}
+select.langsel{
+  appearance:none;-webkit-appearance:none;
+  background:var(--card);color:var(--text);border:1px solid var(--border);
+  border-radius:10px;padding:7px 30px 7px 11px;font:inherit;font-size:.9rem;font-weight:600;cursor:pointer;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236d4dff' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 9px center;
+}
+#themeBtn{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:40px;height:40px;border-radius:10px;cursor:pointer;
+  background:var(--card);color:var(--text);border:1px solid var(--border);
+  font-size:1.05rem;line-height:1;transition:transform .15s ease,background .2s ease;
+}
+#themeBtn:hover{transform:translateY(-1px)}
+#themeBtn .ic-moon{display:none}
+[data-theme="dark"] #themeBtn .ic-sun{display:none}
+[data-theme="dark"] #themeBtn .ic-moon{display:inline}
+
+/* ---------- page head ---------- */
+main{padding:34px 0 20px}
+.crumbs{font-size:.86rem;color:var(--muted);margin:0 0 14px}
+.crumbs a{color:var(--muted)}
+.pagehead{margin:0 0 6px}
+h1{
+  font-size:clamp(1.72rem,1.1rem + 2.4vw,2.5rem);
+  line-height:1.16;letter-spacing:-.025em;margin:.1em 0 .35em;font-weight:800;
+}
+.grad-text{
+  background:linear-gradient(100deg,var(--accent),var(--accent-2));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.lede{font-size:1.06rem;color:var(--muted);max-width:72ch;margin:0 0 8px}
+.updated{display:inline-block;font-size:.84rem;color:var(--muted);background:var(--accent-soft);
+  border:1px solid var(--border);border-radius:999px;padding:4px 12px;margin:6px 0 4px;font-weight:600}
+
+/* ---------- content card ---------- */
+.card{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:clamp(20px,1.2rem + 1.6vw,40px);margin:20px 0 34px;
+}
+.card > *:first-child{margin-top:0}
+.card > *:last-child{margin-bottom:0}
+h2{
+  font-size:1.26rem;line-height:1.3;letter-spacing:-.015em;font-weight:750;
+  margin:1.9em 0 .5em;padding-top:.2em;
+}
+h2:first-of-type{margin-top:0}
+h3{font-size:1.04rem;font-weight:700;margin:1.3em 0 .35em}
+p{margin:0 0 1.02em}
+ul,ol{margin:0 0 1.1em;padding-left:1.25em}
+li{margin:.3em 0}
+code,kbd,pre{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+code{background:var(--bg-soft);border:1px solid var(--border);border-radius:6px;padding:.08em .4em;font-size:.88em}
+strong{font-weight:700}
+hr{border:0;border-top:1px solid var(--border);margin:1.8em 0}
+.note{
+  background:var(--card-2);border:1px solid var(--border);border-left:4px solid var(--accent);
+  border-radius:12px;padding:14px 16px;margin:1.2em 0;color:var(--text);
+}
+.note p:last-child{margin-bottom:0}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin:1.2em 0}
+.tile{background:var(--card-2);border:1px solid var(--border);border-radius:12px;padding:15px 16px}
+.tile h3{margin:0 0 .3em;font-size:1rem}
+.tile p{margin:0;font-size:.94rem;color:var(--muted)}
+.toc{background:var(--card-2);border:1px solid var(--border);border-radius:12px;padding:14px 18px;margin:1.1em 0}
+.toc p{margin:0 0 .4em;font-weight:700;font-size:.9rem;letter-spacing:.02em;text-transform:uppercase;color:var(--muted)}
+.toc ul{columns:2;column-gap:26px;margin:0;padding-left:1.1em}
+@media(max-width:560px){.toc ul{columns:1}}
+
+/* ---------- contact form ---------- */
+form.cform{display:grid;gap:13px;margin:1.1em 0 0}
+.cform label{font-weight:650;font-size:.93rem;display:block;margin-bottom:5px}
+.cform input,.cform textarea{
+  width:100%;background:var(--bg-soft);color:var(--text);border:1px solid var(--border);
+  border-radius:10px;padding:11px 13px;font:inherit;font-size:.97rem;
+}
+.cform textarea{min-height:130px;resize:vertical}
+.cform input:focus,.cform textarea:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:transparent}
+.cform button{
+  justify-self:start;background:linear-gradient(100deg,var(--accent),var(--accent-2));
+  color:#fff;border:0;border-radius:11px;padding:12px 22px;font:inherit;font-weight:700;cursor:pointer;
+  box-shadow:0 8px 22px rgba(109,77,255,.32);
+}
+.cform button:hover{filter:brightness(1.05)}
+.btn{
+  display:inline-block;background:linear-gradient(100deg,var(--accent),var(--accent-2));
+  color:#fff;border-radius:11px;padding:11px 20px;font-weight:700;box-shadow:0 8px 22px rgba(109,77,255,.3);
+}
+.btn:hover{text-decoration:none;filter:brightness(1.05)}
+.btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--border);box-shadow:none}
+.btnrow{display:flex;gap:10px;flex-wrap:wrap;margin:1.3em 0 .4em}
+
+/* ---------- footer ---------- */
+footer.site{
+  border-top:1px solid var(--border);background:var(--bg-soft);margin-top:20px;padding:30px 0 34px;
+}
+.foot-top{display:flex;gap:16px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
+.foot-brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:-.02em}
+.foot-brand .logo{width:28px;height:28px}
+.foot-tag{color:var(--muted);font-size:.92rem;max-width:46ch;margin:8px 0 0}
+.foot-links{display:flex;flex-wrap:wrap;gap:6px 4px;align-items:center;font-size:.94rem;font-weight:600}
+.foot-links a{color:var(--muted);padding:4px 6px;border-radius:8px}
+.foot-links a:hover{color:var(--text);background:var(--accent-soft);text-decoration:none}
+.foot-links .sep{color:var(--border);padding:0 1px}
+.foot-bottom{margin-top:20px;padding-top:16px;border-top:1px solid var(--border);
+  color:var(--muted);font-size:.85rem;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+
+/* ---------- mobile ---------- */
+@media(max-width:640px){
+  body{font-size:16px}
+  .hdr{min-height:58px;gap:10px}
+  nav.mainnav{order:3;width:100%;margin:0 0 8px;gap:4px}
+  nav.mainnav a{padding:6px 9px;font-size:.9rem}
+  .hdr-tools{margin-left:auto}
+  .tile{padding:13px 14px}
+  .foot-top{flex-direction:column}
+}
+@media(max-width:380px){
+  .wrap{padding:0 14px}
+  h1{font-size:1.6rem}
+  .foot-links{font-size:.88rem}
+}
+</style>
+</head>
+<body>
+<header class="site">
+  <div class="wrap hdr">
+    <a class="brand" href="/" aria-label="Offex Mail home"><svg class="logo" width="34" height="34" viewBox="0 0 100 100" role="img" aria-label="Offex Mail logo"><rect width="100" height="100" rx="24" fill="#6d4dff"/><path d="M22 34h56v32H22z" fill="none" stroke="#ffffff" stroke-width="6" stroke-linejoin="round"/><path d="M24 36l26 20 26-20" fill="none" stroke="#ffffff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Offex Mail</span></a>
+    <nav class="mainnav" aria-label="Primary">
+      <a href="/">Home</a>
+      <a href="/services">Services</a>
+    </nav>
+    <div class="hdr-tools">
+      <label class="sr-only" for="langSel">Language</label>
+      <select class="langsel" id="langSel" aria-label="Select language">
+      <option value="en">English</option>
+      <option value="hi">हिन्दी</option>
+      <option value="es">Español</option>
+      <option value="fr">Français</option>
+      <option value="de">Deutsch</option>
+      <option value="pt">Português</option>
+      <option value="ru">Русский</option>
+      <option value="ar">العربية</option>
+      <option value="zh">中文</option>
+      <option value="ja">日本語</option>
+      </select>
+      <button id="themeBtn" type="button" aria-label="Switch to dark mode"><span class="ic-sun" aria-hidden="true">☀️</span><span class="ic-moon" aria-hidden="true">🌙</span></button>
+    </div>
+  </div>
+</header>
+<main>
+  <div class="wrap">
+    <p class="crumbs"><a href="/">Home</a> › <span>Disclaimer</span></p>
+    <div class="pagehead">
+      <h1><span class="grad-text">Disclaimer</span></h1>
+      <p class="lede">Important notes on affiliation, advice, third-party links and advertising on Offex Mail.</p>
+    </div>
+    <article class="card">
+
+<h2>General disclaimer</h2>
+<p>The information and tools on Offex Mail (offexmail.online and tempmail.offexmail.online) are provided for general informational and utility purposes only. We make no warranty about the completeness, accuracy, reliability or availability of the site or its content.</p>
+
+<h2>Independent service &mdash; no affiliation</h2>
+<div class="note">
+  <p>Offex Mail is an independent service. It is <strong>not affiliated with, endorsed by, sponsored by, or connected to</strong> any third-party brand, company or product whose name may appear on this site.</p>
+</div>
+<p>Names such as Google, Gmail, YouTube, Meta, Instagram, WhatsApp, Telegram, Discord and ElevenLabs may appear on our pages solely to describe how a disposable inbox can be used when signing up for those services, or to explain a common use case. All such names, logos and trademarks are the property of their respective owners and are used only for identification and descriptive purposes. Their appearance does not imply any partnership or endorsement in either direction.</p>
+
+<h2>No legal, financial or professional advice</h2>
+<p>Nothing on this site constitutes legal, financial, medical, tax or other professional advice, and it should not be relied upon as such. Where the site describes privacy, data-protection or consumer rights, that information is general in nature and may not reflect the law that applies to your situation. For advice about your specific circumstances, consult a qualified professional in your jurisdiction.</p>
+
+<h2>Use of disposable email</h2>
+<p>A temporary inbox is public by address and expires quickly. It is intended for throwaway signups, trials and verification messages &mdash; not for confidential or important accounts. You are responsible for how you use the Service, and you should never rely on a disposable inbox to receive or store anything you need to keep.</p>
+
+<h2>Third-party links</h2>
+<p>This site may link to external websites we do not control. Such links are for convenience only, and including one does not imply endorsement. We are not responsible for the content or practices of any third-party site; visiting one is at your own risk.</p>
+
+<h2>Advertising disclosure</h2>
+<p>Offex Mail is free to use and is supported in part by advertising. We may display ads served by third-party networks such as Google AdSense, and we may earn revenue when those ads are shown or clicked. Advertisers do not influence our content, and advertising does not constitute an endorsement of any product or service. Third-party ad networks may use cookies; see our <a href="/privacy">Privacy Policy</a> for details and opt-out options.</p>
+
+<h2>Accuracy of information</h2>
+<p>Details on this site &mdash; including features, supported formats, retention windows and third-party policies &mdash; can change without notice. We do not guarantee that any information is accurate or up to date, and we may change or remove content at any time.</p>
+
+<h2>Limitation of liability</h2>
+<p>To the maximum extent permitted by law, Offex Mail accepts no liability for loss or damage arising from use of, or reliance on, this site or its content. Your use of the site is at your own risk, and the Service is provided &ldquo;as is&rdquo;. See our <a href="/terms">Terms of Service</a> for the full terms.</p>
+
+<h2>Contact</h2>
+<p>If you believe any content on this site is inaccurate or misattributed, please contact <a href="mailto:support@offexmail.online">support@offexmail.online</a> and we will review it.</p>
+<p><em>Last updated: 2 October 2026.</em></p>
+
+    </article>
+  </div>
+</main>
+<footer class="site">
+  <div class="wrap">
+    <div class="foot-top">
+      <div>
+        <div class="foot-brand"><svg class="logo" width="34" height="34" viewBox="0 0 100 100" role="img" aria-label="Offex Mail logo"><rect width="100" height="100" rx="24" fill="#6d4dff"/><path d="M22 34h56v32H22z" fill="none" stroke="#ffffff" stroke-width="6" stroke-linejoin="round"/><path d="M24 36l26 20 26-20" fill="none" stroke="#ffffff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Offex Mail</span></div>
+        <p class="foot-tag">Free disposable inboxes on our own domain, offexmail.online. Instant, no signup — keep your real inbox clean.</p>
+      </div>
+      <nav class="foot-links" aria-label="Footer">
+        <a href="/privacy">Privacy Policy</a><span class="sep">·</span><a href="/about">About</a><span class="sep">·</span><a href="/contact">Contact</a><span class="sep">·</span><a href="/terms">Terms of Service</a><span class="sep">·</span><a href="/disclaimer">Disclaimer</a>
+      </nav>
+    </div>
+      <div class="foot-updated">Last updated: 2 October 2026</div>
+    <div class="foot-bottom">
+      <span>© 2026 Offex Mail — offexmail.online</span>
+      <span>Not affiliated with any third-party brand. Use disposable inboxes responsibly.</span>
+    </div>
+  </div>
+</footer>
+<script>
+(function(){
+  var root=document.documentElement;
+  try{var t=localStorage.getItem('offex-theme');if(t){root.setAttribute('data-theme',t);}}catch(e){}
+  var btn=document.getElementById('themeBtn');
+  if(btn){btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme')==='dark'?'light':'dark';
+    root.setAttribute('data-theme',cur);
+    try{localStorage.setItem('offex-theme',cur);}catch(e){}
+    btn.setAttribute('aria-label',cur==='dark'?'Switch to light mode':'Switch to dark mode');
+  });}
+  var sel=document.getElementById('langSel');
+  if(sel){sel.addEventListener('change',function(){
+    if(sel.value&&sel.value!=='en'){location.href='/'+sel.value+'/';}
+  });}
+})();
+</script>
+</body>
+</html>
