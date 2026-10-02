@@ -5,29 +5,25 @@ permissions:
   contents: read
   issues: write
 jobs:
-  d:
+  v:
     runs-on: ubuntu-latest
     steps:
-      - name: Test backend
+      - name: Verify live
         run: |
           set +e
           O=/tmp/o.txt
           : > "$O"
-          B=https://factblink514-compiled.hf.space
-          echo "== /health ==" >> "$O"
-          curl -s --max-time 60 "$B/health" -w "\nHTTP %{http_code}\n" >> "$O" 2>&1
-          echo "== /api/auth empty code ==" >> "$O"
-          curl -s -X POST --max-time 60 -H 'content-type: application/json' -d '{"code":""}' "$B/api/auth" -w "\nHTTP %{http_code}\n" >> "$O" 2>&1
-          echo "== /api/status no code ==" >> "$O"
-          curl -s --max-time 60 "$B/api/status" -w "\nHTTP %{http_code}\n" >> "$O" 2>&1
-          echo "== POST /api/inbox no code ==" >> "$O"
-          curl -s -X POST --max-time 60 -H 'content-type: application/json' -d '{}' "$B/api/inbox" -w "\nHTTP %{http_code}\n" >> "$O" 2>&1
-          echo "== CORS preflight ==" >> "$O"
-          curl -s -X OPTIONS --max-time 60 -H 'Origin: https://mytemp-mail.online' -H 'Access-Control-Request-Method: POST' -H 'Access-Control-Request-Headers: content-type' -D - "$B/api/inbox" -o /dev/null >> "$O" 2>&1
-          head -c 6000 "$O" > /tmp/iss.txt
+          sleep 30
+          for u in "https://mytemp-mail.online/" "https://offex-mail.pages.dev/" "https://offex-mail.pages.dev/api/status"; do
+            echo "== $u ==" >> "$O"
+            code=$(curl -s -L -o /tmp/b -w "%{http_code}" --max-time 60 "$u")
+            echo "status=$code bytes=$(wc -c </tmp/b) api_base_hits=$(grep -c 'factblink514-compiled' /tmp/b)" >> "$O"
+            grep -o 'Error 1046' /tmp/b | head -1 >> "$O"
+          done
+          head -c 2500 "$O" > /tmp/iss.txt
       - name: Issue
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh issue create --repo "$GITHUB_REPOSITORY" --title "hf-diag results" --body-file /tmp/iss.txt
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "live-verify results" --body-file /tmp/iss.txt
