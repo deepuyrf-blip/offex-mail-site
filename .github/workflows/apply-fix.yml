@@ -1,0 +1,20 @@
+name: apply-fix
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch index.html and commit
+        run: |
+          set -e
+          echo 'cCA9ICJwdWJsaWMvaW5kZXguaHRtbCIKcyA9IG9wZW4ocCwgZW5jb2Rpbmc9InV0Zi04IikucmVhZCgpCm9sZCA9ICcnJyAgZnVuY3Rpb24gYXBpKHBhdGgsIG9wdHMpewogICAgcmV0dXJuIGZldGNoKCIvYXBpIiArIHBhdGgsIE9iamVjdC5hc3NpZ24oeyBoZWFkZXJzOnsgImNvbnRlbnQtdHlwZSI6ImFwcGxpY2F0aW9uL2pzb24iIH0gfSwgb3B0c3x8e30pKQogICAgICAudGhlbihmdW5jdGlvbihyKXsgcmV0dXJuIHIuanNvbigpLnRoZW4oZnVuY3Rpb24oail7IGlmKCFyLm9rKSB0aHJvdyBuZXcgRXJyb3IoaiAmJiBqLmVycm9yID8gai5lcnJvciA6ICgiSFRUUCAiK3Iuc3RhdHVzKSk7IHJldHVybiBqOyB9KTsgfSk7CiAgfScnJwpuZXcgPSAnJycgIHZhciBBUElfQkFTRSA9ICJodHRwczovL2ZhY3RibGluazUxNC1jb21waWxlZC5oZi5zcGFjZSI7CiAgZnVuY3Rpb24gYXBpKHBhdGgsIG9wdHMpewogICAgcmV0dXJuIGZldGNoKEFQSV9CQVNFICsgIi9hcGkiICsgcGF0aCwgT2JqZWN0LmFzc2lnbih7IGhlYWRlcnM6eyAiY29udGVudC10eXBlIjoiYXBwbGljYXRpb24vanNvbiIgfSB9LCBvcHRzfHx7fSkpCiAgICAgIC50aGVuKGZ1bmN0aW9uKHIpeyByZXR1cm4gci50ZXh0KCkudGhlbihmdW5jdGlvbih0eHQpeyB2YXIgaj1udWxsOyB0cnl7IGogPSB0eHQgPyBKU09OLnBhcnNlKHR4dCkgOiBudWxsOyB9Y2F0Y2goZSl7fSBpZighci5vaykgdGhyb3cgbmV3IEVycm9yKGogJiYgai5lcnJvciA/IGouZXJyb3IgOiAoIkhUVFAgIityLnN0YXR1cykpOyBpZihqPT09bnVsbCkgdGhyb3cgbmV3IEVycm9yKCJFbXB0eSByZXNwb25zZSBmcm9tIHNlcnZlciAoSFRUUCAiK3Iuc3RhdHVzKyIpIik7IHJldHVybiBqOyB9KTsgfSk7CiAgfScnJwphc3NlcnQgb2xkIGluIHMsICJvbGQgYXBpIGJsb2NrIG5vdCBmb3VuZCIKb3BlbihwLCAidyIsIGVuY29kaW5nPSJ1dGYtOCIpLndyaXRlKHMucmVwbGFjZShvbGQsIG5ldywgMSkpCnByaW50KCJwYXRjaGVkIE9LIikK' | base64 -d > /tmp/p.py
+          python3 /tmp/p.py
+          git config user.email "github-actions@users.noreply.github.com"
+          git config user.name "github-actions"
+          git add public/index.html
+          git commit -m "fix: call backend directly (Cloudflare Pages proxy not executing)" || echo "no changes"
+          git push
