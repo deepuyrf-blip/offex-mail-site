@@ -15,25 +15,24 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Deploy with explicit _routes.json then probe
+      - name: Ping test
         run: |
           set +e
           OUT=/tmp/probe.txt
           : > "$OUT"
-          echo '{"version":1,"include":["/api/*"],"exclude":[]}' > public/_routes.json
-          echo "== _routes.json written ==" >> "$OUT"; cat public/_routes.json >> "$OUT"; echo >> "$OUT"
-          echo "== deploy ==" >> "$OUT"
-          npx --yes wrangler@3 pages deploy public --project-name=offex-mail --branch=main >> "$OUT" 2>&1
-          echo "== probe GET /api/status ==" >> "$OUT"
-          curl -s -D - --max-time 60 "https://offex-mail.pages.dev/api/status" -o /tmp/b >> "$OUT" 2>&1
-          echo "bytes=$(wc -c < /tmp/b)" >> "$OUT"; echo "body:" >> "$OUT"; head -c 600 /tmp/b >> "$OUT"; echo >> "$OUT"
-          echo "== probe POST /api/inbox ==" >> "$OUT"
-          curl -s -D - --max-time 60 -X POST -H 'content-type: application/json' -d '{}' "https://offex-mail.pages.dev/api/inbox" -o /tmp/c >> "$OUT" 2>&1
-          echo "bytes=$(wc -c < /tmp/c)" >> "$OUT"; echo "body:" >> "$OUT"; head -c 600 /tmp/c >> "$OUT"; echo >> "$OUT"
+          printf 'export function onRequest(){ return new Response("PONG_OK_%s", {headers:{"content-type":"text/plain"}}); }' "$(date +%s)" > functions/ping.js
+          echo '{"version":1,"include":["/ping","/api/*"],"exclude":[]}' > public/_routes.json
+          npx --yes wrangler@3 pages deploy public --project-name=offex-mail --branch=main --commit-dirty=true >> "$OUT" 2>&1
+          echo "== GET /ping ==" >> "$OUT"
+          curl -s -D - --max-time 60 "https://offex-mail.pages.dev/ping" -o /tmp/p >> "$OUT" 2>&1
+          echo "bytes=$(wc -c </tmp/p) body=$(cat /tmp/p | head -c 200)" >> "$OUT"
+          echo "== GET /api/status ==" >> "$OUT"
+          curl -s -D - --max-time 60 "https://offex-mail.pages.dev/api/status" -o /tmp/s >> "$OUT" 2>&1
+          echo "bytes=$(wc -c </tmp/s) body=$(head -c 200 /tmp/s)" >> "$OUT"
           head -c 14000 "$OUT" > /tmp/issue.txt
       - name: Post results as an issue
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh issue create --repo "$GITHUB_REPOSITORY" --title "probe-api routesfix results" --body-file /tmp/issue.txt
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "probe-api ping results" --body-file /tmp/issue.txt
