@@ -7,30 +7,21 @@ permissions:
 jobs:
   diag:
     runs-on: ubuntu-latest
-    env:
-      T: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      A: d33504e28650ba4603dc9cafc46d0ec9
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - name: Patch fail_open both envs + probe
+      - name: Read error page
         run: |
           set +e
           O=/tmp/o.txt
           : > "$O"
-          echo "== patch fail_open=false (both) ==" >> "$O"
-          curl -s -X PATCH --max-time 30 -H "Authorization: Bearer $T" -H "Content-Type: application/json" "https://api.cloudflare.com/client/v4/accounts/$A/pages/projects/offex-mail" -d '{"deployment_configs":{"production":{"fail_open":false},"preview":{"fail_open":false}}}' >> "$O" 2>&1
-          echo >> "$O"
-          printf 'export function onRequest(){ return new Response("PONG_OK", {headers:{"content-type":"text/plain"}}); }' > functions/ping.js
-          echo '{"version":1,"include":["/ping","/api/*"],"exclude":[]}' > public/_routes.json
-          echo "== redeploy =" >> "$O"
-          CLOUDFLARE_API_TOKEN="$T" CLOUDFLARE_ACCOUNT_ID="$A" npx --yes wrangler@3 pages deploy public --project-name=offex-mail --branch=main --commit-dirty=true >> "$O" 2>&1
-          sleep 8
-          echo "== probes (fail_open=false) ==" >> "$O"
-          for u in /ping /api/status; do
-            echo "$u -> status=$(curl -s -o /tmp/b -w '%{http_code}' --max-time 60 https://offex-mail.pages.dev$u) bytes=$(wc -c </tmp/b) body=$(head -c 250 /tmp/b)" >> "$O"
+          sleep 40
+          for u in /ping /api/status /; do
+            echo "===== $u =====" >> "$O"
+            curl -s -D - --max-time 60 "https://offex-mail.pages.dev$u" -o /tmp/b >> "$O" 2>&1
+            echo "" >> "$O"
+            echo "[body $(( $(wc -c < /tmp/b) )) bytes]" >> "$O"
+            grep -ioE "error [0-9]+|ray id[^<]*|<title>[^<]*|you have been|rate limit[^<]*|banned|origin[^<]*|function[^<]*" /tmp/b | head -12 >> "$O"
+            head -c 400 /tmp/b >> "$O"
+            echo >> "$O"
           done
           head -c 12000 "$O" > /tmp/iss.txt
       - name: Issue
@@ -38,4 +29,4 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh issue create --repo "$GITHUB_REPOSITORY" --title "cf-fix2 results" --body-file /tmp/iss.txt
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "cf-errpage results" --body-file /tmp/iss.txt
