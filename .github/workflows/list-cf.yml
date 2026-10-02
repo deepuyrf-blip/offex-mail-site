@@ -7,23 +7,7 @@ jobs:
     steps:
       - run: |
           B=https://tempmail.offexmail.online
-          echo "===== REQUIRED PAGES (AdSense) ====="
-          for p in privacy privacy-policy about contact terms disclaimer cookies refund; do
-            echo "/$p -> $(curl -s -o /dev/null -w '%{http_code}' --max-time 20 -L $B/$p)"
+          for p in "" "privacy" "about" "contact" "terms" "disclaimer" "cookies" "refund" "services" "instagram"; do
+            T=$(curl -sL --max-time 20 $B/$p | grep -o '<title>[^<]*</title>' | head -1)
+            echo "/$p  ==>  $T"
           done
-          echo "===== ADSENSE ON MAIL SITE ====="
-          H=$(curl -sL --max-time 25 $B/)
-          echo "adsense-script: $(printf '%s' "$H" | grep -c 'adsbygoogle')"
-          echo "ca-pub: $(printf '%s' "$H" | grep -c 'ca-pub-7802179098119853')"
-          echo "ads.txt: $(curl -s -o /dev/null -w '%{http_code}' --max-time 20 $B/ads.txt)"
-          echo "===== SEO BASICS ====="
-          echo "robots.txt: $(curl -s -o /dev/null -w '%{http_code}' --max-time 20 $B/robots.txt)"
-          echo "sitemap.xml: $(curl -s -o /dev/null -w '%{http_code}' --max-time 20 $B/sitemap.xml)"
-          echo "landing-sitemap: $(curl -s -o /dev/null -w '%{http_code}' --max-time 20 $B/landing-sitemap.xml)"
-          echo "===== AUDIO SITE ====="
-          A=https://offexmail.online
-          for p in privacy about contact terms; do
-            echo "audio /$p -> $(curl -s -o /dev/null -w '%{http_code}' --max-time 20 -L $A/$p)"
-          done
-          AH=$(curl -sL --max-time 25 $A/)
-          echo "audio adsense: $(printf '%s' "$AH" | grep -c 'adsbygoogle')"
