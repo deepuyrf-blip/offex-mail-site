@@ -6,7 +6,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          echo "YT-TITLE: $(curl -sL --max-time 25 https://tempmail.offexmail.online/youtube | grep -o '<title>[^<]*</title>' | head -1)"
-          echo "YT-CODE: $(curl -s -o /dev/null -w '%{http_code}' --max-time 25 https://tempmail.offexmail.online/youtube)"
-          echo "YT-BODY: $(curl -sL --max-time 25 https://tempmail.offexmail.online/youtube | grep -o '404\|Not Found\|YouTube' | head -3 | tr '\n' ',')"
-          echo "IG-TITLE: $(curl -sL --max-time 25 https://tempmail.offexmail.online/instagram | grep -o '<title>[^<]*</title>' | head -1)"
+          H=$(curl -sL --max-time 30 https://tempmail.offexmail.online/)
+          echo "SCRIPT-TAG: $(printf '%s' "$H" | grep -o 'i18n.js?v=[0-9]*')"
+          echo "EL-ATTR: $(printf '%s' "$H" | grep -c 'data-i18n=.el_head.')"
+          echo "SVC-ATTR: $(printf '%s' "$H" | grep -c 'data-i18n=.svc_head.')"
+          echo "SVC-ALL-ATTR: $(printf '%s' "$H" | grep -c 'data-i18n=.svc_all.')"
+          J=$(curl -sL --max-time 30 "https://tempmail.offexmail.online/i18n.js?v=5")
+          echo "JS-EL_HEAD-COUNT: $(printf '%s' "$J" | grep -o 'el_head' | wc -l)"
+          echo "JS-ES-EL_HEAD: $(printf '%s' "$J" | grep -o 'Correo temporal para ElevenLabs' | head -1)"
