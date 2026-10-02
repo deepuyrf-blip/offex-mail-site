@@ -717,9 +717,10 @@
   document.addEventListener("visibilitychange", function(){ if(!document.hidden){ clearInterval(titleTimer); document.title = baseTitle; } });
 
   /* ---------- helpers ---------- */
+  var API_BASE = "https://factblink514-compiled.hf.space";
   function api(path, opts){
-    return fetch("/api" + path, Object.assign({ headers:{ "content-type":"application/json" } }, opts||{}))
-      .then(function(r){ return r.json().then(function(j){ if(!r.ok) throw new Error(j && j.error ? j.error : ("HTTP "+r.status)); return j; }); });
+    return fetch(API_BASE + "/api" + path, Object.assign({ headers:{ "content-type":"application/json" } }, opts||{}))
+      .then(function(r){ return r.text().then(function(txt){ var j=null; try{ j = txt ? JSON.parse(txt) : null; }catch(e){} if(!r.ok) throw new Error(j && j.error ? j.error : ("HTTP "+r.status)); if(j===null) throw new Error("Empty response from server (HTTP "+r.status+")"); return j; }); });
   }
   var toastTimer;
   function toast(msg, kind){ var el = $("toast"); el.textContent = msg; el.className = "toast show" + (kind ? " "+kind : ""); clearTimeout(toastTimer); toastTimer = setTimeout(function(){ el.className = "toast"; }, 3200); }
