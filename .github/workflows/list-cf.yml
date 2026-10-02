@@ -6,19 +6,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
+          set +e
           B=https://mytemp-mail.online
-          echo "===== RAW STATS ====="
-          for p in "" "privacy"; do
-            curl -sL --max-time 30 "$B/$p" -o /tmp/page.html
-            echo "/$p bytes: $(wc -c </tmp/page.html)"
-            echo "/$p mytemp-mail.online: $(grep -o 'mytemp-mail\.online' /tmp/page.html | wc -l)"
-            echo "/$p offexmail.online: $(grep -o 'offexmail\.online' /tmp/page.html | wc -l)"
-            echo "/$p matches:"
-            grep -o '.\{18\}mytemp-mail\.online.\{4\}' /tmp/page.html
-            echo "/$p offexmail matches:"
-            grep -o '.\{18\}offexmail\.online.\{4\}' /tmp/page.html
+          echo "===== COUNTS (old,new,bytes,md5) ====="
+          for p in "" "instagram" "hi/instagram" "privacy" "services"; do
+            H=$(curl -sL --max-time 30 "$B/$p")
+            echo "/$p old=$(printf '%s' "$H" | grep -o 'offexmail\.online' | wc -l) new=$(printf '%s' "$H" | grep -o 'mytemp-mail\.online' | wc -l) bytes=$(printf '%s' "$H" | wc -c) md5=$(printf '%s' "$H" | md5sum | cut -c1-12)"
           done
+          echo "===== PRIVACY DETAIL ====="
+          curl -sL --max-time 30 "$B/privacy" -o /tmp/p.html
+          echo "support emails:"; grep -o 'support@[a-z.-]*' /tmp/p.html | sort | uniq -c
+          echo "code example:"; grep -o 'example <code>[^<]*' /tmp/p.html
+          echo "canonical:"; grep -o '<link rel="canonical" href="[^"]*"' /tmp/p.html
+          echo "===== CANONICALS ====="
+          for p in instagram hi/instagram; do echo "/$p $(curl -sL --max-time 30 "$B/$p" | grep -o '<link rel="canonical" href="[^"]*"' | head -1)"; done
           echo "===== TITLES ====="
-          for p in privacy services instagram hi/instagram; do
-            echo "/$p: $(curl -sL --max-time 30 "$B/$p" | grep -o '<title>[^<]*</title>' | head -1)"
-          done
+          for p in privacy services; do echo "/$p $(curl -sL --max-time 30 "$B/$p" | grep -o '<title>[^<]*</title>' | head -1)"; done
