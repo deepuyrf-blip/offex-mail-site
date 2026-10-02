@@ -7,7 +7,18 @@ jobs:
     steps:
       - run: |
           B=https://tempmail.offexmail.online
-          for p in "" "privacy" "about" "contact" "terms" "disclaimer" "cookies" "refund" "services" "instagram"; do
-            T=$(curl -sL --max-time 20 $B/$p | grep -o '<title>[^<]*</title>' | head -1)
-            echo "/$p  ==>  $T"
+          echo "===== LEGAL PAGES (must have own titles) ====="
+          for p in privacy about contact terms disclaimer; do
+            echo "/$p => $(curl -sL --max-time 20 $B/$p | grep -o '<title>[^<]*</title>' | head -1)"
           done
+          echo "===== REDIRECTS (removed pages) ====="
+          for p in youtube gmail google whatsapp telegram hi/youtube es/gmail; do
+            echo "/$p => code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 $B/$p) final=$(curl -s -o /dev/null -w '%{redirect_url}' --max-time 20 $B/$p)"
+          done
+          echo "===== FOOTER LINKS ON HOMEPAGE ====="
+          H=$(curl -sL --max-time 25 $B/)
+          echo "privacy-link: $(printf '%s' "$H" | grep -c 'href=./privacy.')"
+          echo "about-link: $(printf '%s' "$H" | grep -c 'href=./about.')"
+          echo "terms-link: $(printf '%s' "$H" | grep -c 'href=./terms.')"
+          echo "===== WORDS ON PRIVACY ====="
+          echo "privacy-words: $(curl -sL --max-time 20 $B/privacy | sed 's/<[^>]*>/ /g' | tr -s ' \n' ' ' | wc -w)"
