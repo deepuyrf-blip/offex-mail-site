@@ -6,14 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          for u in "youtube" "gmail" "google" "whatsapp" "telegram" "hi/youtube" "es/gmail" "ja/telegram" "ar/whatsapp" "instagram" "hi/instagram" "services" "hi" "landing-sitemap.xml"; do
-            echo "/$u -> $(curl -s -o /dev/null -w '%{http_code}' --max-time 25 -L https://tempmail.offexmail.online/$u)"
-          done
-          H=$(curl -sL --max-time 30 https://tempmail.offexmail.online/)
-          echo "HOME-CARDS: $(printf '%s' "$H" | grep -o 'class=.svc.' | wc -l)"
-          echo "HOME-YT-LINK: $(printf '%s' "$H" | grep -c 'href=./youtube.')"
-          S=$(curl -sL --max-time 30 https://tempmail.offexmail.online/services)
-          echo "HUB-TILES: $(printf '%s' "$S" | grep -o 'class=.tile.' | wc -l)"
-          echo "HUB-YT-LINK: $(printf '%s' "$S" | grep -c 'youtube.html')"
-          M=$(curl -sL --max-time 30 https://tempmail.offexmail.online/landing-sitemap.xml)
-          echo "SITEMAP-URLS: $(printf '%s' "$M" | grep -o '<loc>' | wc -l)"
+          echo "YT-TITLE: $(curl -sL --max-time 25 https://tempmail.offexmail.online/youtube | grep -o '<title>[^<]*</title>' | head -1)"
+          echo "YT-CODE: $(curl -s -o /dev/null -w '%{http_code}' --max-time 25 https://tempmail.offexmail.online/youtube)"
+          echo "YT-BODY: $(curl -sL --max-time 25 https://tempmail.offexmail.online/youtube | grep -o '404\|Not Found\|YouTube' | head -3 | tr '\n' ',')"
+          echo "IG-TITLE: $(curl -sL --max-time 25 https://tempmail.offexmail.online/instagram | grep -o '<title>[^<]*</title>' | head -1)"
