@@ -6,11 +6,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
+          J=$(curl -sL --max-time 30 https://tempmail.offexmail.online/i18n.js)
+          echo "I18N-LEN: ${#J}"
+          echo "HAS-EL_HEAD: $(printf '%s' "$J" | grep -c 'el_head')"
+          echo "HAS_SVC_HEAD: $(printf '%s' "$J" | grep -c 'svc_head')"
+          echo "HAS_JA: $(printf '%s' "$J" | grep -c 'よく使うサービス用の一時メール')"
+          echo "HAS_AR: $(printf '%s' "$J" | grep -c 'بريد مؤقت')"
           H=$(curl -sL --max-time 30 https://tempmail.offexmail.online/)
-          echo "HOME-LEN: ${#H}"
-          echo "SVC-SECTION: $(printf '%s' "$H" | grep -c 'id=.services.')"
-          echo "SVC-LINKS: $(printf '%s' "$H" | grep -o 'class=.svc.' | wc -l)"
-          echo "LANGPILLS: $(printf '%s' "$H" | grep -o 'langpill' | wc -l)"
-          echo "LINK-INSTA: $(printf '%s' "$H" | grep -c 'href=./instagram.')"
-          echo "LINK-HI: $(printf '%s' "$H" | grep -c 'href=./hi.')"
-          echo "LINK-ALLSVC: $(printf '%s' "$H" | grep -c 'href=./services.')"
+          echo "HOMEPAGE-I18N-ATTRS: $(printf '%s' "$H" | grep -o 'data-i18n' | wc -l)"
+          echo "BANNER-ATTR: $(printf '%s' "$H" | grep -c 'data-i18n-html=.banner.')"
