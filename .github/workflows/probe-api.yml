@@ -15,25 +15,24 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Find routing config
+      - name: Collect
         run: |
           set +e
           OUT=/tmp/probe.txt
           : > "$OUT"
-          echo "===== live /_routes.json =====" >> "$OUT"
-          curl -s -D - --max-time 30 "https://offex-mail.pages.dev/_routes.json" >> "$OUT" 2>&1
-          echo "" >> "$OUT"
-          echo "===== build functions =====" >> "$OUT"
+          echo "== live /_routes.json ==" >> "$OUT"
+          curl -s -D - --max-time 30 "https://offex-mail.pages.dev/_routes.json" -o /tmp/r.txt >> "$OUT" 2>&1
+          echo "[body]" >> "$OUT"; head -c 1200 /tmp/r.txt >> "$OUT"; echo >> "$OUT"
+          echo "== build ==" >> "$OUT"
           rm -rf /tmp/fx && npx --yes wrangler@3 pages functions build --outdir=/tmp/fx >> "$OUT" 2>&1
-          echo "===== search temp for routing config =====" >> "$OUT"
-          find /tmp /root -type f \( -name '*routes*' -o -name '*routing*' -o -name '_worker*' \) 2>/dev/null >> "$OUT"
-          for f in $(find /tmp /root -type f \( -name '*routing*config*' -o -name '_routes.json' \) 2>/dev/null); do echo "--- $f ---" >> "$OUT"; cat "$f" >> "$OUT"; echo >> "$OUT"; done
-          echo "===== grep bundle for route hints =====" >> "$OUT"
-          grep -o 'api[^\"]\{0,20\}' /tmp/fx/index.js | head -20 >> "$OUT" 2>&1
-          cat "$OUT"
+          echo "== temp files ==" >> "$OUT"
+          ls -la /tmp/wrangler-pages 2>&1 >> "$OUT"
+          for f in /tmp/wrangler-pages/*; do echo "--- $f ---" >> "$OUT"; head -c 1500 "$f" >> "$OUT"; echo >> "$OUT"; done
+          head -c 12000 "$OUT" > /tmp/issue.txt
+          echo "== done =="
       - name: Post results as an issue
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh issue create --repo "$GITHUB_REPOSITORY" --title "probe-api routes results" --body-file /tmp/probe.txt
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "probe-api routes2 results" --body-file /tmp/issue.txt
