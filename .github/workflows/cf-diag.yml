@@ -1,0 +1,38 @@
+name: cf-diag
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  issues: write
+jobs:
+  diag:
+    runs-on: ubuntu-latest
+    env:
+      T: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      A: d33504e28650ba4603dc9cafc46d0ec9
+    steps:
+      - name: Collect
+        run: |
+          set +e
+          O=/tmp/d.txt
+          : > "$O"
+          echo "== token verify ==" >> "$O"
+          curl -s --max-time 30 -H "Authorization: Bearer $T" https://api.cloudflare.com/client/v4/user/tokens/verify >> "$O" 2>&1
+          echo >> "$O"
+          echo "== workers subdomain ==" >> "$O"
+          curl -s --max-time 30 -H "Authorization: Bearer $T" "https://api.cloudflare.com/client/v4/accounts/$A/workers/subdomain" >> "$O" 2>&1
+          echo >> "$O"
+          echo "== pages project (full) ==" >> "$O"
+          curl -s --max-time 30 -H "Authorization: Bearer $T" "https://api.cloudflare.com/client/v4/accounts/$A/pages/projects/offex-mail" | python3 -c "import sys,json;d=json.load(sys.stdin);r=d.get('result') or {};print(json.dumps({k:r.get(k) for k in ['name','subdomain','domains','production_branch','uses_functions','deployment_configs','build_config','source']},indent=1))" >> "$O" 2>&1
+          echo "== zones ==" >> "$O"
+          curl -s --max-time 30 -H "Authorization: Bearer $T" "https://api.cloudflare.com/client/v4/zones?per_page=50" | python3 -c "import sys,json;d=json.load(sys.stdin);[print(z['name'],z['id']) for z in (d.get('result') or [])]" >> "$O" 2>&1
+          echo "== worker routes (offexmail.online) ==" >> "$O"
+          curl -s --max-time 30 -H "Authorization: Bearer $T" "https://api.cloudflare.com/client/v4/zones/5c5fca6f2e8bf44362a8ca850dbb3b76/workers/routes" >> "$O" 2>&1
+          echo >> "$O"
+          head -c 14000 "$O" > /tmp/iss.txt
+      - name: Issue
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "cf-diag results" --body-file /tmp/iss.txt
