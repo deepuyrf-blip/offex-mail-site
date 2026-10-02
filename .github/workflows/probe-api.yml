@@ -15,21 +15,25 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Project info + redeploy with output
+      - name: Find routing config
         run: |
           set +e
           OUT=/tmp/probe.txt
           : > "$OUT"
-          echo "===== pages project offex-mail =====" >> "$OUT"
-          curl -s --max-time 30 "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/offex-mail" -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" | python3 -c "import sys,json;d=json.load(sys.stdin);r=d.get('result') or {};print('name',r.get('name'));print('subdomain',r.get('subdomain'));print('domains',r.get('domains'));print('production_branch',r.get('production_branch'));print('source',json.dumps(r.get('source')));print('latest_deployment',json.dumps(r.get('latest_deployment'))[:1200])" >> "$OUT" 2>&1
-          echo "===== latest deployment detail =====" >> "$OUT"
-          curl -s --max-time 30 "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/offex-mail/deployments?per_page=2" -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" | python3 -c "import sys,json;d=json.load(sys.stdin);print(json.dumps(d.get('result'),indent=1)[:2500])" >> "$OUT" 2>&1
-          echo "===== redeploy (verbose) =====" >> "$OUT"
-          npx --yes wrangler@3 pages deploy public --project-name=offex-mail --branch=main >> "$OUT" 2>&1
+          echo "===== live /_routes.json =====" >> "$OUT"
+          curl -s -D - --max-time 30 "https://offex-mail.pages.dev/_routes.json" >> "$OUT" 2>&1
+          echo "" >> "$OUT"
+          echo "===== build functions =====" >> "$OUT"
+          rm -rf /tmp/fx && npx --yes wrangler@3 pages functions build --outdir=/tmp/fx >> "$OUT" 2>&1
+          echo "===== search temp for routing config =====" >> "$OUT"
+          find /tmp /root -type f \( -name '*routes*' -o -name '*routing*' -o -name '_worker*' \) 2>/dev/null >> "$OUT"
+          for f in $(find /tmp /root -type f \( -name '*routing*config*' -o -name '_routes.json' \) 2>/dev/null); do echo "--- $f ---" >> "$OUT"; cat "$f" >> "$OUT"; echo >> "$OUT"; done
+          echo "===== grep bundle for route hints =====" >> "$OUT"
+          grep -o 'api[^\"]\{0,20\}' /tmp/fx/index.js | head -20 >> "$OUT" 2>&1
           cat "$OUT"
       - name: Post results as an issue
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh issue create --repo "$GITHUB_REPOSITORY" --title "probe-api deploy results" --body-file /tmp/probe.txt
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "probe-api routes results" --body-file /tmp/probe.txt
