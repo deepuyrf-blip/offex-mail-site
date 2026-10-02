@@ -6,19 +6,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          B=https://tempmail.offexmail.online
-          echo "===== LEGAL PAGES (must have own titles) ====="
-          for p in privacy about contact terms disclaimer; do
-            echo "/$p => $(curl -sL --max-time 20 $B/$p | grep -o '<title>[^<]*</title>' | head -1)"
+          B=https://mytemp-mail.online
+          echo "===== DOMAIN COUNTS (target old=0, new>0) ====="
+          for p in "" "instagram" "hi/instagram" "privacy" "services"; do
+            H=$(curl -sL --max-time 30 "$B/$p")
+            echo "/$p offexmail.online count  : $(printf '%s' "$H" | grep -o 'offexmail\.online' | wc -l)"
+            echo "/$p mytemp-mail.online count: $(printf '%s' "$H" | grep -o 'mytemp-mail\.online' | wc -l)"
           done
-          echo "===== REDIRECTS (removed pages) ====="
-          for p in youtube gmail google whatsapp telegram hi/youtube es/gmail; do
-            echo "/$p => code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 $B/$p) final=$(curl -s -o /dev/null -w '%{redirect_url}' --max-time 20 $B/$p)"
+          echo "===== CANONICALS ====="
+          for p in instagram hi/instagram; do
+            echo "/$p canonical: $(curl -sL --max-time 30 "$B/$p" | grep -o '<link rel="canonical" href="[^"]*"' | head -1)"
           done
-          echo "===== FOOTER LINKS ON HOMEPAGE ====="
-          H=$(curl -sL --max-time 25 $B/)
-          echo "privacy-link: $(printf '%s' "$H" | grep -c 'href=./privacy.')"
-          echo "about-link: $(printf '%s' "$H" | grep -c 'href=./about.')"
-          echo "terms-link: $(printf '%s' "$H" | grep -c 'href=./terms.')"
-          echo "===== WORDS ON PRIVACY ====="
-          echo "privacy-words: $(curl -sL --max-time 20 $B/privacy | sed 's/<[^>]*>/ /g' | tr -s ' \n' ' ' | wc -w)"
+          echo "===== TITLES (must be own real titles) ====="
+          for p in privacy services; do
+            echo "/$p title: $(curl -sL --max-time 30 "$B/$p" | grep -o '<title>[^<]*</title>' | head -1)"
+          done
+          echo "/ title: $(curl -sL --max-time 30 "$B/" | grep -o '<title>[^<]*</title>' | head -1)"
