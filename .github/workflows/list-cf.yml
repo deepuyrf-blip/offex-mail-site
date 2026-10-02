@@ -1,19 +1,21 @@
-name: List CF assets
+name: verify-adsense
 on:
   workflow_dispatch:
 jobs:
-  list:
+  verify:
     runs-on: ubuntu-latest
     steps:
-      - run: |
-          echo "=== OLD SUBDOMAIN (should 301) ==="
-          for p in "" "instagram" "hi/instagram" "services" "privacy"; do
-            echo "/$p => $(curl -s -o /dev/null -w '%{http_code} -> %{redirect_url}' --max-time 25 https://tempmail.offexmail.online/$p)"
+      - name: Probe live pages for AdSense snippet
+        run: |
+          set -e
+          for url in \
+            https://mytemp-mail.online/ \
+            https://mytemp-mail.online/privacy \
+            https://mytemp-mail.online/services \
+            https://mytemp-mail.online/instagram \
+            https://mytemp-mail.online/hi/instagram ; do
+            body=$(curl -s -L --max-time 30 "$url" || true)
+            a=$(printf '%s' "$body" | grep -o 'adsbygoogle' | wc -l | tr -d ' ')
+            b=$(printf '%s' "$body" | grep -o 'ca-pub-7802179098119853' | wc -l | tr -d ' ')
+            echo "PAGE $url adsbygoogle=$a ca-pub=$b"
           done
-          echo "=== NEW DOMAIN (should 200) ==="
-          for p in "" "instagram" "privacy" "services"; do
-            echo "/$p => $(curl -s -o /dev/null -w '%{http_code}' --max-time 25 https://mytemp-mail.online/$p)"
-          done
-          echo "=== NEW DOMAIN TITLES ==="
-          echo "home: $(curl -sL --max-time 25 https://mytemp-mail.online/ | grep -o '<title>[^<]*</title>' | head -1)"
-          echo "privacy: $(curl -sL --max-time 25 https://mytemp-mail.online/privacy | grep -o '<title>[^<]*</title>' | head -1)"
