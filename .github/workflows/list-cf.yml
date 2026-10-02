@@ -5,10 +5,12 @@ jobs:
   list:
     runs-on: ubuntu-latest
     steps:
-      - name: Multilingual check
-        run: |
-          for u in "hi/instagram" "es/discord" "fr/elevenlabs" "de/youtube" "pt/amazon" "ru/telegram" "ar/facebook" "zh/tiktok" "ja/netflix" "instagram" "services" "landing-sitemap.xml"; do
-            echo "/$u -> $(curl -s -o /dev/null -w '%{http_code}' --max-time 25 https://tempmail.offexmail.online/$u)"
-          done
-          echo "TITLE-HI: $(curl -sL --max-time 25 https://tempmail.offexmail.online/hi/instagram | grep -o '<title>[^<]*</title>' | head -1)"
-          echo "AR-RTL: $(curl -sL --max-time 25 https://tempmail.offexmail.online/ar/facebook | grep -c 'dir=.rtl.')"
+      - run: |
+          H=$(curl -sL --max-time 30 https://tempmail.offexmail.online/)
+          echo "HOME-LEN: ${#H}"
+          echo "SVC-SECTION: $(printf '%s' "$H" | grep -c 'id=.services.')"
+          echo "SVC-LINKS: $(printf '%s' "$H" | grep -o 'class=.svc.' | wc -l)"
+          echo "LANGPILLS: $(printf '%s' "$H" | grep -o 'langpill' | wc -l)"
+          echo "LINK-INSTA: $(printf '%s' "$H" | grep -c 'href=./instagram.')"
+          echo "LINK-HI: $(printf '%s' "$H" | grep -c 'href=./hi.')"
+          echo "LINK-ALLSVC: $(printf '%s' "$H" | grep -c 'href=./services.')"
