@@ -8,25 +8,23 @@ jobs:
   diag:
     runs-on: ubuntu-latest
     steps:
-      - name: Read error page
+      - name: Probe after wait
         run: |
           set +e
           O=/tmp/o.txt
           : > "$O"
-          sleep 40
-          for u in /ping /api/status /; do
+          sleep 150
+          for u in "https://8c04e99c.offex-mail.pages.dev/ping" "https://8c04e99c.offex-mail.pages.dev/api/status" "https://offex-mail.pages.dev/ping" "https://offex-mail.pages.dev/api/status"; do
             echo "===== $u =====" >> "$O"
-            curl -s -D - --max-time 60 "https://offex-mail.pages.dev$u" -o /tmp/b >> "$O" 2>&1
-            echo "" >> "$O"
-            echo "[body $(( $(wc -c < /tmp/b) )) bytes]" >> "$O"
-            grep -ioE "error [0-9]+|ray id[^<]*|<title>[^<]*|you have been|rate limit[^<]*|banned|origin[^<]*|function[^<]*" /tmp/b | head -12 >> "$O"
-            head -c 400 /tmp/b >> "$O"
+            code=$(curl -s -o /tmp/b -w "%{http_code}" --max-time 60 "$u")
+            echo "status=$code bytes=$(wc -c </tmp/b) ctype=$(curl -s -o /dev/null -w '%{content_type}' --max-time 60 "$u")" >> "$O"
+            head -c 220 /tmp/b >> "$O"
             echo >> "$O"
           done
-          head -c 12000 "$O" > /tmp/iss.txt
+          head -c 8000 "$O" > /tmp/iss.txt
       - name: Issue
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh issue create --repo "$GITHUB_REPOSITORY" --title "cf-errpage results" --body-file /tmp/iss.txt
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "cf-probe3 results" --body-file /tmp/iss.txt
