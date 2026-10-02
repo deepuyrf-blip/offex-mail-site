@@ -719,7 +719,20 @@
   /* ---------- helpers ---------- */
   function api(path, opts){
     return fetch("/api" + path, Object.assign({ headers:{ "content-type":"application/json" } }, opts||{}))
-      .then(function(r){ return r.json().then(function(j){ if(!r.ok) throw new Error(j && j.error ? j.error : ("HTTP "+r.status)); return j; }); });
+      .then(function(r){
+        return r.text().then(function(text){
+          var j = null;
+          if(text && text.trim()){
+            try { j = JSON.parse(text); }
+            catch(e){
+              if(!r.ok) throw new Error("HTTP " + r.status);
+              throw new Error("Server returned an invalid response. Please try again.");
+            }
+          }
+          if(!r.ok) throw new Error(j && j.error ? j.error : ("HTTP " + r.status));
+          return j || {};
+        });
+      });
   }
   var toastTimer;
   function toast(msg, kind){ var el = $("toast"); el.textContent = msg; el.className = "toast show" + (kind ? " "+kind : ""); clearTimeout(toastTimer); toastTimer = setTimeout(function(){ el.className = "toast"; }, 3200); }
