@@ -7,18 +7,18 @@ jobs:
     steps:
       - run: |
           B=https://mytemp-mail.online
-          echo "===== DOMAIN COUNTS (target old=0, new>0) ====="
-          for p in "" "instagram" "hi/instagram" "privacy" "services"; do
-            H=$(curl -sL --max-time 30 "$B/$p")
-            echo "/$p offexmail.online count  : $(printf '%s' "$H" | grep -o 'offexmail\.online' | wc -l)"
-            echo "/$p mytemp-mail.online count: $(printf '%s' "$H" | grep -o 'mytemp-mail\.online' | wc -l)"
+          echo "===== RAW STATS ====="
+          for p in "" "privacy"; do
+            curl -sL --max-time 30 "$B/$p" -o /tmp/page.html
+            echo "/$p bytes: $(wc -c </tmp/page.html)"
+            echo "/$p mytemp-mail.online: $(grep -o 'mytemp-mail\.online' /tmp/page.html | wc -l)"
+            echo "/$p offexmail.online: $(grep -o 'offexmail\.online' /tmp/page.html | wc -l)"
+            echo "/$p matches:"
+            grep -o '.\{18\}mytemp-mail\.online.\{4\}' /tmp/page.html
+            echo "/$p offexmail matches:"
+            grep -o '.\{18\}offexmail\.online.\{4\}' /tmp/page.html
           done
-          echo "===== CANONICALS ====="
-          for p in instagram hi/instagram; do
-            echo "/$p canonical: $(curl -sL --max-time 30 "$B/$p" | grep -o '<link rel="canonical" href="[^"]*"' | head -1)"
+          echo "===== TITLES ====="
+          for p in privacy services instagram hi/instagram; do
+            echo "/$p: $(curl -sL --max-time 30 "$B/$p" | grep -o '<title>[^<]*</title>' | head -1)"
           done
-          echo "===== TITLES (must be own real titles) ====="
-          for p in privacy services; do
-            echo "/$p title: $(curl -sL --max-time 30 "$B/$p" | grep -o '<title>[^<]*</title>' | head -1)"
-          done
-          echo "/ title: $(curl -sL --max-time 30 "$B/" | grep -o '<title>[^<]*</title>' | head -1)"
