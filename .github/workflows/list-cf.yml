@@ -6,12 +6,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          J=$(curl -sL --max-time 30 https://tempmail.offexmail.online/i18n.js)
-          echo "I18N-LEN: ${#J}"
-          echo "HAS-EL_HEAD: $(printf '%s' "$J" | grep -c 'el_head')"
-          echo "HAS_SVC_HEAD: $(printf '%s' "$J" | grep -c 'svc_head')"
-          echo "HAS_JA: $(printf '%s' "$J" | grep -c 'よく使うサービス用の一時メール')"
-          echo "HAS_AR: $(printf '%s' "$J" | grep -c 'بريد مؤقت')"
+          for u in "youtube" "gmail" "google" "whatsapp" "telegram" "hi/youtube" "es/gmail" "ja/telegram" "ar/whatsapp" "instagram" "hi/instagram" "services" "hi" "landing-sitemap.xml"; do
+            echo "/$u -> $(curl -s -o /dev/null -w '%{http_code}' --max-time 25 -L https://tempmail.offexmail.online/$u)"
+          done
           H=$(curl -sL --max-time 30 https://tempmail.offexmail.online/)
-          echo "HOMEPAGE-I18N-ATTRS: $(printf '%s' "$H" | grep -o 'data-i18n' | wc -l)"
-          echo "BANNER-ATTR: $(printf '%s' "$H" | grep -c 'data-i18n-html=.banner.')"
+          echo "HOME-CARDS: $(printf '%s' "$H" | grep -o 'class=.svc.' | wc -l)"
+          echo "HOME-YT-LINK: $(printf '%s' "$H" | grep -c 'href=./youtube.')"
+          S=$(curl -sL --max-time 30 https://tempmail.offexmail.online/services)
+          echo "HUB-TILES: $(printf '%s' "$S" | grep -o 'class=.tile.' | wc -l)"
+          echo "HUB-YT-LINK: $(printf '%s' "$S" | grep -c 'youtube.html')"
+          M=$(curl -sL --max-time 30 https://tempmail.offexmail.online/landing-sitemap.xml)
+          echo "SITEMAP-URLS: $(printf '%s' "$M" | grep -o '<loc>' | wc -l)"
