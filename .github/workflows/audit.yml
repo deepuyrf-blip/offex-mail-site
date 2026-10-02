@@ -9,39 +9,44 @@ jobs:
     steps:
       - name: probe
         run: |
-          echo "== follow-redirect status codes =="
+          set +e
+          probe() {
+            u="$1"
+            code=$(curl -s -o /tmp/body -w "%{http_code}" "$u")
+            title=$(grep -io '<title>[^<]*' /tmp/body | head -1 | sed 's/<title>//i')
+            len=$(wc -c < /tmp/body)
+            md5=$(md5sum /tmp/body | cut -c1-10)
+            echo "STATUS=$code LEN=$len MD5=$md5 URL=$u TITLE=$title"
+          }
           for u in \
             "https://mytemp-mail.online/" \
             "https://mytemp-mail.online/instagram" \
             "https://mytemp-mail.online/temp-mail-for-instagram" \
             "https://mytemp-mail.online/discord" \
-            "https://mytemp-mail.online/elevenlabs" \
-            "https://mytemp-mail.online/services" \
             "https://mytemp-mail.online/adobe" \
             "https://mytemp-mail.online/apple" \
             "https://mytemp-mail.online/paypal" \
+            "https://mytemp-mail.online/zzz-not-a-page-123" \
+            "https://mytemp-mail.online/services" \
             "https://mytemp-mail.online/paytm" \
             "https://mytemp-mail.online/swiggy" \
             "https://mytemp-mail.online/hi/instagram" \
             "https://mytemp-mail.online/ja/instagram" \
             "https://mytemp-mail.online/zh/instagram" \
-            "https://mytemp-mail.online/ar/instagram" \
-            "https://mytemp-mail.online/robots.txt" \
-            "https://mytemp-mail.online/sitemap.xml" \
-            "https://mytemp-mail.online/landing-sitemap.xml" \
             "https://mytemp-mail.online/youtube" ; do
-            code=$(curl -s -o /dev/null -w "%{http_code}" -L "$u")
-            echo "$code  $u"
+            probe "$u"
           done
-          echo "== first-hop status + redirect target (no -L) =="
+          echo "== canonical tags served =="
           for u in \
+            "https://mytemp-mail.online/instagram" \
+            "https://mytemp-mail.online/services" \
+            "https://mytemp-mail.online/adobe" \
             "https://mytemp-mail.online/temp-mail-for-instagram" \
-            "https://mytemp-mail.online/youtube" \
-            "https://mytemp-mail.online/adobe" ; do
-            echo "$(curl -s -o /dev/null -w '%{http_code} loc=%{redirect_url}' "$u")  $u"
+            "https://mytemp-mail.online/hi/instagram" ; do
+            echo "--- $u"
+            curl -s "$u" | grep -io '<link rel=.canonical.[^>]*>' | head -3
           done
-          echo "== canonical served for /instagram =="
-          curl -s "https://mytemp-mail.online/instagram" | grep -io '<link rel="canonical"[^>]*>'
-          echo "== canonical served for /services =="
-          curl -s "https://mytemp-mail.online/services" | grep -io '<link rel="canonical"[^>]*>'
-          echo "== landing-sitemap head ==
+          echo "== does /adobe serve the same bytes as / ? =="
+          curl -s https://mytemp-mail.online/ > /tmp/a
+          curl -s https://mytemp-mail.online/adobe > /tmp/b
+          md5sum /tmp/a /tmp/b
