@@ -5,17 +5,12 @@ jobs:
   list:
     runs-on: ubuntu-latest
     steps:
-      - name: Verify backend OTP field
+      - name: Landing pages live check
         run: |
-          echo "mail site      : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://tempmail.offexmail.online/)"
-          echo "api/status     : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://tempmail.offexmail.online/api/status)"
-          echo "--- create inbox + check otp key ---"
-          INBOX=$(curl -s --max-time 30 -X POST https://tempmail.offexmail.online/api/inbox -H 'content-type: application/json' -d '{}')
-          echo "inbox resp: $(echo "$INBOX" | head -c 200)"
-          ADDR=$(echo "$INBOX" | python3 -c "import sys,json;print(json.load(sys.stdin).get('address',''))" 2>/dev/null)
-          echo "address: $ADDR"
-          if [ -n "$ADDR" ]; then
-            MSGS=$(curl -s --max-time 30 "https://tempmail.offexmail.online/api/inbox/$ADDR/messages")
-            echo "messages resp: $(echo "$MSGS" | head -c 300)"
-            echo "has otp key  : $(echo "$MSGS" | grep -c 'otp')"
-          fi
+          for u in "" "instagram" "discord" "elevenlabs" "youtube" "services" "images/inbox.svg" "landing-sitemap.xml"; do
+            echo "/$u -> $(curl -s -o /dev/null -w '%{http_code}' --max-time 25 https://tempmail.offexmail.online/$u)"
+          done
+          echo "--- title check ---"
+          curl -sL --max-time 25 https://tempmail.offexmail.online/instagram | grep -o '<title>[^<]*</title>' | head -1
+          echo "--- hub cards ---"
+          curl -sL --max-time 25 https://tempmail.offexmail.online/services | grep -c 'temp-mail-for\|href='
