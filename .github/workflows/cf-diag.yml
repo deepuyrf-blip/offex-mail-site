@@ -11,28 +11,34 @@ jobs:
       T: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       A: d33504e28650ba4603dc9cafc46d0ec9
     steps:
-      - name: Collect
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Baseline deploy + probe
         run: |
           set +e
-          O=/tmp/d.txt
+          O=/tmp/o.txt
           : > "$O"
-          echo "== token verify ==" >> "$O"
-          curl -s --max-time 30 -H "Authorization: Bearer $T" https://api.cloudflare.com/client/v4/user/tokens/verify >> "$O" 2>&1
+          printf 'export function onRequest(){ return new Response("PONG_OK", {headers:{"content-type":"text/plain"}}); }' > functions/ping.js
+          echo '{"version":1,"include":["/ping","/api/*"],"exclude":[]}' > public/_routes.json
+          CLOUDFLARE_API_TOKEN="$T" CLOUDFLARE_ACCOUNT_ID="$A" npx --yes wrangler@3 pages deploy public --project-name=offex-mail --branch=main --commit-dirty=true >> "$O" 2>&1
+          echo "== baseline probes ==" >> "$O"
+          for u in /ping /api/status; do
+            echo "$u -> status=$(curl -s -o /tmp/b -w '%{http_code}' --max-time 60 https://offex-mail.pages.dev$u) bytes=$(wc -c </tmp/b) body=$(head -c 120 /tmp/b)" >> "$O"
+          done
+          echo "== patch fail_open=false =" >> "$O"
+          curl -s -X PATCH --max-time 30 -H "Authorization: Bearer $T" -H "Content-Type: application/json" "https://api.cloudflare.com/client/v4/accounts/$A/pages/projects/offex-mail" -d '{"deployment_configs":{"production":{"fail_open":false}}}' >> "$O" 2>&1
           echo >> "$O"
-          echo "== workers subdomain ==" >> "$O"
-          curl -s --max-time 30 -H "Authorization: Bearer $T" "https://api.cloudflare.com/client/v4/accounts/$A/workers/subdomain" >> "$O" 2>&1
-          echo >> "$O"
-          echo "== pages project (full) ==" >> "$O"
-          curl -s --max-time 30 -H "Authorization: Bearer $T" "https://api.cloudflare.com/client/v4/accounts/$A/pages/projects/offex-mail" | python3 -c "import sys,json;d=json.load(sys.stdin);r=d.get('result') or {};print(json.dumps({k:r.get(k) for k in ['name','subdomain','domains','production_branch','uses_functions','deployment_configs','build_config','source']},indent=1))" >> "$O" 2>&1
-          echo "== zones ==" >> "$O"
-          curl -s --max-time 30 -H "Authorization: Bearer $T" "https://api.cloudflare.com/client/v4/zones?per_page=50" | python3 -c "import sys,json;d=json.load(sys.stdin);[print(z['name'],z['id']) for z in (d.get('result') or [])]" >> "$O" 2>&1
-          echo "== worker routes (offexmail.online) ==" >> "$O"
-          curl -s --max-time 30 -H "Authorization: Bearer $T" "https://api.cloudflare.com/client/v4/zones/5c5fca6f2e8bf44362a8ca850dbb3b76/workers/routes" >> "$O" 2>&1
-          echo >> "$O"
-          head -c 14000 "$O" > /tmp/iss.txt
+          sleep 10
+          echo "== after patch probes ==" >> "$O"
+          for u in /ping /api/status; do
+            echo "$u -> status=$(curl -s -o /tmp/b -w '%{http_code}' --max-time 60 https://offex-mail.pages.dev$u) bytes=$(wc -c </tmp/b) body=$(head -c 200 /tmp/b)" >> "$O"
+          done
+          head -c 12000 "$O" > /tmp/iss.txt
       - name: Issue
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh issue create --repo "$GITHUB_REPOSITORY" --title "cf-diag results" --body-file /tmp/iss.txt
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "cf-fix results" --body-file /tmp/iss.txt
