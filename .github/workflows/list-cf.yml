@@ -5,12 +5,10 @@ jobs:
   list:
     runs-on: ubuntu-latest
     steps:
-      - name: Landing pages live check
+      - name: Multilingual check
         run: |
-          for u in "" "instagram" "discord" "elevenlabs" "youtube" "services" "images/inbox.svg" "landing-sitemap.xml"; do
+          for u in "hi/instagram" "es/discord" "fr/elevenlabs" "de/youtube" "pt/amazon" "ru/telegram" "ar/facebook" "zh/tiktok" "ja/netflix" "instagram" "services" "landing-sitemap.xml"; do
             echo "/$u -> $(curl -s -o /dev/null -w '%{http_code}' --max-time 25 https://tempmail.offexmail.online/$u)"
           done
-          echo "--- title check ---"
-          curl -sL --max-time 25 https://tempmail.offexmail.online/instagram | grep -o '<title>[^<]*</title>' | head -1
-          echo "--- hub cards ---"
-          curl -sL --max-time 25 https://tempmail.offexmail.online/services | grep -c 'temp-mail-for\|href='
+          echo "TITLE-HI: $(curl -sL --max-time 25 https://tempmail.offexmail.online/hi/instagram | grep -o '<title>[^<]*</title>' | head -1)"
+          echo "AR-RTL: $(curl -sL --max-time 25 https://tempmail.offexmail.online/ar/facebook | grep -c 'dir=.rtl.')"
