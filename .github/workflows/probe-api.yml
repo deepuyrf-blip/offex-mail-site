@@ -8,31 +8,31 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
-      - name: Probe live API
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Build functions and print routes
         run: |
           set +e
           OUT=/tmp/probe.txt
           : > "$OUT"
-          probe() {
-            echo "===== $1 $2 =====" >> "$OUT"
-            if [ "$1" = "POST" ]; then
-              curl -sS -D - -o /tmp/body --max-time 90 -X POST -H 'content-type: application/json' -d '{}' "$2" >> "$OUT" 2>&1
-            else
-              curl -sS -D - -o /tmp/body --max-time 90 "$2" >> "$OUT" 2>&1
-            fi
-            echo "" >> "$OUT"
-            echo "--- body bytes: $(wc -c < /tmp/body) ---" >> "$OUT"
-            echo "--- body head ---" >> "$OUT"
-            head -c 700 /tmp/body >> "$OUT"
-            echo "" >> "$OUT"
-          }
-          probe GET  https://mytemp-mail.online/api/status
-          probe POST https://mytemp-mail.online/api/inbox
-          probe GET  https://offex-mail.pages.dev/api/status
+          echo "===== repo layout =====" >> "$OUT"
+          ls -la >> "$OUT" 2>&1
+          echo "--- functions tree ---" >> "$OUT"
+          find functions -type f >> "$OUT" 2>&1
+          echo "===== wrangler version =====" >> "$OUT"
+          npx --yes wrangler@3 --version >> "$OUT" 2>&1
+          echo "===== functions build =====" >> "$OUT"
+          rm -rf /tmp/fx && npx --yes wrangler@3 pages functions build --outdir=/tmp/fx >> "$OUT" 2>&1
+          echo "===== built files =====" >> "$OUT"
+          find /tmp/fx -maxdepth 3 -type f >> "$OUT" 2>&1
+          echo "===== routing config =====" >> "$OUT"
+          for f in $(find /tmp/fx -name '*.json'); do echo "--- $f ---" >> "$OUT"; head -c 1500 "$f" >> "$OUT"; echo >> "$OUT"; done
           cat "$OUT"
       - name: Post results as an issue
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh issue create --repo "$GITHUB_REPOSITORY" --title "probe-api results" --body-file /tmp/probe.txt
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "probe-api build results" --body-file /tmp/probe.txt
