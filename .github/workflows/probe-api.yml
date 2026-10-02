@@ -1,0 +1,38 @@
+name: probe-api
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  issues: write
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Probe live API
+        run: |
+          set +e
+          OUT=/tmp/probe.txt
+          : > "$OUT"
+          probe() {
+            echo "===== $1 $2 =====" >> "$OUT"
+            if [ "$1" = "POST" ]; then
+              curl -sS -D - -o /tmp/body --max-time 90 -X POST -H 'content-type: application/json' -d '{}' "$2" >> "$OUT" 2>&1
+            else
+              curl -sS -D - -o /tmp/body --max-time 90 "$2" >> "$OUT" 2>&1
+            fi
+            echo "" >> "$OUT"
+            echo "--- body bytes: $(wc -c < /tmp/body) ---" >> "$OUT"
+            echo "--- body head ---" >> "$OUT"
+            head -c 700 /tmp/body >> "$OUT"
+            echo "" >> "$OUT"
+          }
+          probe GET  https://mytemp-mail.online/api/status
+          probe POST https://mytemp-mail.online/api/inbox
+          probe GET  https://offex-mail.pages.dev/api/status
+          cat "$OUT"
+      - name: Post results as an issue
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "probe-api results" --body-file /tmp/probe.txt
