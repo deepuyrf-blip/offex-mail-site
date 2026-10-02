@@ -15,24 +15,25 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Collect
+      - name: Deploy with explicit _routes.json then probe
         run: |
           set +e
           OUT=/tmp/probe.txt
           : > "$OUT"
-          echo "== live /_routes.json ==" >> "$OUT"
-          curl -s -D - --max-time 30 "https://offex-mail.pages.dev/_routes.json" -o /tmp/r.txt >> "$OUT" 2>&1
-          echo "[body]" >> "$OUT"; head -c 1200 /tmp/r.txt >> "$OUT"; echo >> "$OUT"
-          echo "== build ==" >> "$OUT"
-          rm -rf /tmp/fx && npx --yes wrangler@3 pages functions build --outdir=/tmp/fx >> "$OUT" 2>&1
-          echo "== temp files ==" >> "$OUT"
-          ls -la /tmp/wrangler-pages 2>&1 >> "$OUT"
-          for f in /tmp/wrangler-pages/*; do echo "--- $f ---" >> "$OUT"; head -c 1500 "$f" >> "$OUT"; echo >> "$OUT"; done
-          head -c 12000 "$OUT" > /tmp/issue.txt
-          echo "== done =="
+          echo '{"version":1,"include":["/api/*"],"exclude":[]}' > public/_routes.json
+          echo "== _routes.json written ==" >> "$OUT"; cat public/_routes.json >> "$OUT"; echo >> "$OUT"
+          echo "== deploy ==" >> "$OUT"
+          npx --yes wrangler@3 pages deploy public --project-name=offex-mail --branch=main >> "$OUT" 2>&1
+          echo "== probe GET /api/status ==" >> "$OUT"
+          curl -s -D - --max-time 60 "https://offex-mail.pages.dev/api/status" -o /tmp/b >> "$OUT" 2>&1
+          echo "bytes=$(wc -c < /tmp/b)" >> "$OUT"; echo "body:" >> "$OUT"; head -c 600 /tmp/b >> "$OUT"; echo >> "$OUT"
+          echo "== probe POST /api/inbox ==" >> "$OUT"
+          curl -s -D - --max-time 60 -X POST -H 'content-type: application/json' -d '{}' "https://offex-mail.pages.dev/api/inbox" -o /tmp/c >> "$OUT" 2>&1
+          echo "bytes=$(wc -c < /tmp/c)" >> "$OUT"; echo "body:" >> "$OUT"; head -c 600 /tmp/c >> "$OUT"; echo >> "$OUT"
+          head -c 14000 "$OUT" > /tmp/issue.txt
       - name: Post results as an issue
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh issue create --repo "$GITHUB_REPOSITORY" --title "probe-api routes2 results" --body-file /tmp/issue.txt
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "probe-api routesfix results" --body-file /tmp/issue.txt
