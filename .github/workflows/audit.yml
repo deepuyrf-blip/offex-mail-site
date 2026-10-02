@@ -1,0 +1,47 @@
+name: audit
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  curl:
+    runs-on: ubuntu-latest
+    steps:
+      - name: probe
+        run: |
+          echo "== follow-redirect status codes =="
+          for u in \
+            "https://mytemp-mail.online/" \
+            "https://mytemp-mail.online/instagram" \
+            "https://mytemp-mail.online/temp-mail-for-instagram" \
+            "https://mytemp-mail.online/discord" \
+            "https://mytemp-mail.online/elevenlabs" \
+            "https://mytemp-mail.online/services" \
+            "https://mytemp-mail.online/adobe" \
+            "https://mytemp-mail.online/apple" \
+            "https://mytemp-mail.online/paypal" \
+            "https://mytemp-mail.online/paytm" \
+            "https://mytemp-mail.online/swiggy" \
+            "https://mytemp-mail.online/hi/instagram" \
+            "https://mytemp-mail.online/ja/instagram" \
+            "https://mytemp-mail.online/zh/instagram" \
+            "https://mytemp-mail.online/ar/instagram" \
+            "https://mytemp-mail.online/robots.txt" \
+            "https://mytemp-mail.online/sitemap.xml" \
+            "https://mytemp-mail.online/landing-sitemap.xml" \
+            "https://mytemp-mail.online/youtube" ; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" -L "$u")
+            echo "$code  $u"
+          done
+          echo "== first-hop status + redirect target (no -L) =="
+          for u in \
+            "https://mytemp-mail.online/temp-mail-for-instagram" \
+            "https://mytemp-mail.online/youtube" \
+            "https://mytemp-mail.online/adobe" ; do
+            echo "$(curl -s -o /dev/null -w '%{http_code} loc=%{redirect_url}' "$u")  $u"
+          done
+          echo "== canonical served for /instagram =="
+          curl -s "https://mytemp-mail.online/instagram" | grep -io '<link rel="canonical"[^>]*>'
+          echo "== canonical served for /services =="
+          curl -s "https://mytemp-mail.online/services" | grep -io '<link rel="canonical"[^>]*>'
+          echo "== landing-sitemap head ==
