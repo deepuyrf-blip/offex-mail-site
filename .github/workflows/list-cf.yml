@@ -6,11 +6,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          H=$(curl -sL --max-time 30 https://tempmail.offexmail.online/)
-          echo "SCRIPT-TAG: $(printf '%s' "$H" | grep -o 'i18n.js?v=[0-9]*')"
-          echo "EL-ATTR: $(printf '%s' "$H" | grep -c 'data-i18n=.el_head.')"
-          echo "SVC-ATTR: $(printf '%s' "$H" | grep -c 'data-i18n=.svc_head.')"
-          echo "SVC-ALL-ATTR: $(printf '%s' "$H" | grep -c 'data-i18n=.svc_all.')"
-          J=$(curl -sL --max-time 30 "https://tempmail.offexmail.online/i18n.js?v=5")
-          echo "JS-EL_HEAD-COUNT: $(printf '%s' "$J" | grep -o 'el_head' | wc -l)"
-          echo "JS-ES-EL_HEAD: $(printf '%s' "$J" | grep -o 'Correo temporal para ElevenLabs' | head -1)"
+          B=https://tempmail.offexmail.online
+          echo "===== REQUIRED PAGES (AdSense) ====="
+          for p in privacy privacy-policy about contact terms disclaimer cookies refund; do
+            echo "/$p -> $(curl -s -o /dev/null -w '%{http_code}' --max-time 20 -L $B/$p)"
+          done
+          echo "===== ADSENSE ON MAIL SITE ====="
+          H=$(curl -sL --max-time 25 $B/)
+          echo "adsense-script: $(printf '%s' "$H" | grep -c 'adsbygoogle')"
+          echo "ca-pub: $(printf '%s' "$H" | grep -c 'ca-pub-7802179098119853')"
+          echo "ads.txt: $(curl -s -o /dev/null -w '%{http_code}' --max-time 20 $B/ads.txt)"
+          echo "===== SEO BASICS ====="
+          echo "robots.txt: $(curl -s -o /dev/null -w '%{http_code}' --max-time 20 $B/robots.txt)"
+          echo "sitemap.xml: $(curl -s -o /dev/null -w '%{http_code}' --max-time 20 $B/sitemap.xml)"
+          echo "landing-sitemap: $(curl -s -o /dev/null -w '%{http_code}' --max-time 20 $B/landing-sitemap.xml)"
+          echo "===== AUDIO SITE ====="
+          A=https://offexmail.online
+          for p in privacy about contact terms; do
+            echo "audio /$p -> $(curl -s -o /dev/null -w '%{http_code}' --max-time 20 -L $A/$p)"
+          done
+          AH=$(curl -sL --max-time 25 $A/)
+          echo "audio adsense: $(printf '%s' "$AH" | grep -c 'adsbygoogle')"
