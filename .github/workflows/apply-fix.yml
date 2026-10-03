@@ -8,11 +8,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: ElevenLabs 100% to 85% and commit
+      - name: Run patch and commit
         run: |
           set -e
-          echo 'aW1wb3J0IHJlCgojIDEpIGkxOG4uanMgLT4gb25seSBlbF9oZWFkIGFuZCBiYW5uZXIgdmFsdWVzCnAgPSAicHVibGljL2kxOG4uanMiCnMgPSBvcGVuKHAsIGVuY29kaW5nPSJ1dGYtOCIpLnJlYWQoKQpkZWYgc3ViX2tleShzLCBrZXkpOgogICAgcmV0dXJuIHJlLnN1YihyJygnICsga2V5ICsgJzoiKShbXiJdKikiJywKICAgICAgICAgICAgICAgICAgbGFtYmRhIG06IG0uZ3JvdXAoMSkgKyBtLmdyb3VwKDIpLnJlcGxhY2UoIjEwMCUiLCAiODUlIikgKyAnIicsIHMpCnMgPSBzdWJfa2V5KHMsICJlbF9oZWFkIikKcyA9IHN1Yl9rZXkocywgImJhbm5lciIpCm9wZW4ociwgInciLCBlbmNvZGluZz0idXRmLTgiKS53cml0ZShzKQoKIyAyKSBlbGV2ZW5sYWJzLmh0bWwgLT4gd2hvbGUgcGFnZSBpcyBFbGV2ZW5MYWJzCnAgPSAicHVibGljL2VsZXZlbmxhYnMuaHRtbCIKcyA9IG9wZW4ociwgZW5jb2Rpbmc9InV0Zi04IikucmVhZCgpCm9wZW4ociwgInciLCBlbmNvZGluZz0idXRmLTgiKS53cml0ZShzLnJlcGxhY2UoIjEwMCUiLCAiODUlIikpCgojIDMpIGluZGV4Lmh0bWwgLT4gb25seSBFbGV2ZW5MYWJzLzExTGFicyBsaW5lcwpwID0gInB1YmxpYy9pbmRleC5odG1sIgpsaW5lcyA9IG9wZW4ociwgZW5jb2Rpbmc9InV0Zi04IikucmVhZCgpLnNwbGl0KCJcbiIpCm4gPSAwCmZvciBpLCBsIGluIGVudW1lcmF0ZShsaW5lcyk6CiAgICBsb3cgPSBsLmxvd2VyKCkKICAgIGlmICgiZWxldmVubGFicyIgaW4gbG93IG9yICIxMWxhYnMiIGluIGxvdykgYW5kICIxMDAlIiBpbiBsOgogICAgICAgIGxpbmVzW2ldID0gbC5yZXBsYWNlKCIxMDAlIiwgIjg1JSIpOyBuICs9IDEKb3BlbihwLCAidyIsIGVuY29kaW5nPSJ1dGYtOCIpLndyaXRlKCJcbiIuam9pbihsaW5lcykpCnByaW50KCJpbmRleC5odG1sIGxpbmVzIGNoYW5nZWQ6IiwgbikKCiMgdmVyaWZ5CmZvciBmIGluIFsicHVibGljL2kxOG4uanMiLCAicHVibGljL2VsZXZlbmxhYnMuaHRtbCIsICJwdWJsaWMvaW5kZXguaHRtbCJdOgogICAgYyA9IG9wZW4ociwgZW5jb2Rpbmc9InV0Zi04IikucmVhZCgpCiAgICBwcmludChmLCJlbF9oZWFkL2Jhbm5lciAxMDAlIGxlZnQ6IiwgbGVuKHJlLmZpbmRhbGwocicoPzplbF9oZWFkfGJhbm5lcik6IlteIl0qMTAwJScsIGMpKSwgInwgZWxldmVubGFicy5odG1sIHRvdGFsIDEwMCU6IiwgYy5jb3VudCgiMTAwJSIpIGlmICJlbGV2ZW5sYWJzIiBpbiBmIGVsc2UgIi0iKQo=' | base64 -d > /tmp/el.py
-          python3 /tmp/el.py
+          python3 patch_el.py
           git config user.email "github-actions@users.noreply.github.com"
           git config user.name "github-actions"
           git add public/
