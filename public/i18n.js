@@ -14,7 +14,7 @@ window.OFFEX_LANGS = [
 
 window.OFFEX_STR = {
 en:{
- el_head:"Temp Mail for ElevenLabs (11Labs) — 100% Working",
+ el_head:"Temp Mail for ElevenLabs (11Labs) — 85% Working",
  el_intro:"Signing up for ElevenLabs asks for email verification. You don't need to give your real email — get a temporary address here, paste it on ElevenLabs, and the OTP / verification link will arrive here within seconds. Free, instant, no signup.",
  el_s1t:"1. Get an address",
  el_s1d:"Tap \"Create inbox\" below — you'll get a private address instantly.",
@@ -22,7 +22,7 @@ en:{
  el_s2d:"Paste this address in the signup form (in place of your real email).",
  el_s3t:"3. Get your code",
  el_s3d:"The verification mail / OTP will arrive here — the OTP is auto-detected and shown too.",
- banner:"🎙️ ElevenLabs (11Labs) temp mail — <b>100% working</b> • free • instant • no signup",
+ banner:"🎙️ ElevenLabs (11Labs) temp mail — <b>85% working</b> • free • instant • no signup",
  svc_head:"Temp mail for your favourite services",
  svc_sub:"Pick a service and get a free disposable inbox built for its signup — 40+ step-by-step guides, all free, no signup.",
  svc_all:"See all 40+ services →",
@@ -67,7 +67,7 @@ en:{
  lang_pick:"Language"
 },
 hi:{
- el_head:"ElevenLabs (11Labs) ke liye Temp Mail — 100% Working",
+ el_head:"ElevenLabs (11Labs) ke liye Temp Mail — 85% Working",
  el_intro:"ElevenLabs pe signup karte waqt email verification maangta hai. Apna asli email dene ki zaroorat nahi — yahan se ek temporary address lo, ElevenLabs pe daalo, aur OTP / verification link yahin par seconds mein aa jayega. Free, instant, no signup.",
  el_s1t:"1. Address lo",
  el_s1d:"Neeche \"Create inbox\" dabao — turant ek private address mil jayega.",
@@ -75,7 +75,7 @@ hi:{
  el_s2d:"Signup form mein ye address paste karo (asli email ki jagah).",
  el_s3t:"3. Code le lo",
  el_s3d:"Verification mail / OTP yahan aayega — auto-detect hoke OTP bhi dikh jayega.",
- banner:"🎙️ ElevenLabs (11Labs) ke liye <b>100% working temp mail</b> • free • instant • no signup",
+ banner:"🎙️ ElevenLabs (11Labs) ke liye <b>85% working temp mail</b> • free • instant • no signup",
  svc_head:"Apni favourite services ke liye temp mail",
  svc_sub:"Service chuno aur uske signup ke liye bana free disposable inbox lo — 40+ step-by-step guides, sab free, no signup.",
  svc_all:"Saari 40+ services dekho →",
@@ -120,7 +120,7 @@ hi:{
  lang_pick:"भाषा"
 },
 es:{
- el_head:"Correo temporal para ElevenLabs (11Labs) — 100% funcional",
+ el_head:"Correo temporal para ElevenLabs (11Labs) — 85% funcional",
  el_intro:"Registrarse en ElevenLabs pide verificar tu correo. No necesitas dar tu correo real: consigue aquí una dirección temporal, pégala en ElevenLabs y el OTP o el enlace de verificación llegará aquí en segundos. Gratis, instantáneo, sin registro.",
  el_s1t:"1. Consigue una dirección",
  el_s1d:"Pulsa \"Crear bandeja\" abajo y tendrás una dirección privada al instante.",
@@ -128,7 +128,7 @@ es:{
  el_s2d:"Pega esta dirección en el formulario de registro (en lugar de tu correo real).",
  el_s3t:"3. Recibe tu código",
  el_s3d:"El correo de verificación u OTP llegará aquí; el OTP se detecta y se muestra automáticamente.",
- banner:"🎙️ Correo temporal para ElevenLabs (11Labs) — <b>100% funcional</b> • gratis • instantáneo • sin registro",
+ banner:"🎙️ Correo temporal para ElevenLabs (11Labs) — <b>85% funcional</b> • gratis • instantáneo • sin registro",
  svc_head:"Correo temporal para tus servicios favoritos",
  svc_sub:"Elige un servicio y consigue una bandeja desechable gratis hecha para su registro: más de 40 guías paso a paso, todas gratis, sin registro.",
  svc_all:"Ver los más de 40 servicios →",
@@ -279,7 +279,7 @@ de:{
  lang_pick:"Sprache"
 },
 pt:{
- el_head:"E-mail temporário para ElevenLabs (11Labs) — 100% funcional",
+ el_head:"E-mail temporário para ElevenLabs (11Labs) — 85% funcional",
  el_intro:"Cadastrar-se no ElevenLabs pede verificação por e-mail. Você não precisa dar seu e-mail real: pegue aqui um endereço temporário, cole no ElevenLabs e o OTP ou o link de verificação chegará aqui em segundos. Grátis, instantâneo, sem cadastro.",
  el_s1t:"1. Pegue um endereço",
  el_s1d:"Toque em \"Criar caixa\" abaixo — você recebe um endereço privado na hora.",
@@ -287,7 +287,7 @@ pt:{
  el_s2d:"Cole este endereço no formulário de cadastro (no lugar do seu e-mail real).",
  el_s3t:"3. Receba seu código",
  el_s3d:"O e-mail de verificação / OTP chegará aqui — o OTP é detectado e mostrado automaticamente.",
- banner:"🎙️ E-mail temporário para ElevenLabs (11Labs) — <b>100% funcional</b> • grátis • instantâneo • sem cadastro",
+ banner:"🎙️ E-mail temporário para ElevenLabs (11Labs) — <b>85% funcional</b> • grátis • instantâneo • sem cadastro",
  svc_head:"E-mail temporário para seus serviços favoritos",
  svc_sub:"Escolha um serviço e receba uma caixa descartável grátis feita para o cadastro dele — mais de 40 guias passo a passo, todas grátis, sem cadastro.",
  svc_all:"Ver os 40+ serviços →",
@@ -332,7 +332,7 @@ pt:{
  lang_pick:"Idioma"
 },
 ru:{
- el_head:"Временная почта для ElevenLabs (11Labs) — работает на 100%",
+ el_head:"Временная почта для ElevenLabs (11Labs) — работает на 85%",
  el_intro:"При регистрации в ElevenLabs требуется подтверждение e-mail. Настоящий адрес указывать не нужно: возьмите здесь временный адрес, вставьте его в ElevenLabs — и код (OTP) или ссылка подтверждения придут сюда за секунды. Бесплатно, мгновенно, без регистрации.",
  el_s1t:"1. Получите адрес",
  el_s1d:"Нажмите «Создать ящик» ниже — вы сразу получите приватный адрес.",
@@ -340,7 +340,7 @@ ru:{
  el_s2d:"Вставьте этот адрес в форму регистрации (вместо настоящего e-mail).",
  el_s3t:"3. Получите код",
  el_s3d:"Письмо с подтверждением / OTP придёт сюда — код определяется и показывается автоматически.",
- banner:"🎙️ Временная почта для ElevenLabs (11Labs) — <b>работает на 100%</b> • бесплатно • мгновенно • без регистрации",
+ banner:"🎙️ Временная почта для ElevenLabs (11Labs) — <b>работает на 85%</b> • бесплатно • мгновенно • без регистрации",
  svc_head:"Временная почта для ваших любимых сервисов",
  svc_sub:"Выберите сервис и получите бесплатный одноразовый ящик под его регистрацию — 40+ пошаговых руководств, всё бесплатно, без регистрации.",
  svc_all:"Смотреть все 40+ сервисов →",
@@ -385,7 +385,7 @@ ru:{
  lang_pick:"Язык"
 },
 ar:{
- el_head:"بريد مؤقت لـ ElevenLabs (11Labs) — يعمل 100%",
+ el_head:"بريد مؤقت لـ ElevenLabs (11Labs) — يعمل 85%",
  el_intro:"عند التسجيل في ElevenLabs يُطلب تأكيد البريد الإلكتروني. لا حاجة لإعطاء بريدك الحقيقي — احصل من هنا على عنوان مؤقت، وألصقه في ElevenLabs، وسيصل رمز التحقق (OTP) أو رابط التأكيد إلى هنا خلال ثوانٍ. مجاني، فوري، بدون تسجيل.",
  el_s1t:"١. احصل على عنوان",
  el_s1d:"اضغط \"إنشاء صندوق\" بالأسفل — ستحصل على عنوان خاص فورًا.",
@@ -393,7 +393,7 @@ ar:{
  el_s2d:"ألصق هذا العنوان في نموذج التسجيل (بدلًا من بريدك الحقيقي).",
  el_s3t:"٣. استلم الرمز",
  el_s3d:"سيصل بريد التأكيد / رمز OTP إلى هنا — ويُكتشف الرمز ويُعرض تلقائيًا.",
- banner:"🎙️ بريد مؤقت لـ ElevenLabs (11Labs) — <b>يعمل 100%</b> • مجاني • فوري • بدون تسجيل",
+ banner:"🎙️ بريد مؤقت لـ ElevenLabs (11Labs) — <b>يعمل 85%</b> • مجاني • فوري • بدون تسجيل",
  svc_head:"بريد مؤقت لخدماتك المفضلة",
  svc_sub:"اختر خدمة واحصل على صندوق مؤقت مجاني مُهيّأ لتسجيلها — أكثر من 40 دليلًا خطوة بخطوة، كلها مجانية، بدون تسجيل.",
  svc_all:"شاهد كل الخدمات (40+) ←",
@@ -438,7 +438,7 @@ ar:{
  lang_pick:"اللغة"
 },
 zh:{
- el_head:"ElevenLabs (11Labs) 临时邮箱 — 100% 可用",
+ el_head:"ElevenLabs (11Labs) 临时邮箱 — 85% 可用",
  el_intro:"注册 ElevenLabs 需要验证邮箱。你不必提供真实邮箱——在这里获取一个临时地址，粘贴到 ElevenLabs，验证码（OTP）或验证链接几秒内就会到达这里。免费、即时、无需注册。",
  el_s1t:"1. 获取一个地址",
  el_s1d:"点击下方“创建收件箱”，立刻获得一个私密地址。",
@@ -446,7 +446,7 @@ zh:{
  el_s2d:"把这个地址粘贴到注册表单里（代替你的真实邮箱）。",
  el_s3t:"3. 获取验证码",
  el_s3d:"验证邮件 / OTP 会送到这里——验证码会自动识别并显示。",
- banner:"🎙️ ElevenLabs (11Labs) 临时邮箱 — <b>100% 可用</b> • 免费 • 即时 • 无需注册",
+ banner:"🎙️ ElevenLabs (11Labs) 临时邮箱 — <b>85% 可用</b> • 免费 • 即时 • 无需注册",
  svc_head:"为你常用服务准备的临时邮箱",
  svc_sub:"选择一个服务，领取为其注册量身打造的免费一次性收件箱——40+ 篇分步指南，全部免费，无需注册。",
  svc_all:"查看全部 40+ 服务 →",
@@ -491,7 +491,7 @@ zh:{
  lang_pick:"语言"
 },
 ja:{
- el_head:"ElevenLabs（11Labs）用の一時メール — 100% 使えます",
+ el_head:"ElevenLabs（11Labs）用の一時メール — 85% 使えます",
  el_intro:"ElevenLabs の登録にはメール認証が必要です。本物のメールアドレスを渡す必要はありません——ここで一時アドレスを取得し、ElevenLabs に貼り付ければ、OTP（認証コード）や確認リンクが数秒でここに届きます。無料・即時・登録不要。",
  el_s1t:"1. アドレスを取得",
  el_s1d:"下の「受信箱を作成」をタップすると、すぐにプライベートなアドレスが手に入ります。",
@@ -499,7 +499,7 @@ ja:{
  el_s2d:"このアドレスを登録フォームに貼り付けます（本物のメールの代わりに）。",
  el_s3t:"3. コードを受け取る",
  el_s3d:"確認メール / OTP がここに届きます——OTP は自動で検出・表示されます。",
- banner:"🎙️ ElevenLabs（11Labs）用の一時メール — <b>100% 使えます</b> • 無料 • 即時 • 登録不要",
+ banner:"🎙️ ElevenLabs（11Labs）用の一時メール — <b>85% 使えます</b> • 無料 • 即時 • 登録不要",
  svc_head:"よく使うサービス用の一時メール",
  svc_sub:"サービスを選ぶと、その登録に合わせた無料の使い捨て受信箱が手に入ります——40 以上のステップ別ガイド、すべて無料、登録不要。",
  svc_all:"40 以上のサービスをすべて見る →",
