@@ -12,10 +12,13 @@ s = re.sub(r'el_head:"([^"]*)"', lambda m: 'el_head:"' + fix(m.group(1)) + '"', 
 s = re.sub(r'banner:"([^"]*)"', lambda m: 'banner:"' + fix(m.group(1)) + '"', s)
 open(p, "w", encoding="utf-8").write(s)
 
-# 2) elevenlabs.html -> whole page is ElevenLabs
+# 2) elevenlabs.html -> text fix, but keep CSS widths at 100%
 p = "public/elevenlabs.html"
 s = open(p, encoding="utf-8").read()
-open(p, "w", encoding="utf-8").write(fix(s))
+s = fix(s)
+s = s.replace("max-width:85%", "max-width:100%")
+s = s.replace(".ill{width:85%", ".ill{width:100%")
+open(p, "w", encoding="utf-8").write(s)
 
 # 3) index.html -> only ElevenLabs/11Labs lines
 p = "public/index.html"
@@ -30,6 +33,7 @@ open(p, "w", encoding="utf-8").write("\n".join(lines))
 
 # verify
 c = open("public/i18n.js", encoding="utf-8").read()
+e = open("public/elevenlabs.html", encoding="utf-8").read()
 print("index lines changed:", n)
 print("el_head/banner 100 left:", len(re.findall('(?:el_head|banner):"[^"]*100 ?%', c)))
-print("elevenlabs.html 100 left:", open("public/elevenlabs.html", encoding="utf-8").read().count("100"))
+print("elevenlabs.html has max-width:100%:", "max-width:100%" in e, "| has .ill{width:100%:", ".ill{width:100%" in e, "| has CSS 85%:", ("max-width:85%" in e or ".ill{width:85%" in e))
