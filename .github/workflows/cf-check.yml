@@ -5,33 +5,32 @@ permissions:
   contents: read
   issues: write
 jobs:
-  c:
+  t:
     runs-on: ubuntu-latest
-    env:
-      T: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      A: d33504e28650ba4603dc9cafc46d0ec9
     steps:
-      - name: Check zones and email routing
+      - name: Test multi-domain backend
         run: |
           set +e
           O=/tmp/o.txt
           : > "$O"
-          echo "== zones ==" >> "$O"
-          curl -s --max-time 30 -H "Authorization: Bearer $T" "https://api.cloudflare.com/client/v4/zones?per_page=50" | python3 -c "import sys,json;d=json.load(sys.stdin);[print(z['name'],z['id']) for z in (d.get('result') or [])]" >> "$O" 2>&1
-          for zid in 5c5fca6f2e8bf44362a8ca850dbb3b76 900aba0bd69a63d84d137029b15da481; do
-            echo "== email routing settings $zid ==" >> "$O"
-            curl -s --max-time 30 -H "Authorization: Bearer $T" "https://api.cloudflare.com/client/v4/zones/$zid/email/routing" >> "$O" 2>&1
-            echo >> "$O"
-            echo "== catch_all $zid ==" >> "$O"
-            curl -s --max-time 30 -H "Authorization: Bearer $T" "https://api.cloudflare.com/client/v4/zones/$zid/email/routing/rules/catch_all" >> "$O" 2>&1
-            echo >> "$O"
-            echo "== dns MX $zid ==" >> "$O"
-            curl -s --max-time 30 -H "Authorization: Bearer $T" "https://api.cloudflare.com/client/v4/zones/$zid/dns_records?type=MX" | python3 -c "import sys,json;d=json.load(sys.stdin);[print(r['name'],r['content'],r['priority']) for r in (d.get('result') or [])]" >> "$O" 2>&1
+          B=https://factblink514-compiled.hf.space
+          sleep 120
+          echo "== /api/status ==" >> "$O"
+          curl -s --max-time 60 "$B/api/status" | python3 -c "import sys,json;d=json.load(sys.stdin);print('domain:',d.get('domain'));print('domains:',d.get('domains'))" >> "$O" 2>&1
+          echo "== create 8 random inboxes ==" >> "$O"
+          for i in 1 2 3 4 5 6 7 8; do
+            curl -s -X POST --max-time 60 -H 'content-type: application/json' -d '{}' "$B/api/inbox" | python3 -c "import sys,json;print(json.load(sys.stdin).get('address'))" >> "$O" 2>&1
           done
-          head -c 8000 "$O" > /tmp/iss.txt
+          echo "== forced mytemp-mail.online ==" >> "$O"
+          curl -s -X POST --max-time 60 -H 'content-type: application/json' -d '{"domain":"mytemp-mail.online"}' "$B/api/inbox" >> "$O" 2>&1
+          echo >> "$O"
+          echo "== forced offexmail.online ==" >> "$O"
+          curl -s -X POST --max-time 60 -H 'content-type: application/json' -d '{"domain":"offexmail.online"}' "$B/api/inbox" >> "$O" 2>&1
+          echo >> "$O"
+          head -c 6000 "$O" > /tmp/iss.txt
       - name: Issue
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh issue create --repo "$GITHUB_REPOSITORY" --title "cf-check results" --body-file /tmp/iss.txt
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "multi-domain test results" --body-file /tmp/iss.txt
