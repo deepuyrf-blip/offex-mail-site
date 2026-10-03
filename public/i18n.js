@@ -173,7 +173,7 @@ es:{
  lang_pick:"Idioma"
 },
 fr:{
- el_head:"Mail temporaire pour ElevenLabs (11Labs) — 100 % fonctionnel",
+ el_head:"Mail temporaire pour ElevenLabs (11Labs) — 85 % fonctionnel",
  el_intro:"S'inscrire sur ElevenLabs demande une vérification par e-mail. Pas besoin de donner votre vraie adresse : prenez ici une adresse temporaire, collez-la sur ElevenLabs, et l'OTP ou le lien de vérification arrivera ici en quelques secondes. Gratuit, instantané, sans inscription.",
  el_s1t:"1. Obtenez une adresse",
  el_s1d:"Appuyez sur « Créer une boîte » ci-dessous : vous obtenez aussitôt une adresse privée.",
@@ -181,7 +181,7 @@ fr:{
  el_s2d:"Collez cette adresse dans le formulaire d'inscription (à la place de votre vraie adresse).",
  el_s3t:"3. Recevez votre code",
  el_s3d:"L'e-mail de vérification ou l'OTP arrivera ici ; l'OTP est détecté et affiché automatiquement.",
- banner:"🎙️ Mail temporaire pour ElevenLabs (11Labs) — <b>100 % fonctionnel</b> • gratuit • instantané • sans inscription",
+ banner:"🎙️ Mail temporaire pour ElevenLabs (11Labs) — <b>85 % fonctionnel</b> • gratuit • instantané • sans inscription",
  svc_head:"Mail temporaire pour vos services préférés",
  svc_sub:"Choisissez un service et obtenez une boîte jetable gratuite adaptée à son inscription : plus de 40 guides pas à pas, tous gratuits, sans inscription.",
  svc_all:"Voir les 40+ services →",
@@ -226,7 +226,7 @@ fr:{
  lang_pick:"Langue"
 },
 de:{
- el_head:"Temp-Mail für ElevenLabs (11Labs) — 100 % funktionsfähig",
+ el_head:"Temp-Mail für ElevenLabs (11Labs) — 85 % funktionsfähig",
  el_intro:"Bei der Anmeldung bei ElevenLabs ist eine E-Mail-Bestätigung nötig. Du musst deine echte E-Mail nicht angeben: Hol dir hier eine temporäre Adresse, füge sie bei ElevenLabs ein, und der OTP / Bestätigungslink kommt in Sekunden hier an. Kostenlos, sofort, ohne Anmeldung.",
  el_s1t:"1. Adresse holen",
  el_s1d:"Tippe unten auf „Postfach erstellen“ – du bekommst sofort eine private Adresse.",
@@ -234,7 +234,7 @@ de:{
  el_s2d:"Füge diese Adresse im Anmeldeformular ein (statt deiner echten E-Mail).",
  el_s3t:"3. Code abholen",
  el_s3d:"Die Bestätigungsmail / der OTP kommt hier an – der OTP wird automatisch erkannt und angezeigt.",
- banner:"🎙️ Temp-Mail für ElevenLabs (11Labs) — <b>100 % funktionsfähig</b> • kostenlos • sofort • ohne Anmeldung",
+ banner:"🎙️ Temp-Mail für ElevenLabs (11Labs) — <b>85 % funktionsfähig</b> • kostenlos • sofort • ohne Anmeldung",
  svc_head:"Temp-Mail für deine Lieblingsdienste",
  svc_sub:"Wähle einen Dienst und hol dir ein kostenloses Wegwerf-Postfach für dessen Anmeldung – 40+ Schritt-für-Schritt-Anleitungen, alles kostenlos, ohne Anmeldung.",
  svc_all:"Alle 40+ Dienste ansehen →",
