@@ -1,0 +1,19 @@
+name: apply-fix
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  f:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fix canonical and commit
+        run: |
+          set -e
+          python3 fix_canon.py
+          git config user.email "github-actions@users.noreply.github.com"
+          git config user.name "github-actions"
+          git add public/
+          git commit -m "fix: homepage canonical/og:url point to mytemp-mail.online" || echo "no changes"
+          git push
