@@ -9,10 +9,15 @@ CF = os.environ["CLOUDFLARE_API_TOKEN"]
 ZID = "5c5fca6f2e8bf44362a8ca850dbb3b76"  # offexmail.online
 DOMAIN = "offexmail.online"
 
+UA = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0 Safari/537.36"
+
 
 def req(url, method="GET", headers=None, body=None):
     data = json.dumps(body).encode() if body is not None else None
-    r = urllib.request.Request(url, method=method, headers=headers or {}, data=data)
+    h = {"User-Agent": UA, "Accept": "application/json"}
+    if headers:
+        h.update(headers)
+    r = urllib.request.Request(url, method=method, headers=h, data=data)
     try:
         with urllib.request.urlopen(r, timeout=45) as resp:
             raw = resp.read().decode("utf-8", "replace")
@@ -34,8 +39,6 @@ RH = {"Authorization": "Bearer " + RESEND, "Content-Type": "application/json"}
 CH = {"Authorization": "Bearer " + CF, "Content-Type": "application/json"}
 
 out = []
-
-# key sanity: how many chars, and what does Resend say about it?
 out.append(("key_len", len(RESEND), "key_prefix", RESEND[:8]))
 st, data = req("https://api.resend.com/domains", headers=RH)
 out.append(("list-domains", st, data))
