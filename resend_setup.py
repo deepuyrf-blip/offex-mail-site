@@ -15,12 +15,19 @@ def req(url, method="GET", headers=None, body=None):
     r = urllib.request.Request(url, method=method, headers=headers or {}, data=data)
     try:
         with urllib.request.urlopen(r, timeout=45) as resp:
-            return resp.status, json.loads(resp.read())
+            raw = resp.read().decode("utf-8", "replace")
+            try:
+                return resp.status, json.loads(raw)
+            except Exception:
+                return resp.status, {"raw": raw[:600]}
     except urllib.error.HTTPError as e:
+        raw = e.read().decode("utf-8", "replace")
         try:
-            return e.code, json.loads(e.read())
+            return e.code, json.loads(raw)
         except Exception:
-            return e.code, {"raw": "error"}
+            return e.code, {"raw": raw[:600]}
+    except Exception as e:
+        return 0, {"exception": str(e)}
 
 
 RH = {"Authorization": "Bearer " + RESEND, "Content-Type": "application/json"}
@@ -28,7 +35,11 @@ CH = {"Authorization": "Bearer " + CF, "Content-Type": "application/json"}
 
 out = []
 
+# key sanity: how many chars, and what does Resend say about it?
+out.append(("key_len", len(RESEND), "key_prefix", RESEND[:8]))
 st, data = req("https://api.resend.com/domains", headers=RH)
+out.append(("list-domains", st, data))
+
 dom = None
 if isinstance(data, dict):
     for d in (data.get("data") or []):
