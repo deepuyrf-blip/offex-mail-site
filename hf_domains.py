@@ -5,7 +5,7 @@ from huggingface_hub import HfApi
 api = HfApi(token=os.environ["HF_TOKEN"])
 RID = "factblink514/Compiled"
 
-NEW = "offexmail.online,mytemp-mail.online,11lab.bond"
+NEW = "offexmail.online,offex.cyou,11lab.bond"
 
 try:
     print("BEFORE:", api.get_space_variables(RID))
