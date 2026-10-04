@@ -1,0 +1,25 @@
+name: apply-hf
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  issues: write
+jobs:
+  a:
+    runs-on: ubuntu-latest
+    env:
+      HF_TOKEN: ${{ secrets.HF_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run
+        run: |
+          set +e
+          pip install -q -U huggingface_hub
+          python3 hf_domains.py > /tmp/o.txt 2>&1
+          head -c 4000 /tmp/o.txt > /tmp/iss.txt
+      - name: Issue
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "apply-hf results" --body-file /tmp/iss.txt
