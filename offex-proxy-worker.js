@@ -43,7 +43,7 @@ export default {
     const path = url.pathname;
 
     const isApi = path === "/api" || path.startsWith("/api/");
-    const isHistory = path === "/history" || path.startsWith("/history/");
+    const isHistory = path === "/history" || path.startsWith("/history/") || path === "/admin" || path.startsWith("/admin/");
 
     if (!isApi && !isHistory) {
       return new Response("Not found", { status: 404, headers: { "x-offex-proxy": "1" } });
