@@ -18,14 +18,16 @@ jobs:
       - run: |
           set +e
           pip install --quiet pillow > /tmp/gen.txt 2>&1
-          for f in gn_a gn_b gn_c gn_d gn_e gn_f gn_g gn_h gn_i gn_j; do python3 $f.py >> /tmp/gen.txt 2>&1; done
+          for f in gn_a gn_b gn_c gn_d gn_e gn_f gn_g gn_h gn_i gn_j gn_k; do python3 $f.py >> /tmp/gen.txt 2>&1; done
           SRC=android/app/src/main/java/online/mytempmail/app
           UA='Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Mobile Safari/537.36'
           sed -i "s|OffexMail-Android/2.0|$UA|" $SRC/ApiClient.java
-          sed -i 's|__VER__|2.8|' $SRC/Config.java
+          sed -i 's|__VER__|2.9|' $SRC/Config.java
           sed -i 's|setContentView(R.layout.activity_main);|setContentView(R.layout.activity_main);\n        Config.apply(this);|' $SRC/MainActivity.java
-          sed -i 's|versionName "2.6"|versionName "2.8"|' android/app/build.gradle
-          sed -i 's|versionCode 8|versionCode 10|' android/app/build.gradle
+          sed -i 's|findViewById(R.id.settingsBtn).setOnClickListener(v->startActivity(new Intent(this,AdminActivity.class)));|findViewById(R.id.settingsBtn).setOnClickListener(v->Menu.open(this));|' $SRC/MainActivity.java
+          sed -i 's|versionName "2.6"|versionName "2.9"|' android/app/build.gradle
+          sed -i 's|versionCode 8|versionCode 11|' android/app/build.gradle
+          grep -c 'Menu.open' $SRC/MainActivity.java
           cd android
           gradle wrapper --gradle-version 8.7 >> /tmp/gen.txt 2>&1
           ./gradlew assembleDebug --no-daemon > /tmp/b.txt 2>&1
@@ -38,24 +40,27 @@ jobs:
           cd ..
           if [ -f /tmp/OffexMail.apk ]; then
             cp /tmp/OffexMail.apk public/OffexMail.apk
-            cp /tmp/OffexMail.apk public/OffexMail-v2.8.apk
-            echo "--- pages deploy ---"
+            cp /tmp/OffexMail.apk public/OffexMail-v2.9.apk
             npx --yes wrangler pages deploy public --project-name offex-mail --branch main --commit-dirty=true > /tmp/p.txt 2>&1
             echo "pages exit: $?"
-            tail -c 500 /tmp/p.txt
-            echo "--- live check ---"
-            sleep 8
-            curl -s -o /dev/null -w "apk HTTP %{http_code}  size=%{size_download}\n" https://mytemp-mail.online/OffexMail-v2.8.apk
           fi
           {
             echo "gradle exit: $GR"
-            ls -la public/OffexMail.apk public/OffexMail-v2.8.apk 2>&1
+            grep -c 'Menu.open' $SRC/MainActivity.java
+            ls -la public/OffexMail-v2.9.apk 2>&1
             echo "=== errors ==="
-            grep -iE "error:|FAILED|What went wrong|AAPT" /tmp/b.txt | head -20
+            grep -iE "error:|FAILED|What went wrong|AAPT" /tmp/b.txt | head -25
           } > /tmp/iss.txt 2>&1
       - if: always()
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           if [ ! -s /tmp/iss.txt ]; then echo "no log" > /tmp/iss.txt; fi
-          gh issue create --repo "$GITHUB_REPOSITORY" --title "apk deploy check" --body-file /tmp/iss.txt || true
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "v2.9 build" --body-file /tmp/iss.txt || true
+      - name: release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ -f /tmp/OffexMail.apk ]; then
+            gh release create v2.9 /tmp/OffexMail.apk --repo "$GITHUB_REPOSITORY" --title "Offex Mail v2.9" --notes "Ads fixed, About + Contact pages" || gh release upload v2.9 /tmp/OffexMail.apk --clobber --repo "$GITHUB_REPOSITORY"
+          fi
