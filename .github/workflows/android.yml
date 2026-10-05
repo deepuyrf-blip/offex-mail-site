@@ -25,6 +25,7 @@ jobs:
           sed -i 's|<string name="ob2_body">.*</string>|<string name="ob2_body">The app keeps checking in the background, so you get a notification the moment new mail arrives.</string>|' $S
           sed -i 's|<string name="ob3_body">.*</string>|<string name="ob3_body">No account, no password. Every inbox expires on its own after a while.</string>|' $S
           sed -i 's|<string name="no_messages">.*</string>|<string name="no_messages">No mail yet. Paste this address wherever you need it and mail will land here.</string>|' $S
+          sed -i 's|</resources>|    <string name="tagline">Temp Mail - Instant Inbox</string>\n</resources>|' $S
           sed -i 's|versionName "2.0"|versionName "2.2"|' android/app/build.gradle
           sed -i 's|versionCode 2|versionCode 4|' android/app/build.gradle
           SRC=android/app/src/main/java/online/mytempmail/app
@@ -36,12 +37,10 @@ jobs:
           GR=$?
           {
             echo "gradle exit: $GR"
-            echo "=== gen ==="
-            tail -c 400 /tmp/gen.txt
             echo "=== apk ==="
             ls -la app/build/outputs/apk/debug/ 2>&1
             echo "=== errors ==="
-            grep -iE "error:|FAILED|What went wrong" /tmp/b.txt | head -30
+            grep -iE "error:|FAILED|What went wrong|AAPT" /tmp/b.txt | head -30
           } > /tmp/iss.txt 2>&1
       - if: always()
         env:
