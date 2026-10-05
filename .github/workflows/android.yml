@@ -6,9 +6,6 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      CLOUDFLARE_ACCOUNT_ID: d33504e28650ba4603dc9cafc46d0ec9
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -26,7 +23,6 @@ jobs:
           sed -i 's|setContentView(R.layout.activity_main);|setContentView(R.layout.activity_main);\n        Config.apply(this);|' $SRC/MainActivity.java
           sed -i 's|versionName "2.6"|versionName "2.8"|' android/app/build.gradle
           sed -i 's|versionCode 8|versionCode 10|' android/app/build.gradle
-          grep -n 'User-Agent' $SRC/ApiClient.java
           cd android
           gradle wrapper --gradle-version 8.7 >> /tmp/gen.txt 2>&1
           ./gradlew assembleDebug --no-daemon > /tmp/b.txt 2>&1
@@ -39,13 +35,16 @@ jobs:
           cd ..
           if [ -f /tmp/OffexMail.apk ]; then
             cp /tmp/OffexMail.apk public/OffexMail.apk
-            npx --yes wrangler pages deploy public --project-name offex-mail --branch main --commit-dirty=true > /tmp/p.txt 2>&1
-            echo "pages exit: $?" >> /tmp/iss.txt
+            cp /tmp/OffexMail.apk public/OffexMail-v2.8.apk
+            git config user.email "actions@users.noreply.github.com"
+            git config user.name "actions"
+            git add -f public/OffexMail.apk public/OffexMail-v2.8.apk
+            git commit -m "publish apk v2.8" || echo "no change"
+            git push || true
           fi
           {
             echo "gradle exit: $GR"
-            ls -la public/OffexMail.apk 2>&1
-            grep -n 'User-Agent' $SRC/ApiClient.java
+            ls -la public/OffexMail.apk public/OffexMail-v2.8.apk 2>&1
             echo "=== errors ==="
             grep -iE "error:|FAILED|What went wrong|AAPT" /tmp/b.txt | head -20
           } > /tmp/iss.txt 2>&1
@@ -54,4 +53,4 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           if [ ! -s /tmp/iss.txt ]; then echo "no log" > /tmp/iss.txt; fi
-          gh issue create --repo "$GITHUB_REPOSITORY" --title "ua fix build" --body-file /tmp/iss.txt || true
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "apk published in repo" --body-file /tmp/iss.txt || true
