@@ -14,6 +14,9 @@ window.OFFEX_LANGS = [
 
 window.OFFEX_STR = {
 en:{
+ adblock_title:"Ad blocker detected",
+ adblock_msg:"Please turn off your ad blocker / AdGuard (and any ad-blocking DNS) to use this site, then reload.",
+ adblock_btn:"Reload",
  el_head:"Temp Mail for ElevenLabs (11Labs) — 85% Working",
  el_intro:"Signing up for ElevenLabs asks for email verification. You don't need to give your real email — get a temporary address here, paste it on ElevenLabs, and the OTP / verification link will arrive here within seconds. Free, instant, no signup.",
  el_s1t:"1. Get an address",
@@ -67,6 +70,9 @@ en:{
  lang_pick:"Language"
 },
 hi:{
+ adblock_title:"Ad blocker detect hua",
+ adblock_msg:"Is site ko use karne ke liye pehle apna ad blocker / AdGuard (aur koi bhi ad-blocking DNS) band karo, phir reload karo.",
+ adblock_btn:"Reload",
  el_head:"ElevenLabs (11Labs) ke liye Temp Mail — 85% Working",
  el_intro:"ElevenLabs pe signup karte waqt email verification maangta hai. Apna asli email dene ki zaroorat nahi — yahan se ek temporary address lo, ElevenLabs pe daalo, aur OTP / verification link yahin par seconds mein aa jayega. Free, instant, no signup.",
  el_s1t:"1. Address lo",
@@ -120,6 +126,9 @@ hi:{
  lang_pick:"भाषा"
 },
 es:{
+ adblock_title:"Bloqueador de anuncios detectado",
+ adblock_msg:"Desactiva tu bloqueador de anuncios / AdGuard (y cualquier DNS de bloqueo) para usar este sitio, luego recarga.",
+ adblock_btn:"Recargar",
  el_head:"Correo temporal para ElevenLabs (11Labs) — 85% funcional",
  el_intro:"Registrarse en ElevenLabs pide verificar tu correo. No necesitas dar tu correo real: consigue aquí una dirección temporal, pégala en ElevenLabs y el OTP o el enlace de verificación llegará aquí en segundos. Gratis, instantáneo, sin registro.",
  el_s1t:"1. Consigue una dirección",
@@ -173,6 +182,9 @@ es:{
  lang_pick:"Idioma"
 },
 fr:{
+ adblock_title:"Bloqueur de publicités détecté",
+ adblock_msg:"Désactivez votre bloqueur de publicités / AdGuard (et tout DNS de blocage) pour utiliser ce site, puis rechargez.",
+ adblock_btn:"Recharger",
  el_head:"Mail temporaire pour ElevenLabs (11Labs) — 85 % fonctionnel",
  el_intro:"S'inscrire sur ElevenLabs demande une vérification par e-mail. Pas besoin de donner votre vraie adresse : prenez ici une adresse temporaire, collez-la sur ElevenLabs, et l'OTP ou le lien de vérification arrivera ici en quelques secondes. Gratuit, instantané, sans inscription.",
  el_s1t:"1. Obtenez une adresse",
@@ -226,6 +238,9 @@ fr:{
  lang_pick:"Langue"
 },
 de:{
+ adblock_title:"Werbeblocker erkannt",
+ adblock_msg:"Bitte deaktiviere deinen Werbeblocker / AdGuard (und blockierendes DNS), um diese Seite zu nutzen, dann neu laden.",
+ adblock_btn:"Neu laden",
  el_head:"Temp-Mail für ElevenLabs (11Labs) — 85 % funktionsfähig",
  el_intro:"Bei der Anmeldung bei ElevenLabs ist eine E-Mail-Bestätigung nötig. Du musst deine echte E-Mail nicht angeben: Hol dir hier eine temporäre Adresse, füge sie bei ElevenLabs ein, und der OTP / Bestätigungslink kommt in Sekunden hier an. Kostenlos, sofort, ohne Anmeldung.",
  el_s1t:"1. Adresse holen",
@@ -279,6 +294,9 @@ de:{
  lang_pick:"Sprache"
 },
 pt:{
+ adblock_title:"Bloqueador de anúncios detectado",
+ adblock_msg:"Desative seu bloqueador de anúncios / AdGuard (e qualquer DNS de bloqueio) para usar este site, depois recarregue.",
+ adblock_btn:"Recarregar",
  el_head:"E-mail temporário para ElevenLabs (11Labs) — 85% funcional",
  el_intro:"Cadastrar-se no ElevenLabs pede verificação por e-mail. Você não precisa dar seu e-mail real: pegue aqui um endereço temporário, cole no ElevenLabs e o OTP ou o link de verificação chegará aqui em segundos. Grátis, instantâneo, sem cadastro.",
  el_s1t:"1. Pegue um endereço",
@@ -332,6 +350,9 @@ pt:{
  lang_pick:"Idioma"
 },
 ru:{
+ adblock_title:"Обнаружен блокировщик рекламы",
+ adblock_msg:"Отключите блокировщик рекламы / AdGuard (и блокирующий DNS), чтобы пользоваться сайтом, затем перезагрузите.",
+ adblock_btn:"Перезагрузить",
  el_head:"Временная почта для ElevenLabs (11Labs) — работает на 85%",
  el_intro:"При регистрации в ElevenLabs требуется подтверждение e-mail. Настоящий адрес указывать не нужно: возьмите здесь временный адрес, вставьте его в ElevenLabs — и код (OTP) или ссылка подтверждения придут сюда за секунды. Бесплатно, мгновенно, без регистрации.",
  el_s1t:"1. Получите адрес",
@@ -385,6 +406,9 @@ ru:{
  lang_pick:"Язык"
 },
 ar:{
+ adblock_title:"تم اكتشاف مانع الإعلانات",
+ adblock_msg:"يرجى إيقاف مانع الإعلانات / AdGuard (وأي DNS مانع للإعلانات) لاستخدام هذا الموقع، ثم أعد التحميل.",
+ adblock_btn:"إعادة التحميل",
  el_head:"بريد مؤقت لـ ElevenLabs (11Labs) — يعمل 85%",
  el_intro:"عند التسجيل في ElevenLabs يُطلب تأكيد البريد الإلكتروني. لا حاجة لإعطاء بريدك الحقيقي — احصل من هنا على عنوان مؤقت، وألصقه في ElevenLabs، وسيصل رمز التحقق (OTP) أو رابط التأكيد إلى هنا خلال ثوانٍ. مجاني، فوري، بدون تسجيل.",
  el_s1t:"١. احصل على عنوان",
@@ -438,6 +462,9 @@ ar:{
  lang_pick:"اللغة"
 },
 zh:{
+ adblock_title:"检测到广告拦截器",
+ adblock_msg:"请关闭您的广告拦截器 / AdGuard（以及任何广告拦截 DNS）以使用本网站，然后刷新。",
+ adblock_btn:"刷新",
  el_head:"ElevenLabs (11Labs) 临时邮箱 — 85% 可用",
  el_intro:"注册 ElevenLabs 需要验证邮箱。你不必提供真实邮箱——在这里获取一个临时地址，粘贴到 ElevenLabs，验证码（OTP）或验证链接几秒内就会到达这里。免费、即时、无需注册。",
  el_s1t:"1. 获取一个地址",
@@ -491,6 +518,9 @@ zh:{
  lang_pick:"语言"
 },
 ja:{
+ adblock_title:"広告ブロッカーを検出しました",
+ adblock_msg:"このサイトを利用するには、広告ブロッカー / AdGuard（および広告ブロックDNS）をオフにして、再読み込みしてください。",
+ adblock_btn:"再読み込み",
  el_head:"ElevenLabs（11Labs）用の一時メール — 85% 使えます",
  el_intro:"ElevenLabs の登録にはメール認証が必要です。本物のメールアドレスを渡す必要はありません——ここで一時アドレスを取得し、ElevenLabs に貼り付ければ、OTP（認証コード）や確認リンクが数秒でここに届きます。無料・即時・登録不要。",
  el_s1t:"1. アドレスを取得",
