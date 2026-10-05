@@ -1,0 +1,37 @@
+name: Build Android APK
+on: workflow_dispatch
+permissions:
+  contents: write
+  issues: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - run: |
+          set +e
+          pip install --quiet pillow
+          python3 android_setup.py > /tmp/o.txt 2>&1
+          cd android
+          gradle wrapper --gradle-version 8.7 >> /tmp/o.txt 2>&1
+          ./gradlew assembleDebug --no-daemon >> /tmp/o.txt 2>&1
+          echo "build exit: $?" >> /tmp/o.txt
+          ls -la app/build/outputs/apk/debug/ >> /tmp/o.txt 2>&1
+          head -c 3000 /tmp/o.txt > /tmp/iss.txt
+      - if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh issue create --repo "$GITHUB_REPOSITORY" --title "apk build results" --body-file /tmp/iss.txt
+      - name: publish apk release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          APK=android/app/build/outputs/apk/debug/app-debug.apk
+          if [ -f "$APK" ]; then
+            cp "$APK" /tmp/OffexMail.apk
+            gh release create v1.0 /tmp/OffexMail.apk --repo "$GITHUB_REPOSITORY" --title "Offex Mail Android app v1.0" --notes "Sideload APK for mytemp-mail.online" || gh release upload v1.0 /tmp/OffexMail.apk --clobber --repo "$GITHUB_REPOSITORY"
+          fi
