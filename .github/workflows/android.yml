@@ -15,17 +15,19 @@ jobs:
       - run: |
           set +e
           pip install --quiet pillow > /tmp/gen.txt 2>&1
-          for f in gn_a gn_b gn_c gn_d gn_e gn_f gn_g gn_h; do python3 $f.py >> /tmp/gen.txt 2>&1; done
-          sed -i 's|versionName "2.0"|versionName "2.4"|' android/app/build.gradle
-          sed -i 's|versionCode 2|versionCode 6|' android/app/build.gradle
+          for f in gn_a gn_b gn_c gn_d gn_e gn_f gn_g gn_h gn_i; do python3 $f.py >> /tmp/gen.txt 2>&1; done
+          SRC=android/app/src/main/java/online/mytempmail/app
+          sed -i 's|__VER__|2.5|' $SRC/Config.java
+          sed -i 's|setContentView(R.layout.activity_main);|setContentView(R.layout.activity_main);\n        Config.apply(this);|' $SRC/MainActivity.java
+          sed -i 's|versionName "2.0"|versionName "2.5"|' android/app/build.gradle
+          sed -i 's|versionCode 2|versionCode 7|' android/app/build.gradle
+          grep -c 'Config.apply' $SRC/MainActivity.java
           cd android
           gradle wrapper --gradle-version 8.7 >> /tmp/gen.txt 2>&1
           ./gradlew assembleDebug --no-daemon > /tmp/b.txt 2>&1
           GR=$?
           {
             echo "gradle exit: $GR"
-            echo "=== gen ==="
-            tail -c 400 /tmp/gen.txt
             echo "=== apk ==="
             ls -la app/build/outputs/apk/debug/ 2>&1
             echo "=== errors ==="
@@ -36,13 +38,13 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           if [ ! -s /tmp/iss.txt ]; then echo "no log" > /tmp/iss.txt; fi
-          gh issue create --repo "$GITHUB_REPOSITORY" --title "admin panel build" --body-file /tmp/iss.txt || true
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "config receive build" --body-file /tmp/iss.txt || true
       - name: release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           APK=android/app/build/outputs/apk/debug/app-debug.apk
           if [ -f "$APK" ]; then
-            cp "$APK" /tmp/OffexMail-v2.4.apk
-            gh release create v2.4 /tmp/OffexMail-v2.4.apk --repo "$GITHUB_REPOSITORY" --title "Offex Mail v2.4" --notes "Admin panel" || gh release upload v2.4 /tmp/OffexMail-v2.4.apk --clobber --repo "$GITHUB_REPOSITORY"
+            cp "$APK" /tmp/OffexMail-v2.5.apk
+            gh release create v2.5 /tmp/OffexMail-v2.5.apk --repo "$GITHUB_REPOSITORY" --title "Offex Mail v2.5" --notes "Reads remote config: notification, banner, update" || gh release upload v2.5 /tmp/OffexMail-v2.5.apk --clobber --repo "$GITHUB_REPOSITORY"
           fi
