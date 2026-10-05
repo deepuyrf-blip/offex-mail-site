@@ -100,6 +100,7 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.webkit.CookieManager;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -132,7 +133,8 @@ public class MainActivity extends Activity {
 
         web.setWebViewClient(new WebViewClient() {
             @Override
-            public boolean shouldOverrideUrlLoading(WebView v, Uri u) {
+            public boolean shouldOverrideUrlLoading(WebView v, WebResourceRequest req) {
+                Uri u = req.getUrl();
                 String host = u.getHost();
                 if (host != null && (host.endsWith("mytemp-mail.online") || host.endsWith("offexmail.online"))) {
                     return false;
