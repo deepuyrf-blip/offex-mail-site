@@ -1,0 +1,6 @@
+name = "offex-api-proxy"
+main = "offex-proxy-worker.js"
+compatibility_date = "2024-11-01"
+routes = [
+  { pattern = "api.mytemp-mail.online/*", zone_name = "mytemp-mail.online" }
+]
