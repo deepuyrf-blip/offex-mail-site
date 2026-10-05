@@ -13,15 +13,23 @@ jobs:
       - uses: actions/checkout@v4
       - run: |
           set +e
-          grep -n 'isHistory' offex-proxy-worker.js
-          sed -i 's|const isHistory = path === "/history" \|\| path.startsWith("/history/");|const isHistory = path === "/history" \|\| path.startsWith("/history/") \|\| path === "/admin" \|\| path.startsWith("/admin/");|' offex-proxy-worker.js
+          echo "--- before ---"
+          sed -n '1,20p' offex-proxy-worker.js
+          sed -i 's|const ALLOWED = \[|const ALLOWED = [\n  "https://api.mytemp-mail.online",|' offex-proxy-worker.js
           echo "--- after ---"
-          grep -n 'isHistory' offex-proxy-worker.js
+          sed -n '1,20p' offex-proxy-worker.js
           git config user.email "actions@users.noreply.github.com"
           git config user.name "actions"
           git add offex-proxy-worker.js
-          git commit -m "allow /admin through proxy" || echo "no change"
+          git commit -m "allow admin panel origin" || echo "no change"
           git push || true
           npx --yes wrangler deploy --config wrangler.worker.toml > /tmp/w.txt 2>&1
           echo "worker exit: $?"
-          tail -c 900 /tmp/w.txt
+          tail -c 700 /tmp/w.txt
+          echo
+          echo "--- live test ---"
+          curl -s -o /tmp/c.json -w "app-config HTTP %{http_code}\n" -H "Origin: https://api.mytemp-mail.online" https://api.mytemp-mail.online/api/app-config
+          head -c 500 /tmp/c.json
+          echo
+          curl -s -o /tmp/a.json -w "admin-post HTTP %{http_code}\n" -X POST -H "Origin: https://api.mytemp-mail.online" -H "Content-Type: application/json" -H "x-admin-code: wrong" -d '{}' https://api.mytemp-mail.online/api/admin/app-config
+          head -c 200 /tmp/a.json
