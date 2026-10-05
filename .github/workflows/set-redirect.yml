@@ -8,24 +8,28 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: d33504e28650ba4603dc9cafc46d0ec9
       HF_TOKEN: ${{ secrets.HF_TOKEN }}
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
       - run: |
           set +e
-          python3 proxy_setup.py > /tmp/o.txt 2>&1
+          npx --yes wrangler@3 deploy --config wrangler.worker.toml > /tmp/o.txt 2>&1
           echo "" >> /tmp/o.txt
-          echo "== waiting for propagation ==" >> /tmp/o.txt
+          echo "== put secret ==" >> /tmp/o.txt
+          echo "$HF_TOKEN" | npx --yes wrangler@3 secret put HF_TOKEN --name offex-api-proxy >> /tmp/o.txt 2>&1
+          echo "== waiting ==" >> /tmp/o.txt
           sleep 30
           echo "== proxy /api/status ==" >> /tmp/o.txt
           curl -s --max-time 40 "https://api.mytemp-mail.online/api/status" >> /tmp/o.txt 2>&1
           echo "" >> /tmp/o.txt
           echo "== proxy / status ==" >> /tmp/o.txt
           curl -s -o /dev/null -w "%{http_code}\n" --max-time 40 "https://api.mytemp-mail.online/" >> /tmp/o.txt 2>&1
-          echo "== direct hf status ==" >> /tmp/o.txt
-          curl -s -o /dev/null -w "%{http_code}\n" --max-time 40 "https://factblink514-compiled.hf.space/api/status" >> /tmp/o.txt 2>&1
           head -c 5000 /tmp/o.txt > /tmp/iss.txt
       - if: always()
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh issue create --repo "$GITHUB_REPOSITORY" --title "proxy results" --body-file /tmp/iss.txt
+        run: gh issue create --repo "$GITHUB_REPOSITORY" --title "worker proxy results" --body-file /tmp/iss.txt
