@@ -6,6 +6,9 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: d33504e28650ba4603dc9cafc46d0ec9
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -19,47 +22,40 @@ jobs:
           SRC=android/app/src/main/java/online/mytempmail/app
           sed -i 's|__VER__|2.7|' $SRC/Config.java
           sed -i 's|setContentView(R.layout.activity_main);|setContentView(R.layout.activity_main);\n        Config.apply(this);|' $SRC/MainActivity.java
-          sed -i 's|versionName "2.6"|versionName "2.7"|' android/app/build.gradle
-          sed -i 's|versionCode 8|versionCode 9|' android/app/build.gradle
-          # fixed keystore so every build installs over the previous one
-          if [ ! -f offex.keystore ]; then
-            keytool -genkeypair -keystore offex.keystore -alias offex -keyalg RSA -keysize 2048 -validity 10000 -storepass offexpass123 -keypass offexpass123 -dname "CN=Offex Mail, O=Offex, C=IN" > /tmp/ks.txt 2>&1
-            git config user.email "actions@users.noreply.github.com"
-            git config user.name "actions"
-            git add offex.keystore
-            git commit -m "add fixed signing keystore" >> /tmp/ks.txt 2>&1
-            git push >> /tmp/ks.txt 2>&1
-            echo "keystore created"
-          else
-            echo "keystore exists"
-          fi
           cd android
           gradle wrapper --gradle-version 8.7 >> /tmp/gen.txt 2>&1
           ./gradlew assembleDebug --no-daemon > /tmp/b.txt 2>&1
           GR=$?
           APK=app/build/outputs/apk/debug/app-debug.apk
           BT=$(ls -d $ANDROID_HOME/build-tools/* 2>/dev/null | sort -V | tail -1)
-          echo "build-tools: $BT"
           if [ -f "$APK" ] && [ -n "$BT" ]; then
-            "$BT/apksigner" sign --ks ../offex.keystore --ks-pass pass:offexpass123 --key-pass pass:offexpass123 --out /tmp/OffexMail-signed.apk "$APK" >> /tmp/b.txt 2>&1
+            "$BT/apksigner" sign --ks ../offex.keystore --ks-pass pass:offexpass123 --key-pass pass:offexpass123 --out /tmp/OffexMail.apk "$APK" >> /tmp/b.txt 2>&1
             echo "sign exit: $?"
+          fi
+          cd ..
+          if [ -f /tmp/OffexMail.apk ]; then
+            cp /tmp/OffexMail.apk public/OffexMail.apk
+            echo "--- pages deploy ---"
+            npx --yes wrangler pages deploy public --project-name offex-mail --branch main --commit-dirty=true > /tmp/p.txt 2>&1
+            echo "pages exit: $?"
+            tail -c 600 /tmp/p.txt
           fi
           {
             echo "gradle exit: $GR"
-            ls -la /tmp/OffexMail-signed.apk 2>&1
+            ls -la public/OffexMail.apk 2>&1
             echo "=== errors ==="
-            grep -iE "error:|FAILED|What went wrong|AAPT" /tmp/b.txt | head -30
+            grep -iE "error:|FAILED|What went wrong|AAPT" /tmp/b.txt | head -20
           } > /tmp/iss.txt 2>&1
       - if: always()
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           if [ ! -s /tmp/iss.txt ]; then echo "no log" > /tmp/iss.txt; fi
-          gh issue create --repo "$GITHUB_REPOSITORY" --title "signed build" --body-file /tmp/iss.txt || true
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "apk on site" --body-file /tmp/iss.txt || true
       - name: release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if [ -f /tmp/OffexMail-signed.apk ]; then
-            gh release create v2.7 /tmp/OffexMail-signed.apk --repo "$GITHUB_REPOSITORY" --title "Offex Mail v2.7" --notes "Fixed signing - installs over previous version" || gh release upload v2.7 /tmp/OffexMail-signed.apk --clobber --repo "$GITHUB_REPOSITORY"
+          if [ -f /tmp/OffexMail.apk ]; then
+            gh release create v2.7 /tmp/OffexMail.apk --repo "$GITHUB_REPOSITORY" --title "Offex Mail v2.7" --notes "Signed build" --clobber 2>/dev/null || gh release upload v2.7 /tmp/OffexMail.apk --clobber --repo "$GITHUB_REPOSITORY"
           fi
