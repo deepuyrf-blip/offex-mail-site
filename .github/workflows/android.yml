@@ -19,19 +19,19 @@ jobs:
           python3 gn_b.py >> /tmp/gen.txt 2>&1
           python3 gn_c.py >> /tmp/gen.txt 2>&1
           python3 gn_d.py >> /tmp/gen.txt 2>&1
-          ls -R android/app/src/main >> /tmp/gen.txt 2>&1
+          SRC=android/app/src/main/java/online/mytempmail/app
+          sed -i 's/boolean notify()/boolean notifyOn()/g' $SRC/Prefs.java
+          sed -i 's/Prefs\.notify()/Prefs.notifyOn()/g' $SRC/Notifier.java $SRC/AdminActivity.java
           cd android
           gradle wrapper --gradle-version 8.7 >> /tmp/gen.txt 2>&1
           ./gradlew assembleDebug --no-daemon > /tmp/b.txt 2>&1
           GR=$?
           {
             echo "gradle exit: $GR"
-            echo "=== generator ==="
-            tail -c 800 /tmp/gen.txt
             echo "=== apk ==="
             ls -la app/build/outputs/apk/debug/ 2>&1
             echo "=== errors ==="
-            grep -iE "error:|FAILED|What went wrong|Caused by|error" /tmp/b.txt | head -40
+            grep -iE "error:|FAILED|What went wrong|Caused by" /tmp/b.txt | head -40
             echo "=== tail ==="
             tail -c 1000 /tmp/b.txt
           } > /tmp/iss.txt 2>&1
@@ -39,5 +39,14 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if [ ! -s /tmp/iss.txt ]; then echo "no log captured - early failure" > /tmp/iss.txt; fi
+          if [ ! -s /tmp/iss.txt ]; then echo "no log captured" > /tmp/iss.txt; fi
           gh issue create --repo "$GITHUB_REPOSITORY" --title "native apk build" --body-file /tmp/iss.txt || true
+      - name: release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          APK=android/app/build/outputs/apk/debug/app-debug.apk
+          if [ -f "$APK" ]; then
+            cp "$APK" /tmp/OffexMail-v2.apk
+            gh release create v2.0 /tmp/OffexMail-v2.apk --repo "$GITHUB_REPOSITORY" --title "Offex Mail native app v2.0" --notes "Native Android app" || gh release upload v2.0 /tmp/OffexMail-v2.apk --clobber --repo "$GITHUB_REPOSITORY"
+          fi
