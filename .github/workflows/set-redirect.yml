@@ -1,23 +1,21 @@
 name: Set CF redirect
 on: workflow_dispatch
 permissions:
-  contents: write
+  contents: read
   issues: write
 jobs:
   r:
     runs-on: ubuntu-latest
+    env:
+      HF_TOKEN: ${{ secrets.HF_TOKEN }}
     steps:
       - uses: actions/checkout@v4
       - run: |
           set +e
-          python3 patch_site_api.py > /tmp/o.txt 2>&1
-          git config user.email "actions@users.noreply.github.com"
-          git config user.name "actions"
-          git add public/index.html
-          git commit -m "feat(site): route API through api.mytemp-mail.online proxy" >> /tmp/o.txt 2>&1 || echo "no change" >> /tmp/o.txt
-          git push >> /tmp/o.txt 2>&1
-          head -c 3000 /tmp/o.txt > /tmp/iss.txt
+          pip install -q -U huggingface_hub
+          python3 go_private.py > /tmp/o.txt 2>&1
+          head -c 5000 /tmp/o.txt > /tmp/iss.txt
       - if: always()
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh issue create --repo "$GITHUB_REPOSITORY" --title "site api patch results" --body-file /tmp/iss.txt
+        run: gh issue create --repo "$GITHUB_REPOSITORY" --title "go-private results" --body-file /tmp/iss.txt
