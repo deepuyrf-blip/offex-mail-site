@@ -362,6 +362,13 @@
   </style>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7802179098119853"
      crossorigin="anonymous"></script>
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#6d4dff">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Offex Mail">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
 </head>
 <body>
 <div id="adblockGate" style="display:none;position:fixed;inset:0;z-index:99999;background:#0f1117;color:#e8eaf2;align-items:center;justify-content:center;padding:24px;text-align:center;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif">
@@ -754,7 +761,10 @@
   /* ---------- helpers ---------- */
   var API_BASE = "https://api.mytemp-mail.online";
   function api(path, opts){
-    return fetch(API_BASE + "/api" + path, Object.assign({ headers:{ "content-type":"application/json" } }, opts||{}))
+    var _h = Object.assign({ "content-type":"application/json" }, (opts && opts.headers) || {});
+    if((((opts||{}).method)||"GET").toUpperCase()==="POST" && path==="/inbox"){ try{ var _el=document.querySelector('[name="cf-turnstile-response"]'); if(_el && _el.value) _h["x-turnstile-token"]=_el.value; }catch(e){} }
+    opts = Object.assign({}, opts, { headers: _h });
+    return fetch(API_BASE + "/api" + path, opts)
       .then(function(r){ return r.text().then(function(txt){ var j=null; try{ j = txt ? JSON.parse(txt) : null; }catch(e){} if(!r.ok) throw new Error(j && j.error ? j.error : ("HTTP "+r.status)); if(j===null) throw new Error("Empty response from server (HTTP "+r.status+")"); return j; }); });
   }
   var toastTimer;
@@ -1060,6 +1070,18 @@
 
   var io = new IntersectionObserver(function(es){ es.forEach(function(en){ if(en.isIntersecting){ en.target.classList.add("in"); io.unobserve(en.target); } }); }, { threshold:.12 });
   Array.prototype.forEach.call(document.querySelectorAll(".reveal"), function(el){ io.observe(el); });
+})();
+</script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+<div class="cf-turnstile" data-sitekey="0x4AAAAAAFN9iQll6bXoy2tA" data-size="invisible" data-theme="dark"></div>
+<button id="pwaInstall" style="display:none;position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:9998;padding:12px 22px;border:0;border-radius:999px;background:#6d4dff;color:#fff;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 8px 24px rgba(109,77,255,.45)">📲 Install app</button>
+<script>
+(function(){
+  if("serviceWorker" in navigator){ window.addEventListener("load", function(){ navigator.serviceWorker.register("/sw.js").catch(function(){}); }); }
+  var deferred = null, btn = document.getElementById("pwaInstall");
+  window.addEventListener("beforeinstallprompt", function(e){ e.preventDefault(); deferred = e; if(btn) btn.style.display = "block"; });
+  if(btn){ btn.onclick = function(){ if(!deferred) return; deferred.prompt(); deferred.userChoice.then(function(){ deferred = null; btn.style.display = "none"; }); }; }
+  window.addEventListener("appinstalled", function(){ if(btn) btn.style.display = "none"; });
 })();
 </script>
 </body>
