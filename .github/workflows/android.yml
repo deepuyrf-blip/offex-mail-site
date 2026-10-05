@@ -1,4 +1,4 @@
-name: Build Android APK
+name: Build Native APK
 on: workflow_dispatch
 permissions:
   contents: write
@@ -14,7 +14,10 @@ jobs:
           java-version: '17'
       - run: |
           pip install --quiet pillow
-          python3 android_setup.py > /tmp/o.txt 2>&1
+          python3 gn_a.py > /tmp/o.txt 2>&1
+          python3 gn_b.py >> /tmp/o.txt 2>&1
+          python3 gn_c.py >> /tmp/o.txt 2>&1
+          python3 gn_d.py >> /tmp/o.txt 2>&1
           cd android
           gradle wrapper --gradle-version 8.7 >> /tmp/o.txt 2>&1
           ./gradlew assembleDebug --no-daemon > /tmp/b.txt 2>&1
@@ -22,23 +25,21 @@ jobs:
           {
             echo "gradle exit: $GR"
             ls -la app/build/outputs/apk/debug/ 2>&1
-            echo
             echo "=== errors ==="
-            grep -iE "error|failed|failure|exception|what went wrong|FAILED" /tmp/b.txt | head -50
-            echo
+            grep -iE "error:|FAILED|What went wrong|Caused by" /tmp/b.txt | head -40
             echo "=== tail ==="
-            tail -c 1500 /tmp/b.txt
+            tail -c 1200 /tmp/b.txt
           } > /tmp/iss.txt 2>&1
       - if: always()
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh issue create --repo "$GITHUB_REPOSITORY" --title "apk build results" --body-file /tmp/iss.txt
-      - name: publish apk release
+        run: gh issue create --repo "$GITHUB_REPOSITORY" --title "native apk build" --body-file /tmp/iss.txt
+      - name: release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           APK=android/app/build/outputs/apk/debug/app-debug.apk
           if [ -f "$APK" ]; then
-            cp "$APK" /tmp/OffexMail.apk
-            gh release create v1.0 /tmp/OffexMail.apk --repo "$GITHUB_REPOSITORY" --title "Offex Mail Android app v1.0" --notes "Sideload APK for mytemp-mail.online" || gh release upload v1.0 /tmp/OffexMail.apk --clobber --repo "$GITHUB_REPOSITORY"
+            cp "$APK" /tmp/OffexMail-v2.apk
+            gh release create v2.0 /tmp/OffexMail-v2.apk --repo "$GITHUB_REPOSITORY" --title "Offex Mail native app v2.0" --notes "Native Android app" || gh release upload v2.0 /tmp/OffexMail-v2.apk --clobber --repo "$GITHUB_REPOSITORY"
           fi
