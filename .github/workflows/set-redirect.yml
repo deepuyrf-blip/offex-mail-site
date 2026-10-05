@@ -1,7 +1,7 @@
 name: Set CF redirect
 on: workflow_dispatch
 permissions:
-  contents: write
+  contents: read
   issues: write
 jobs:
   r:
@@ -13,18 +13,9 @@ jobs:
       - uses: actions/checkout@v4
       - run: |
           set +e
-          pip install --quiet pillow
-          python3 pwa_setup.py > /tmp/o.txt 2>&1
-          git config user.email "actions@users.noreply.github.com"
-          git config user.name "actions"
-          git add public/ pwa_setup.py
-          git commit -m "feat: PWA (manifest + sw + icons) + turnstile frontend" >> /tmp/o.txt 2>&1 || echo "no change" >> /tmp/o.txt
-          git push >> /tmp/o.txt 2>&1
-          echo "--- worker deploy ---" >> /tmp/o.txt
-          npx --yes wrangler deploy --config wrangler.worker.toml >> /tmp/o.txt 2>&1
-          echo "worker exit: $?" >> /tmp/o.txt
+          python3 verify_pwa.py > /tmp/o.txt 2>&1
           head -c 3000 /tmp/o.txt > /tmp/iss.txt
       - if: always()
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh issue create --repo "$GITHUB_REPOSITORY" --title "pwa + worker deploy results" --body-file /tmp/iss.txt
+        run: gh issue create --repo "$GITHUB_REPOSITORY" --title "pwa verify results" --body-file /tmp/iss.txt
