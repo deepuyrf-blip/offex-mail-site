@@ -13,22 +13,18 @@ jobs:
           distribution: temurin
           java-version: '17'
       - run: |
-          set +e
           pip install --quiet pillow
           python3 android_setup.py > /tmp/o.txt 2>&1
           cd android
           gradle wrapper --gradle-version 8.7 >> /tmp/o.txt 2>&1
           ./gradlew assembleDebug --no-daemon > /tmp/b.txt 2>&1
-          echo "gradle exit: $?"
-          echo "gradle exit: $?" >> /tmp/b.txt
-          ls -la app/build/outputs/apk/debug/ >> /tmp/b.txt 2>&1
+          GR=$?
           {
-            echo "=== gradle exit + apk ==="
-            grep "gradle exit" /tmp/b.txt
+            echo "gradle exit: $GR"
             ls -la app/build/outputs/apk/debug/ 2>&1
             echo
             echo "=== errors ==="
-            grep -iE "error|failed|failure|exception|what went wrong|> Task .*FAILED" /tmp/b.txt | head -50
+            grep -iE "error|failed|failure|exception|what went wrong|FAILED" /tmp/b.txt | head -50
             echo
             echo "=== tail ==="
             tail -c 1500 /tmp/b.txt
