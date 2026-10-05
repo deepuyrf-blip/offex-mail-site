@@ -20,8 +20,13 @@ jobs:
           pip install --quiet pillow > /tmp/gen.txt 2>&1
           for f in gn_a gn_b gn_c gn_d gn_e gn_f gn_g gn_h gn_i gn_j; do python3 $f.py >> /tmp/gen.txt 2>&1; done
           SRC=android/app/src/main/java/online/mytempmail/app
-          sed -i 's|__VER__|2.7|' $SRC/Config.java
+          UA='Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Mobile Safari/537.36'
+          sed -i "s|OffexMail-Android/2.0|$UA|" $SRC/ApiClient.java
+          sed -i 's|__VER__|2.8|' $SRC/Config.java
           sed -i 's|setContentView(R.layout.activity_main);|setContentView(R.layout.activity_main);\n        Config.apply(this);|' $SRC/MainActivity.java
+          sed -i 's|versionName "2.6"|versionName "2.8"|' android/app/build.gradle
+          sed -i 's|versionCode 8|versionCode 10|' android/app/build.gradle
+          grep -n 'User-Agent' $SRC/ApiClient.java
           cd android
           gradle wrapper --gradle-version 8.7 >> /tmp/gen.txt 2>&1
           ./gradlew assembleDebug --no-daemon > /tmp/b.txt 2>&1
@@ -30,19 +35,17 @@ jobs:
           BT=$(ls -d $ANDROID_HOME/build-tools/* 2>/dev/null | sort -V | tail -1)
           if [ -f "$APK" ] && [ -n "$BT" ]; then
             "$BT/apksigner" sign --ks ../offex.keystore --ks-pass pass:offexpass123 --key-pass pass:offexpass123 --out /tmp/OffexMail.apk "$APK" >> /tmp/b.txt 2>&1
-            echo "sign exit: $?"
           fi
           cd ..
           if [ -f /tmp/OffexMail.apk ]; then
             cp /tmp/OffexMail.apk public/OffexMail.apk
-            echo "--- pages deploy ---"
             npx --yes wrangler pages deploy public --project-name offex-mail --branch main --commit-dirty=true > /tmp/p.txt 2>&1
-            echo "pages exit: $?"
-            tail -c 600 /tmp/p.txt
+            echo "pages exit: $?" >> /tmp/iss.txt
           fi
           {
             echo "gradle exit: $GR"
             ls -la public/OffexMail.apk 2>&1
+            grep -n 'User-Agent' $SRC/ApiClient.java
             echo "=== errors ==="
             grep -iE "error:|FAILED|What went wrong|AAPT" /tmp/b.txt | head -20
           } > /tmp/iss.txt 2>&1
@@ -51,11 +54,4 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           if [ ! -s /tmp/iss.txt ]; then echo "no log" > /tmp/iss.txt; fi
-          gh issue create --repo "$GITHUB_REPOSITORY" --title "apk on site" --body-file /tmp/iss.txt || true
-      - name: release
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          if [ -f /tmp/OffexMail.apk ]; then
-            gh release create v2.7 /tmp/OffexMail.apk --repo "$GITHUB_REPOSITORY" --title "Offex Mail v2.7" --notes "Signed build" --clobber 2>/dev/null || gh release upload v2.7 /tmp/OffexMail.apk --clobber --repo "$GITHUB_REPOSITORY"
-          fi
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "ua fix build" --body-file /tmp/iss.txt || true
