@@ -15,12 +15,10 @@ jobs:
       - run: |
           set +e
           pip install --quiet pillow > /tmp/gen.txt 2>&1
-          for f in gn_a gn_b gn_c gn_d gn_e gn_f gn_g gn_h gn_i; do python3 $f.py >> /tmp/gen.txt 2>&1; done
+          for f in gn_a gn_b gn_c gn_d gn_e gn_f gn_g gn_h gn_i gn_j; do python3 $f.py >> /tmp/gen.txt 2>&1; done
           SRC=android/app/src/main/java/online/mytempmail/app
-          sed -i 's|__VER__|2.5|' $SRC/Config.java
+          sed -i 's|__VER__|2.6|' $SRC/Config.java
           sed -i 's|setContentView(R.layout.activity_main);|setContentView(R.layout.activity_main);\n        Config.apply(this);|' $SRC/MainActivity.java
-          sed -i 's|versionName "2.0"|versionName "2.5"|' android/app/build.gradle
-          sed -i 's|versionCode 2|versionCode 7|' android/app/build.gradle
           grep -c 'Config.apply' $SRC/MainActivity.java
           cd android
           gradle wrapper --gradle-version 8.7 >> /tmp/gen.txt 2>&1
@@ -38,13 +36,13 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           if [ ! -s /tmp/iss.txt ]; then echo "no log" > /tmp/iss.txt; fi
-          gh issue create --repo "$GITHUB_REPOSITORY" --title "config receive build" --body-file /tmp/iss.txt || true
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "admob build" --body-file /tmp/iss.txt || true
       - name: release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           APK=android/app/build/outputs/apk/debug/app-debug.apk
           if [ -f "$APK" ]; then
-            cp "$APK" /tmp/OffexMail-v2.5.apk
-            gh release create v2.5 /tmp/OffexMail-v2.5.apk --repo "$GITHUB_REPOSITORY" --title "Offex Mail v2.5" --notes "Reads remote config: notification, banner, update" || gh release upload v2.5 /tmp/OffexMail-v2.5.apk --clobber --repo "$GITHUB_REPOSITORY"
+            cp "$APK" /tmp/OffexMail-v2.6.apk
+            gh release create v2.6 /tmp/OffexMail-v2.6.apk --repo "$GITHUB_REPOSITORY" --title "Offex Mail v2.6 (AdMob)" --notes "AdMob SDK + banner ads" || gh release upload v2.6 /tmp/OffexMail-v2.6.apk --clobber --repo "$GITHUB_REPOSITORY"
           fi
