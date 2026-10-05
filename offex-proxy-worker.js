@@ -5,6 +5,7 @@
 // The Hugging Face token is injected server-side (the browser never sees it).
 
 const ALLOWED = [
+  "https://api.mytemp-mail.online",
   "https://mytemp-mail.online",
   "https://www.mytemp-mail.online",
   "https://offexmail.online",
