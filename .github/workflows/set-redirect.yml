@@ -6,30 +6,35 @@ permissions:
 jobs:
   r:
     runs-on: ubuntu-latest
-    env:
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      CLOUDFLARE_ACCOUNT_ID: d33504e28650ba4603dc9cafc46d0ec9
     steps:
       - uses: actions/checkout@v4
       - run: |
           set +e
-          echo "--- before ---"
-          sed -n '1,20p' offex-proxy-worker.js
-          sed -i 's|const ALLOWED = \[|const ALLOWED = [\n  "https://api.mytemp-mail.online",|' offex-proxy-worker.js
-          echo "--- after ---"
-          sed -n '1,20p' offex-proxy-worker.js
-          git config user.email "actions@users.noreply.github.com"
-          git config user.name "actions"
-          git add offex-proxy-worker.js
-          git commit -m "allow admin panel origin" || echo "no change"
+          NEWUA='Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Mobile Safari/537.36'
+          {
+            echo "== 1) app-config with NEW app UA =="
+            curl -s -o /tmp/c1 -w "HTTP %{http_code}\n" -H "Origin: https://mytemp-mail.online" -H "Referer: https://mytemp-mail.online/" -H "User-Agent: $NEWUA" https://api.mytemp-mail.online/api/app-config
+            head -c 500 /tmp/c1
+            echo
+            echo "== 2) app-config with OLD app UA =="
+            curl -s -o /tmp/c2 -w "HTTP %{http_code}\n" -H "Origin: https://mytemp-mail.online" -H "Referer: https://mytemp-mail.online/" -H "User-Agent: OffexMail-Android/2.0" https://api.mytemp-mail.online/api/app-config
+            head -c 300 /tmp/c2
+            echo
+            echo "== 3) app-config with NO origin =="
+            curl -s -o /dev/null -w "HTTP %{http_code}\n" https://api.mytemp-mail.online/api/app-config
+            echo "== 4) status with new UA =="
+            curl -s -o /tmp/s -w "HTTP %{http_code}\n" -H "Origin: https://mytemp-mail.online" -H "User-Agent: $NEWUA" https://api.mytemp-mail.online/api/status
+            head -c 250 /tmp/s
+            echo
+            echo "== 5) create inbox =="
+            curl -s -o /tmp/i -w "HTTP %{http_code}\n" -X POST -H "Origin: https://mytemp-mail.online" -H "Referer: https://mytemp-mail.online/" -H "Content-Type: application/json" -H "User-Agent: $NEWUA" -d '{"custom":"","domain":""}' https://api.mytemp-mail.online/api/inbox
+            head -c 250 /tmp/i
+            echo
+            echo "== 6) site apk reachable =="
+            curl -s -o /dev/null -w "HTTP %{http_code}  size=%{size_download}\n" https://mytemp-mail.online/OffexMail.apk
+          } > TEST.txt 2>&1
+          git config user.email "a@b.c"
+          git config user.name "t"
+          git add TEST.txt
+          git commit -m "api test" || true
           git push || true
-          npx --yes wrangler deploy --config wrangler.worker.toml > /tmp/w.txt 2>&1
-          echo "worker exit: $?"
-          tail -c 700 /tmp/w.txt
-          echo
-          echo "--- live test ---"
-          curl -s -o /tmp/c.json -w "app-config HTTP %{http_code}\n" -H "Origin: https://api.mytemp-mail.online" https://api.mytemp-mail.online/api/app-config
-          head -c 500 /tmp/c.json
-          echo
-          curl -s -o /tmp/a.json -w "admin-post HTTP %{http_code}\n" -X POST -H "Origin: https://api.mytemp-mail.online" -H "Content-Type: application/json" -H "x-admin-code: wrong" -d '{}' https://api.mytemp-mail.online/api/admin/app-config
-          head -c 200 /tmp/a.json
