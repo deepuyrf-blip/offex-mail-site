@@ -1,21 +1,23 @@
 name: Set CF redirect
 on: workflow_dispatch
 permissions:
-  contents: read
+  contents: write
   issues: write
 jobs:
   r:
     runs-on: ubuntu-latest
-    env:
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
     steps:
       - uses: actions/checkout@v4
       - run: |
           set +e
-          python3 resend_setup.py > /tmp/o.txt 2>&1
-          head -c 6000 /tmp/o.txt > /tmp/iss.txt
+          python3 patch_site_random.py > /tmp/o.txt 2>&1
+          git config user.email "actions@users.noreply.github.com"
+          git config user.name "actions"
+          git add public/index.html
+          git commit -m "feat(site): default random mail domain + manual select" >> /tmp/o.txt 2>&1 || echo "no change" >> /tmp/o.txt
+          git push >> /tmp/o.txt 2>&1
+          head -c 3000 /tmp/o.txt > /tmp/iss.txt
       - if: always()
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh issue create --repo "$GITHUB_REPOSITORY" --title "resend results" --body-file /tmp/iss.txt
+        run: gh issue create --repo "$GITHUB_REPOSITORY" --title "site patch results" --body-file /tmp/iss.txt
