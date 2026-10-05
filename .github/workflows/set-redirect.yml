@@ -1,37 +1,24 @@
 name: Set CF redirect
 on: workflow_dispatch
 permissions:
-  contents: read
+  contents: write
   issues: write
 jobs:
   r:
     runs-on: ubuntu-latest
-    env:
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      CLOUDFLARE_ACCOUNT_ID: d33504e28650ba4603dc9cafc46d0ec9
-      HF_TOKEN: ${{ secrets.HF_TOKEN }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
       - run: |
           set +e
-          npx --yes wrangler@3 deploy --config wrangler.worker.toml > /tmp/o.txt 2>&1
-          sleep 15
-          echo "" >> /tmp/o.txt
-          echo "== root (expect 404) ==" >> /tmp/o.txt
-          curl -s -o /dev/null -w "%{http_code}\n" --max-time 30 "https://api.mytemp-mail.online/" >> /tmp/o.txt 2>&1
-          echo "== /api/status no origin (expect 403) ==" >> /tmp/o.txt
-          curl -s -o /dev/null -w "%{http_code}\n" --max-time 30 "https://api.mytemp-mail.online/api/status" >> /tmp/o.txt 2>&1
-          echo "== /api/status with origin (expect 200) ==" >> /tmp/o.txt
-          curl -s -o /dev/null -w "%{http_code}\n" --max-time 30 -H "Origin: https://mytemp-mail.online" "https://api.mytemp-mail.online/api/status" >> /tmp/o.txt 2>&1
-          echo "== POST inbox with origin (expect 200) ==" >> /tmp/o.txt
-          curl -s -o /dev/null -w "%{http_code}\n" --max-time 30 -X POST -H "Origin: https://mytemp-mail.online" -H "Content-Type: application/json" -d '{"custom":"sec1"}' "https://api.mytemp-mail.online/api/inbox" >> /tmp/o.txt 2>&1
-          echo "== /history (expect 200) ==" >> /tmp/o.txt
-          curl -s -o /dev/null -w "%{http_code}\n" --max-time 30 "https://api.mytemp-mail.online/history" >> /tmp/o.txt 2>&1
-          head -c 4000 /tmp/o.txt > /tmp/iss.txt
+          python3 patch_adblock.py > /tmp/o.txt 2>&1
+          sed -i 's|/i18n.js?v=6|/i18n.js?v=7|' public/index.html
+          git config user.email "actions@users.noreply.github.com"
+          git config user.name "actions"
+          git add public/i18n.js public/index.html
+          git commit -m "feat(site): ad-blocker gate overlay + 10-language message" >> /tmp/o.txt 2>&1 || echo "no change" >> /tmp/o.txt
+          git push >> /tmp/o.txt 2>&1
+          head -c 3000 /tmp/o.txt > /tmp/iss.txt
       - if: always()
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh issue create --repo "$GITHUB_REPOSITORY" --title "proxy hardening results" --body-file /tmp/iss.txt
+        run: gh issue create --repo "$GITHUB_REPOSITORY" --title "adblock patch results" --body-file /tmp/iss.txt
