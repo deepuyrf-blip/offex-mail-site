@@ -414,7 +414,7 @@
           <div class="create">
             <div class="prefix">
               <input id="customName" autocomplete="off" spellcheck="false" maxlength="30">
-              <select class="suffix" id="domainSuffix" title="Mail domain" aria-label="Mail domain"><option value="offexmail.online">@offexmail.online</option></select>
+              <select class="suffix" id="domainSuffix" title="Mail domain" aria-label="Mail domain"><option value="">🎲 Random (auto)</option><option value="offexmail.online">@offexmail.online</option></select>
             </div>
             <button class="btn btn-primary" id="createBtn">✨ Create inbox</button>
             <div class="hint" data-i18n="hint_create">Leave blank for a random address. Custom name: 3–30 chars, lowercase letters/numbers.</div>
@@ -1021,7 +1021,7 @@
   var _lastAddr = null;
   try{ _lastAddr = localStorage.getItem("offex_last_addr"); }catch(e){}
   if(_lastAddr && getHistory().some(function(x){ return x.address === _lastAddr; })){ switchInbox(_lastAddr); }
-  api("/status").then(function(s){ var sel=$("domainSuffix"); if(sel && s && s.domains && s.domains.length){ sel.innerHTML = s.domains.map(function(d){ return '<option value="'+esc(d)+'">@'+esc(d)+'</option>'; }).join(""); } }).catch(function(){});
+  api("/status").then(function(s){ var sel=$("domainSuffix"); if(sel && s && s.domains && s.domains.length){ sel.innerHTML = '<option value="">🎲 Random (auto)</option>' + s.domains.map(function(d){ return '<option value="'+esc(d)+'">@'+esc(d)+'</option>'; }).join(""); } }).catch(function(){});
   document.addEventListener("click", unlockAudio, { once:true });
 
   var io = new IntersectionObserver(function(es){ es.forEach(function(en){ if(en.isIntersecting){ en.target.classList.add("in"); io.unobserve(en.target); } }); }, { threshold:.12 });
