@@ -18,14 +18,14 @@ jobs:
       - run: |
           set +e
           pip install --quiet pillow > /tmp/gen.txt 2>&1
-          for f in gn_a gn_b gn_c gn_d gn_e gn_f gn_g gn_h gn_i gn_j gn_k gn_l gn_m gn_n gn_o gn_p gn_q; do python3 $f.py >> /tmp/gen.txt 2>&1; done
+          for f in gn_a gn_b gn_c gn_d gn_e gn_f gn_g gn_h gn_i gn_j gn_k gn_l gn_m gn_n gn_o gn_p gn_q gn_r; do python3 $f.py >> /tmp/gen.txt 2>&1; done
           SRC=android/app/src/main/java/online/mytempmail/app
           UA='Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Mobile Safari/537.36'
           sed -i "s|OffexMail-Android/2.0|$UA|" $SRC/ApiClient.java
-          sed -i 's|__VER__|3.3|' $SRC/Config.java
+          sed -i 's|__VER__|3.4|' $SRC/Config.java
           sed -i '/AdminActivity/d' android/app/src/main/AndroidManifest.xml
-          sed -i 's|versionName "[^"]*"|versionName "3.3"|' android/app/build.gradle
-          sed -i 's|versionCode [0-9]*|versionCode 23|' android/app/build.gradle
+          sed -i 's|versionName "[^"]*"|versionName "3.4"|' android/app/build.gradle
+          sed -i 's|versionCode [0-9]*|versionCode 24|' android/app/build.gradle
           grep -c 'AdminActivity' android/app/src/main/AndroidManifest.xml
           cd android
           gradle wrapper --gradle-version 8.7 >> /tmp/gen.txt 2>&1
@@ -39,13 +39,13 @@ jobs:
           cd ..
           if [ -f /tmp/OffexMail.apk ]; then
             cp /tmp/OffexMail.apk public/OffexMail.apk
-            cp /tmp/OffexMail.apk public/OffexMail-v3.3.apk
+            cp /tmp/OffexMail.apk public/OffexMail-v3.4.apk
             npx --yes wrangler pages deploy public --project-name offex-mail --branch main --commit-dirty=true > /tmp/p.txt 2>&1
             echo "pages exit: $?"
           fi
           {
             echo "gradle exit: $GR"
-            ls -la public/OffexMail-v3.3.apk 2>&1
+            ls -la public/OffexMail-v3.4.apk 2>&1
             echo "=== errors ==="
             grep -iE "error:|FAILED|What went wrong|AAPT" /tmp/b.txt | head -25
           } > /tmp/iss.txt 2>&1
@@ -54,11 +54,11 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           if [ ! -s /tmp/iss.txt ]; then echo "no log" > /tmp/iss.txt; fi
-          gh issue create --repo "$GITHUB_REPOSITORY" --title "v3.3 build" --body-file /tmp/iss.txt || true
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "v3.4 build" --body-file /tmp/iss.txt || true
       - name: release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           if [ -f /tmp/OffexMail.apk ]; then
-            gh release create v3.3 /tmp/OffexMail.apk --repo "$GITHUB_REPOSITORY" --title "Offex Mail v3.3" --notes "v3.3 fixes: (1) new-mail notifications now fire reliably - the first message in a fresh inbox is no longer silently suppressed, mail alerts use a dedicated high-importance channel and the foreground sync service runs on its own low-importance channel; (2) message bodies render as clean readable text - style/script/head/comments/images are stripped before parsing, entities decoded, long lines wrapped; (3) one-tap 'Copy code' card for OTPs; (4) verification links are tappable and open in the browser; (5) UI restyled to the reference screens (light theme, red accent) with a new 'Why Offex Mail' features section on the home screen. Bottom nav Email/Inbox/Switch/More kept; API, ads, announcement banner, notifications and update prompt unchanged." || gh release upload v3.3 /tmp/OffexMail.apk --clobber --repo "$GITHUB_REPOSITORY"
+            gh release create v3.4 /tmp/OffexMail.apk --repo "$GITHUB_REPOSITORY" --title "Offex Mail v3.4" --notes "v3.4 changes: (1) the 'Why Offex Mail' features section moved to the bottom of the home screen; (2) 2-3 custom bundled notification sounds with a More > Notification sound picker (the phone's default sound is no longer used); (3) in-app APK update download via DownloadManager with a progress dialog, instead of opening the browser; (4) REQUEST_INSTALL_PACKAGES plus an unknown-sources install flow; (5) the provided Offex Mail logo is now the launcher icon, with an animated loading splash; (6) a loading animation now shows while the rewarded ad loads on Create. Bottom nav Email/Inbox/Switch/More and the light theme are unchanged; API, ads, announcement banner, notifications and the update prompt keep the same fields." || gh release upload v3.4 /tmp/OffexMail.apk --clobber --repo "$GITHUB_REPOSITORY"
           fi
