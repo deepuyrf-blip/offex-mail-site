@@ -1,0 +1,66 @@
+name: hf-persist-check
+
+# TEMPORARY diagnostic workflow: probes the Offex Mail API from GitHub's
+# network (which can reach the Space + Cloudflare-fronted domain) using a
+# browser-like User-Agent plus Origin/Referer headers, since bare requests
+# get blocked by Cloudflare. Used to verify that DB rows survive a Space
+# restart. Safe to delete once verification is done.
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: "write (create rows) or read (fetch rows back)"
+        required: true
+        default: "write"
+      local:
+        description: "inbox local-part used for the test (no @domain)"
+        required: true
+        default: "pchkverify1"
+      marker:
+        description: "support-message marker string"
+        required: true
+        default: "PERSIST-MARKER-DEFAULT"
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Persistence check
+        env:
+          ACTION: ${{ inputs.action }}
+          LOCAL: ${{ inputs.local }}
+          MARKER: ${{ inputs.marker }}
+        run: |
+          set -u
+          UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+          ADDR="${LOCAL}@offexmail.online"
+          echo "ACTION=${ACTION}  LOCAL=${LOCAL}  ADDR=${ADDR}  MARKER=${MARKER}"
+          for BASE in "https://api.mytemp-mail.online" "https://factblink514-compiled.hf.space"; do
+            echo "############ BASE=${BASE} ############"
+            if [ "${ACTION}" = "write" ]; then
+              echo "== POST /api/support =="
+              curl -s -m 30 -w "\nHTTP %{http_code}\n" \
+                -H "User-Agent: ${UA}" -H "Origin: https://offexmail.online" -H "Referer: https://offexmail.online/" \
+                -H "Accept: application/json" -H "Content-Type: application/json" \
+                -X POST "${BASE}/api/support" \
+                --data "{\"message\":\"${MARKER}\",\"category\":\"PersistenceTest\",\"address\":\"${ADDR}\",\"version\":\"1.0\",\"device\":\"gha\"}"
+              echo "== POST /api/inbox (custom ${LOCAL}) =="
+              curl -s -m 30 -w "\nHTTP %{http_code}\n" \
+                -H "User-Agent: ${UA}" -H "Origin: https://offexmail.online" -H "Referer: https://offexmail.online/" \
+                -H "Accept: application/json" -H "Content-Type: application/json" \
+                -X POST "${BASE}/api/inbox" \
+                --data "{\"custom\":\"${LOCAL}\",\"domain\":\"offexmail.online\"}"
+            fi
+            echo "== GET /api/inbox/${ADDR}/messages =="
+            curl -s -m 30 -w "\nHTTP %{http_code}\n" \
+              -H "User-Agent: ${UA}" -H "Origin: https://offexmail.online" -H "Referer: https://offexmail.online/" \
+              -H "Accept: application/json" \
+              "${BASE}/api/inbox/${ADDR}/messages"
+            echo "== GET /api/app-config =="
+            curl -s -m 30 -w "\nHTTP %{http_code}\n" \
+              -H "User-Agent: ${UA}" -H "Origin: https://offexmail.online" -H "Referer: https://offexmail.online/" \
+              -H "Accept: application/json" \
+              "${BASE}/api/app-config"
+            echo
+          done
