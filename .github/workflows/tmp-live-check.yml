@@ -9,14 +9,24 @@ jobs:
           UA='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
           ORIGIN='https://mytemp-mail.online'
           REF="$ORIGIN/"
-          echo "=== GET /health ==="
-          curl -sS -i -A "$UA" -H "Origin: $ORIGIN" -H "Referer: $REF" --max-time 30 https://api.mytemp-mail.online/health
-          echo
+          API=https://api.mytemp-mail.online
+          echo "=== GET /api/status ==="
+          curl -sS -A "$UA" -H "Origin: $ORIGIN" -H "Referer: $REF" --max-time 30 "$API/api/status"; echo
           echo "=== POST /api/auth ==="
-          curl -sS -i -A "$UA" -H "Origin: $ORIGIN" -H "Referer: $REF" -H "Content-Type: application/json" -X POST --data '{"code":""}' --max-time 30 https://api.mytemp-mail.online/api/auth
-          echo
-          echo "=== GET /api/status (no code) ==="
-          curl -sS -i -A "$UA" -H "Origin: $ORIGIN" -H "Referer: $REF" --max-time 30 https://api.mytemp-mail.online/api/status | head -25
-          echo
-          echo "=== GET / (root) ==="
-          curl -sS -o /dev/null -w "root http=%{http_code}\n" -A "$UA" -H "Origin: $ORIGIN" -H "Referer: $REF" --max-time 30 https://api.mytemp-mail.online/
+          curl -sS -A "$UA" -H "Origin: $ORIGIN" -H "Referer: $REF" -H "Content-Type: application/json" -X POST --data '{"code":""}' --max-time 30 "$API/api/auth"; echo
+          echo "=== POST /api/inbox (random) ==="
+          INBOX_JSON=$(curl -sS -A "$UA" -H "Origin: $ORIGIN" -H "Referer: $REF" -H "Content-Type: application/json" -X POST --data '{}' --max-time 30 "$API/api/inbox")
+          echo "$INBOX_JSON"
+          ADDR=$(echo "$INBOX_JSON" | jq -r '.address // empty')
+          echo "ADDR=$ADDR"
+          if [ -z "$ADDR" ]; then echo "no inbox - abort"; exit 0; fi
+          post() { curl -sS -A "$UA" -H "Origin: $ORIGIN" -H "Referer: $REF" -H "Content-Type: application/json" -X POST --data "$1" --max-time 30 "$API/webhook/ingest"; echo; }
+          echo "=== ingest 1: real OTP in subject ==="
+          post "{\"to\":\"$ADDR\",\"from\":\"no-reply@bank.example\",\"subject\":\"Your verification code is 482913\",\"text\":\"Use this code within 10 minutes.\"}"
+          echo "=== ingest 2: price + year + phone + long id (must NOT match) ==="
+          post "{\"to\":\"$ADDR\",\"from\":\"shop@example.com\",\"subject\":\"Order total Rs 1,299 placed 2026\",\"text\":\"Call 9876543210 or toll free 18001234. Order id 123456789012.\"}"
+          echo "=== ingest 3: Hinglish OTP in subject ==="
+          post "{\"to\":\"$ADDR\",\"from\":\"app@example.com\",\"subject\":\"Aapka OTP hai 731204\",\"text\":\"10 minute me use karein.\"}"
+          sleep 3
+          echo "=== GET /api/inbox/{addr}/messages -> otp field ==="
+          curl -sS -A "$UA" -H "Origin: $ORIGIN" -H "Referer: $REF" --max-time 30 "$API/api/inbox/$ADDR/messages" | jq -c '.messages[] | {subject, otp, service}'
