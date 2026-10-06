@@ -1,0 +1,29 @@
+name: Broadcast probe temp
+on:
+  workflow_dispatch:
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run broadcast verification
+        run: |
+          A=https://api.mytemp-mail.online
+          UA="Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Mobile Safari/537.36"
+          OR="Origin: $A"
+          RF="Referer: $A/admin?code=Hyco"
+          echo "=== 1. STATUS ==="
+          curl -s -o /tmp/status.json -w "HTTP %{http_code}\n" --max-time 30 -A "$UA" -H "$OR" -H "$RF" "$A/api/status"
+          echo "STATUS_BODY: $(head -c 400 /tmp/status.json)"
+          echo "=== 2. DEVICE REGISTER ==="
+          curl -s -o /tmp/dev.json -w "HTTP %{http_code}\n" --max-time 30 -X POST -A "$UA" -H "Content-Type: application/json" -H "$OR" -H "$RF" --data '{"token":"PROBE_TOKEN_DELETE_ME_123","address":"probe@offexmail.online","platform":"android"}' "$A/api/device"
+          echo "DEVICE_BODY: $(head -c 400 /tmp/dev.json)"
+          echo "=== 3. BROADCAST (Send notification) ==="
+          TS=$(date +%s)
+          printf '{"announcement":{"on":false,"text":""},"ads":{"on":false,"app_id":"","banner":"","interstitial":"","rewarded":""},"update":{"latest":"","min":"","url":"","force":false},"push":{"title":"Offex test","body":"Broadcast probe %s","ts":%s}}' "$TS" "$TS" > /tmp/bc.json
+          curl -s -o /tmp/bcres.json -w "HTTP %{http_code}\n" --max-time 30 -X POST -A "$UA" -H "x-admin-code: Hyco" -H "Content-Type: application/json" -H "$OR" -H "$RF" --data @/tmp/bc.json "$A/api/admin/app-config"
+          echo "BROADCAST_BODY: $(head -c 500 /tmp/bcres.json)"
+          sleep 5
+          echo "=== 4. CONFIG AFTER ==="
+          curl -s --max-time 30 -A "$UA" -H "x-admin-code: Hyco" -H "$OR" -H "$RF" "$A/api/app-config" | head -c 800
+          echo
+          echo "PROBE_DONE"
