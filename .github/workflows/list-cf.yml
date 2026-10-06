@@ -7,11 +7,30 @@ jobs:
     steps:
       - run: |
           A=https://api.mytemp-mail.online
-          echo "1 query-param:  $(curl -s --max-time 25 "$A/api/app-config?code=Hyco" | head -c 200)"
-          echo "2 x-admin-code: $(curl -s --max-time 25 -H "x-admin-code: Hyco" "$A/api/app-config" | head -c 200)"
-          echo "3 x-admin-code lower: $(curl -s --max-time 25 -H "X-Admin-Code: Hyco" "$A/api/app-config" | head -c 200)"
-          echo "4 authorization: $(curl -s --max-time 25 -H "Authorization: Hyco" "$A/api/app-config" | head -c 200)"
-          echo "5 x-admin: $(curl -s --max-time 25 -H "x-admin: Hyco" "$A/api/app-config" | head -c 200)"
-          echo "6 no-auth: $(curl -s --max-time 25 "$A/api/app-config" | head -c 200)"
-          echo "--- app-config via admin page host path ---"
-          echo "7 /api/status: $(curl -s --max-time 25 "$A/api/status" | head -c 250)"
+          UA="Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Mobile Safari/537.36"
+          H1="x-admin-code: Hyco"
+          curl -s --max-time 30 -A "$UA" -H "$H1" -H "Origin: https://api.mytemp-mail.online" -H "Referer: https://api.mytemp-mail.online/admin?code=Hyco" "$A/api/app-config" > /tmp/cfg.json
+          echo "=== BEFORE ==="; head -c 1600 /tmp/cfg.json; echo
+          python3 - <<'PY'
+          import json
+          c=json.load(open('/tmp/cfg.json'))
+          u=c.get('update') or {}
+          u['force']=False
+          c['update']=u
+          a=c.get('ads') or {}
+          old=a.get('app_id')
+          if isinstance(old,str) and '-' in old:
+              # fix the dash between pub-id and app-id -> tilde
+              a['app_id']=old.replace('-8006460361','~8006460361') if '-8006460361' in old else old
+          c['ads']=a
+          json.dump(c,open('/tmp/new.json','w'))
+          print("BEFORE ads.app_id:", old)
+          print("AFTER  ads.app_id:", a.get('app_id'))
+          print("AFTER  update.force:", u.get('force'))
+          print("AFTER  update.latest:", u.get('latest'))
+          PY
+          echo "=== POST ==="
+          curl -s -X POST --max-time 30 -A "$UA" -H "$H1" -H "Content-Type: application/json" -H "Origin: https://api.mytemp-mail.online" -H "Referer: https://api.mytemp-mail.online/admin?code=Hyco" --data @/tmp/new.json "$A/api/admin/app-config" | head -c 300; echo
+          sleep 3
+          echo "=== VERIFY ==="
+          curl -s --max-time 30 -A "$UA" -H "$H1" -H "Origin: https://api.mytemp-mail.online" -H "Referer: https://api.mytemp-mail.online/admin?code=Hyco" "$A/api/app-config" | python3 -c "import sys,json;d=json.load(sys.stdin);print('update =',json.dumps(d.get('update')));print('ads.app_id =',(d.get('ads') or {}).get('app_id'));print('announcement =',json.dumps(d.get('announcement'))[:150])"
