@@ -3,7 +3,7 @@ import os, re, io, wave, struct, math
 # ---------------------------------------------------------------------------
 # gn_r.py  (runs LAST, after gn_q, in the android.yml pipeline)
 #
-# Applies the v3.4 changes on top of everything emitted by gn_a..gn_q:
+# Applies the v3.5 changes on top of everything emitted by gn_a..gn_q:
 #   1. Move the "Why Offex Mail" features section from the top of the home
 #      screen to the BOTTOM of the home screen.
 #   2. Bundle 2-3 custom notification sounds (real WAV resources in res/raw)
@@ -13,7 +13,8 @@ import os, re, io, wave, struct, math
 #   4. In-app APK update download (DownloadManager + progress + install).
 #   5. REQUEST_INSTALL_PACKAGES + unknown-sources install intent.
 #   6. Logo (bundled) as launcher icon + animated loading splash.
-#   7. Loading animation while the rewarded ad loads on "Create".
+#   7. Premium INLINE loading state on the Create button (spinner on the
+#      button itself; the old floating loading dialog was removed).
 #
 # API endpoints, JSON field names and admin-controlled features (announcement
 # banner, AdMob banner + rewarded ads, notifications, update prompt) are kept
@@ -325,46 +326,105 @@ if old_btn in s:
     print("R: Config update button -> in-app download")
 else:
     print("R: WARN Config update button anchor not found")
-s = s.replace('latest.equals("3.3")', 'latest.equals("3.4")')
-s = s.replace('latest.equals("__VER__")', 'latest.equals("3.4")')
+s = s.replace('latest.equals("3.3")', 'latest.equals("3.5")')
+s = s.replace('latest.equals("__VER__")', 'latest.equals("3.5")')
 W(cp, s)
 
 # ===========================================================================
-# 7 : MainActivity  -> loading animation while the rewarded ad loads
+# 7 : MainActivity  -> premium INLINE loading state on the Create button
+#     (spinner sits on the button itself; no floating dialog)
 # ===========================================================================
 mp = J + "/MainActivity.java"
 s = R(mp)
-if "import android.app.Dialog;" not in s:
-    s = s.replace("import android.app.Activity;", "import android.app.Activity;\nimport android.app.Dialog;")
-if "private Dialog adDialog;" not in s:
-    s = s.replace("    private Runnable pollTask;", "    private Runnable pollTask;\n    private Dialog adDialog;")
+
+if "import android.widget.ImageView;" not in s:
+    s = s.replace("import android.widget.EditText;",
+                  "import android.widget.EditText;\nimport android.widget.FrameLayout;\nimport android.widget.ImageView;")
+if "import android.view.animation.RotateAnimation;" not in s:
+    s = s.replace("import android.view.View;",
+                  "import android.view.View;\nimport android.view.ViewGroup;\nimport android.view.animation.Animation;\nimport android.view.animation.LinearInterpolator;\nimport android.view.animation.RotateAnimation;")
+if "private ImageView createSpin;" not in s:
+    s = s.replace("    private Runnable pollTask;",
+                  "    private Runnable pollTask;\n    private ImageView createSpin;\n    private boolean createLoading=false;")
+
 old_click = "createBtn.setOnClickListener(v->Ads.rewarded(this, ()->createInbox()));"
-new_click = "createBtn.setOnClickListener(v->{ showAdLoading(); Ads.rewarded(this, ()->{ hideAdLoading(); createInbox(); }); });"
+new_click = "createBtn.setOnClickListener(v->{ showCreateLoading(); Ads.rewarded(this, ()->createInbox()); });"
 if old_click in s:
     s = s.replace(old_click, new_click)
-    print("R: MainActivity create click -> ad loading overlay")
+    print("R: MainActivity create click -> inline button loading")
 else:
     print("R: WARN MainActivity create click anchor not found")
-AD_METHODS = r'''    private void showAdLoading(){
+
+if "createBtn.setEnabled(false); createBtn.setText(R.string.creating);" in s:
+    s = s.replace("createBtn.setEnabled(false); createBtn.setText(R.string.creating);", "showCreateLoading();")
+    print("R: createInbox start -> showCreateLoading")
+else:
+    print("R: WARN createInbox start anchor not found")
+if "createBtn.setEnabled(true); createBtn.setText(R.string.create_inbox);" in s:
+    s = s.replace("createBtn.setEnabled(true); createBtn.setText(R.string.create_inbox);", "hideCreateLoading();")
+    print("R: createInbox finish -> hideCreateLoading")
+
+AD_METHODS = r'''    private void setupCreateLoading(){
         try {
-            if(adDialog != null && adDialog.isShowing()) return;
-            adDialog = new Dialog(this, android.R.style.Theme_Translucent_NoTitleBar);
-            adDialog.setContentView(R.layout.dialog_loading);
-            adDialog.setCancelable(false);
-            if(adDialog.getWindow() != null) adDialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(0x00000000));
-            adDialog.show();
+            if(createSpin != null) return;
+            final ImageView iv = new ImageView(this);
+            iv.setImageResource(R.drawable.ox_spinner);
+            int sz = (int)(getResources().getDisplayMetrics().density * 22f);
+            iv.setLayoutParams(new FrameLayout.LayoutParams(sz, sz, Gravity.CENTER));
+            iv.setVisibility(View.GONE);
+            ViewGroup parent = (ViewGroup) createBtn.getParent();
+            if(parent == null) return;
+            int idx = parent.indexOfChild(createBtn);
+            ViewGroup.LayoutParams blp = createBtn.getLayoutParams();
+            FrameLayout holder = new FrameLayout(this);
+            holder.setLayoutParams(blp);
+            createBtn.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            parent.removeView(createBtn);
+            holder.addView(createBtn);
+            holder.addView(iv);
+            parent.addView(holder, idx);
+            createSpin = iv;
         } catch(Exception e){}
     }
-    private void hideAdLoading(){
-        try { if(adDialog != null){ adDialog.dismiss(); adDialog = null; } } catch(Exception e){}
+    private void showCreateLoading(){
+        try {
+            if(createSpin == null) setupCreateLoading();
+            if(createSpin == null) return;
+            createLoading = true;
+            createBtn.setEnabled(false);
+            createBtn.setText("");
+            if(createSpin.getVisibility() != View.VISIBLE){
+                createSpin.setVisibility(View.VISIBLE);
+                createSpin.setAlpha(0f);
+                createSpin.animate().alpha(1f).setDuration(200).start();
+            }
+            RotateAnimation ra = new RotateAnimation(0f, 360f,
+                Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+            ra.setDuration(800);
+            ra.setInterpolator(new LinearInterpolator());
+            ra.setRepeatCount(Animation.INFINITE);
+            createSpin.startAnimation(ra);
+        } catch(Exception e){}
+    }
+    private void hideCreateLoading(){
+        try {
+            createLoading = false;
+            createBtn.setEnabled(true);
+            createBtn.setText(R.string.create_inbox);
+            if(createSpin != null && createSpin.getVisibility() == View.VISIBLE){
+                createSpin.animate().alpha(0f).setDuration(200).withEndAction(()->{
+                    try { createSpin.clearAnimation(); createSpin.setVisibility(View.GONE); } catch(Exception e){}
+                }).start();
+            }
+        } catch(Exception e){}
     }
 '''
 anchor_resume = "    @Override protected void onResume(){"
-if "private void showAdLoading" not in s and anchor_resume in s:
+if "private void showCreateLoading" not in s and anchor_resume in s:
     s = s.replace(anchor_resume, AD_METHODS + anchor_resume)
-    print("R: MainActivity ad-loading methods inserted")
+    print("R: MainActivity inline-loading methods inserted")
 else:
-    print("R: WARN MainActivity ad-loading methods not inserted")
+    print("R: WARN MainActivity inline-loading methods not inserted")
 W(mp, s)
 
 # ===========================================================================
@@ -420,6 +480,19 @@ W(RES + "/drawable/splash_bg.xml", '''<?xml version="1.0" encoding="utf-8"?>
 </shape>
 ''')
 
+W(RES + "/drawable/ox_spinner.xml", '''<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp"
+    android:viewportWidth="24" android:viewportHeight="24">
+    <path android:pathData="M12,3 a9,9 0 1,0 18,0 a9,9 0 1,0 -18,0"
+        android:strokeColor="#40FFFFFF" android:strokeWidth="2.4"
+        android:strokeLineCap="round" android:fillColor="#00000000" />
+    <path android:pathData="M12,3 A9,9 0 1 1 3,12"
+        android:strokeColor="#FFFFFF" android:strokeWidth="2.6"
+        android:strokeLineCap="round" android:fillColor="#00000000" />
+</vector>
+''')
+
 W(RES + "/layout/activity_splash.xml", '''<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent"
@@ -446,23 +519,6 @@ W(RES + "/layout/activity_splash.xml", '''<?xml version="1.0" encoding="utf-8"?>
 </LinearLayout>
 ''')
 
-W(RES + "/layout/dialog_loading.xml", '''<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content" android:layout_height="wrap_content"
-    android:orientation="vertical" android:gravity="center" android:padding="30dp"
-    android:background="@drawable/bg_card">
-
-    <ImageView android:layout_width="66dp" android:layout_height="66dp"
-        android:src="@drawable/logo" android:contentDescription="@string/app_name" />
-
-    <ProgressBar android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:layout_marginTop="16dp" android:indeterminate="true" />
-
-    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:layout_marginTop="10dp" android:text="Loading..."
-        android:textColor="#5C5875" android:textSize="13sp" />
-</LinearLayout>
-''')
 
 # ===========================================================================
 # 2 : bundle the custom notification sounds (real WAV resources)
@@ -599,17 +655,17 @@ else:
 W(lp, s)
 
 # ===========================================================================
-# version : 3.3 -> 3.4
+# version : 3.3 -> 3.5
 # ===========================================================================
 bp = "android/app/build.gradle"
 s = R(bp)
-s = re.sub(r"versionCode \d+", "versionCode 24", s)
-s = re.sub(r'versionName "[^"]*"', 'versionName "3.4"', s)
+s = re.sub(r"versionCode \d+", "versionCode 25", s)
+s = re.sub(r'versionName "[^"]*"', 'versionName "3.5"', s)
 W(bp, s)
 
 ap = RES + "/layout/activity_about.xml"
 s = R(ap)
-s = s.replace("Version 3.3", "Version 3.4").replace("Version 3.1", "Version 3.4")
+s = s.replace("Version 3.3", "Version 3.5").replace("Version 3.1", "Version 3.5")
 W(ap, s)
 
-print("R: applied v3.4 changes (features move, sounds, in-app update, install perm, logo+splash, ad loading)")
+print("R: applied v3.5 changes (inline create-button loading + premium spinner, features move, sounds, in-app update, install perm, logo+splash)")

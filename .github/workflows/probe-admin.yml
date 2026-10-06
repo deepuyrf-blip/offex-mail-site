@@ -1,0 +1,29 @@
+name: Probe Admin Panel
+on: workflow_dispatch
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch admin panel with browser headers
+        run: |
+          set +e
+          URL='https://api.mytemp-mail.online/admin?code=Hyco'
+          UA='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
+          echo "=== HTTP status line + headers ==="
+          curl -sS -L -D - -o /tmp/body.html \
+            -A "$UA" \
+            -H 'Origin: https://api.mytemp-mail.online' \
+            -H 'Referer: https://api.mytemp-mail.online/admin?code=Hyco' \
+            -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' \
+            -H 'Accept-Language: en-US,en;q=0.9' \
+            "$URL" | head -40
+          echo "=== body size (bytes) ==="
+          wc -c /tmp/body.html
+          echo "=== marker check (OFFEX-ADMIN-V2) ==="
+          if grep -q 'OFFEX-ADMIN-V2' /tmp/body.html; then echo "MARKER_FOUND"; else echo "MARKER_MISSING"; fi
+          echo "=== panel title / headings ==="
+          grep -oE '<title>[^<]*</title>|Offex Admin Panel|offex-admin-v2' /tmp/body.html | head
+          echo "=== first 160 lines of body ==="
+          head -160 /tmp/body.html
