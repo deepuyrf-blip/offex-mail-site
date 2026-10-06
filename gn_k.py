@@ -125,71 +125,90 @@ public class ContactActivity extends Activity {
 
 W(RES+"/layout/activity_about.xml","""<?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent" android:background="@color/offex_bg">
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@color/offex_bg" android:scrollbars="none">
     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:orientation="vertical" android:padding="18dp">
-        <TextView android:layout_width="72dp" android:layout_height="72dp"
-            android:background="@drawable/bg_avatar" android:gravity="center"
-            android:text="\u2709" android:textColor="@color/offex_white" android:textSize="30sp" />
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:layout_marginTop="14dp" android:text="@string/app_name"
-            android:textColor="@color/offex_text" android:textSize="22sp" android:textStyle="bold" />
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:text="@string/tagline" android:textColor="@color/offex_text_dim" android:textSize="13sp" />
+        android:orientation="vertical" android:padding="20dp">
+
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:layout_marginTop="18dp" android:background="@drawable/bg_card" android:elevation="3dp"
-            android:orientation="vertical" android:padding="18dp">
+            android:background="@drawable/bg_header" android:orientation="vertical"
+            android:paddingStart="22dp" android:paddingEnd="22dp"
+            android:paddingTop="26dp" android:paddingBottom="26dp">
+            <TextView android:layout_width="76dp" android:layout_height="76dp"
+                android:background="@drawable/bg_logo" android:gravity="center" android:elevation="10dp"
+                android:text="@string/glyph_mail" android:textColor="@color/offex_white" android:textSize="32sp" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:layout_marginTop="16dp" android:text="@string/app_name"
+                android:textColor="@color/offex_white" android:textSize="22sp" android:textStyle="bold"
+                android:fontFamily="sans-serif-black" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="@string/tagline" android:textColor="@color/offex_white_dim" android:textSize="13sp" />
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginTop="16dp" android:background="@drawable/bg_card" android:elevation="3dp"
+            android:orientation="vertical" android:padding="20dp">
             <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:lineSpacingExtra="5dp" android:textColor="@color/offex_text" android:textSize="14sp"
+                android:lineSpacingExtra="6dp" android:textColor="@color/offex_text" android:textSize="14sp"
                 android:text="Offex Mail is a free temporary email service. Create a disposable inbox in one tap for OTPs, verification links and test emails - no signup, no password." />
             <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:layout_marginTop="14dp" android:lineSpacingExtra="5dp"
+                android:layout_marginTop="16dp" android:lineSpacingExtra="6dp"
                 android:textColor="@color/offex_text_dim" android:textSize="13sp"
                 android:text="Every inbox expires automatically after a while. Nothing is kept forever, and you never have to share your real email address." />
         </LinearLayout>
-        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:layout_marginTop="16dp" android:textColor="@color/offex_text_dim" android:textSize="12sp"
-            android:text="Version 2.9" />
+
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_marginTop="18dp" android:background="@drawable/bg_chip"
+            android:paddingStart="14dp" android:paddingEnd="14dp" android:paddingTop="6dp" android:paddingBottom="6dp"
+            android:textColor="@color/offex_purple2" android:textSize="12sp" android:textStyle="bold"
+            android:text="Version 3.1" />
     </LinearLayout>
 </ScrollView>
 """)
 
 W(RES+"/layout/activity_contact.xml","""<?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent" android:layout_height="match_parent" android:background="@color/offex_bg">
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@color/offex_bg" android:scrollbars="none">
     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:orientation="vertical" android:padding="18dp">
+        android:orientation="vertical" android:padding="20dp">
+
         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:text="Contact us" android:textColor="@color/offex_text" android:textSize="22sp" android:textStyle="bold" />
+            android:text="Contact us" android:textColor="@color/offex_text" android:textSize="22sp"
+            android:textStyle="bold" android:fontFamily="sans-serif-black" />
         <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
             android:layout_marginTop="8dp" android:textColor="@color/offex_text_dim" android:textSize="14sp"
+            android:lineSpacingExtra="4dp"
             android:text="Koi dikkat, sawal ya suggestion? Hum se rabta karo - hum jaldi reply karte hain." />
+
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:layout_marginTop="18dp" android:background="@drawable/bg_card" android:elevation="3dp"
-            android:orientation="vertical" android:padding="18dp">
+            android:layout_marginTop="20dp" android:background="@drawable/bg_card" android:elevation="3dp"
+            android:orientation="vertical" android:padding="20dp">
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
                 android:text="Support email" android:textColor="@color/offex_text_dim" android:textSize="12sp" />
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
                 android:text="support@offexmail.online" android:textColor="@color/offex_text"
                 android:textSize="16sp" android:textStyle="bold" android:textIsSelectable="true" />
-            <Button android:id="@+id/mailBtn" android:layout_width="match_parent" android:layout_height="50dp"
-                android:layout_marginTop="14dp" android:insetTop="0dp" android:insetBottom="0dp"
-                android:backgroundTint="@color/offex_purple" android:textColor="@color/offex_white"
-                android:textAllCaps="false" android:textSize="15sp" android:text="Send email" app:cornerRadius="14dp" />
+            <androidx.appcompat.widget.AppCompatButton android:id="@+id/mailBtn"
+                android:layout_width="match_parent" android:layout_height="52dp"
+                android:layout_marginTop="16dp" android:insetTop="0dp" android:insetBottom="0dp"
+                android:background="@drawable/bg_btn_primary" android:textColor="@color/offex_white"
+                android:textAllCaps="false" android:textSize="15sp" android:text="Send email" />
         </LinearLayout>
+
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
             android:layout_marginTop="14dp" android:background="@drawable/bg_card" android:elevation="3dp"
-            android:orientation="vertical" android:padding="18dp">
+            android:orientation="vertical" android:padding="20dp">
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
                 android:text="Website" android:textColor="@color/offex_text_dim" android:textSize="12sp" />
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
                 android:text="mytemp-mail.online" android:textColor="@color/offex_text"
                 android:textSize="16sp" android:textStyle="bold" />
-            <Button android:id="@+id/siteBtn" android:layout_width="match_parent" android:layout_height="50dp"
-                android:layout_marginTop="14dp" android:insetTop="0dp" android:insetBottom="0dp"
-                android:backgroundTint="@color/offex_purple_soft" android:textColor="@color/offex_purple_dark"
-                android:textAllCaps="false" android:textSize="15sp" android:text="Open website" app:cornerRadius="14dp" />
+            <androidx.appcompat.widget.AppCompatButton android:id="@+id/siteBtn"
+                android:layout_width="match_parent" android:layout_height="52dp"
+                android:layout_marginTop="16dp" android:insetTop="0dp" android:insetBottom="0dp"
+                android:background="@drawable/bg_btn_ghost" android:textColor="@color/offex_text"
+                android:textAllCaps="false" android:textSize="15sp" android:text="Open website" />
         </LinearLayout>
     </LinearLayout>
 </ScrollView>
@@ -231,4 +250,4 @@ W("android/app/src/main/AndroidManifest.xml","""<?xml version="1.0" encoding="ut
 for rel,c in F.items():
     os.makedirs(os.path.dirname(rel),exist_ok=True)
     open(rel,"w",encoding="utf-8").write(c)
-print("K:",len(F))
+print("K premium:",len(F))

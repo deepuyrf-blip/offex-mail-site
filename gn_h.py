@@ -111,65 +111,78 @@ public class AdminActivity extends Activity {
 W(RES+"/layout/activity_admin.xml","""<?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent" android:layout_height="match_parent" android:background="@color/offex_bg">
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@color/offex_bg" android:scrollbars="none">
     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:orientation="vertical" android:padding="18dp">
+        android:orientation="vertical" android:padding="20dp">
 
         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:text="@string/admin" android:textColor="@color/offex_text" android:textSize="22sp" android:textStyle="bold" />
+            android:text="@string/admin" android:textColor="@color/offex_text" android:textSize="22sp"
+            android:textStyle="bold" android:fontFamily="sans-serif-black" />
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginTop="6dp" android:textColor="@color/offex_text_dim" android:textSize="13sp"
+            android:lineSpacingExtra="4dp"
+            android:text="Push the announcement banner, ads and update prompt to every installed device." />
 
-        <EditText android:id="@+id/codeBox" android:layout_width="match_parent" android:layout_height="52dp"
-            android:layout_marginTop="16dp" android:background="@drawable/bg_input" android:hint="@string/admin_hint"
-            android:inputType="textPassword" android:paddingStart="16dp" android:paddingEnd="16dp"
-            android:textColorHint="@color/offex_text_dim" android:textColor="@color/offex_text" />
+        <EditText android:id="@+id/codeBox" android:layout_width="match_parent" android:layout_height="54dp"
+            android:layout_marginTop="18dp" android:background="@drawable/bg_input" android:hint="@string/admin_hint"
+            android:inputType="textPassword" android:paddingStart="18dp" android:paddingEnd="18dp"
+            android:textColorHint="@color/offex_text_mute" android:textColor="@color/offex_text" />
 
-        <Button android:id="@+id/unlockBtn" android:layout_width="match_parent" android:layout_height="52dp"
+        <androidx.appcompat.widget.AppCompatButton android:id="@+id/unlockBtn"
+            android:layout_width="match_parent" android:layout_height="54dp"
             android:layout_marginTop="12dp" android:insetTop="0dp" android:insetBottom="0dp"
-            android:backgroundTint="@color/offex_purple" android:textColor="@color/offex_white"
-            android:textAllCaps="false" android:textSize="16sp" android:text="@string/unlock" app:cornerRadius="14dp" />
+            android:background="@drawable/bg_btn_primary" android:textColor="@color/offex_white"
+            android:textAllCaps="false" android:textSize="16sp" android:textStyle="bold" android:text="@string/unlock" />
 
         <LinearLayout android:id="@+id/panel" android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:layout_marginTop="18dp" android:background="@drawable/bg_card" android:elevation="3dp"
-            android:orientation="vertical" android:padding="18dp" android:visibility="gone">
+            android:layout_marginTop="20dp" android:background="@drawable/bg_card" android:elevation="4dp"
+            android:orientation="vertical" android:padding="20dp" android:visibility="gone">
 
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="Announcement" android:textColor="@color/offex_text" android:textSize="15sp" android:textStyle="bold" />
+                android:text="Announcement" android:textColor="@color/offex_text" android:textSize="15sp"
+                android:textStyle="bold" android:fontFamily="sans-serif-medium" />
             <Switch android:id="@+id/annOn" android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:text="Show banner in app" android:textColor="@color/offex_text_dim" android:textSize="13sp" />
             <EditText android:id="@+id/annText" android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:minHeight="48dp" android:background="@drawable/bg_input" android:hint="Banner message"
-                android:inputType="textMultiLine" android:paddingStart="14dp" android:paddingEnd="14dp"
-                android:textColorHint="@color/offex_text_dim" android:textColor="@color/offex_text" />
+                android:minHeight="52dp" android:background="@drawable/bg_input" android:hint="Banner message"
+                android:inputType="textMultiLine" android:paddingStart="16dp" android:paddingEnd="16dp"
+                android:textColorHint="@color/offex_text_mute" android:textColor="@color/offex_text" />
 
-            <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginTop="16dp" android:background="@color/offex_line" />
+            <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginTop="18dp"
+                android:background="@color/offex_line" />
 
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:layout_marginTop="14dp" android:text="Ads" android:textColor="@color/offex_text" android:textSize="15sp" android:textStyle="bold" />
+                android:layout_marginTop="16dp" android:text="Ads" android:textColor="@color/offex_text"
+                android:textSize="15sp" android:textStyle="bold" android:fontFamily="sans-serif-medium" />
             <Switch android:id="@+id/adsOn" android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:text="Enable AdMob ads" android:textColor="@color/offex_text_dim" android:textSize="13sp" />
 
-            <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginTop="16dp" android:background="@color/offex_line" />
+            <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginTop="18dp"
+                android:background="@color/offex_line" />
 
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:layout_marginTop="14dp" android:text="App update" android:textColor="@color/offex_text" android:textSize="15sp" android:textStyle="bold" />
-            <EditText android:id="@+id/verText" android:layout_width="match_parent" android:layout_height="48dp"
-                android:background="@drawable/bg_input" android:hint="Latest version (e.g. 2.4)"
-                android:paddingStart="14dp" android:paddingEnd="14dp"
-                android:textColorHint="@color/offex_text_dim" android:textColor="@color/offex_text" />
-            <EditText android:id="@+id/urlText" android:layout_width="match_parent" android:layout_height="48dp"
+                android:layout_marginTop="16dp" android:text="App update" android:textColor="@color/offex_text"
+                android:textSize="15sp" android:textStyle="bold" android:fontFamily="sans-serif-medium" />
+            <EditText android:id="@+id/verText" android:layout_width="match_parent" android:layout_height="52dp"
+                android:background="@drawable/bg_input" android:hint="Latest version (e.g. 3.1)"
+                android:paddingStart="16dp" android:paddingEnd="16dp"
+                android:textColorHint="@color/offex_text_mute" android:textColor="@color/offex_text" />
+            <EditText android:id="@+id/urlText" android:layout_width="match_parent" android:layout_height="52dp"
                 android:layout_marginTop="8dp" android:background="@drawable/bg_input" android:hint="Download URL"
-                android:inputType="textUri" android:paddingStart="14dp" android:paddingEnd="14dp"
-                android:textColorHint="@color/offex_text_dim" android:textColor="@color/offex_text" />
+                android:inputType="textUri" android:paddingStart="16dp" android:paddingEnd="16dp"
+                android:textColorHint="@color/offex_text_mute" android:textColor="@color/offex_text" />
             <Switch android:id="@+id/forceOn" android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:text="Force update (block old app)" android:textColor="@color/offex_text_dim" android:textSize="13sp" />
 
-            <Button android:id="@+id/saveBtn" android:layout_width="match_parent" android:layout_height="50dp"
-                android:layout_marginTop="14dp" android:insetTop="0dp" android:insetBottom="0dp"
-                android:backgroundTint="@color/offex_purple" android:textColor="@color/offex_white"
-                android:textAllCaps="false" android:textSize="15sp" android:text="Save" app:cornerRadius="14dp" />
+            <androidx.appcompat.widget.AppCompatButton android:id="@+id/saveBtn"
+                android:layout_width="match_parent" android:layout_height="54dp"
+                android:layout_marginTop="16dp" android:insetTop="0dp" android:insetBottom="0dp"
+                android:background="@drawable/bg_btn_primary" android:textColor="@color/offex_white"
+                android:textAllCaps="false" android:textSize="15sp" android:textStyle="bold" android:text="Save" />
 
             <TextView android:id="@+id/statsText" android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:layout_marginTop="14dp" android:textColor="@color/offex_text_dim" android:textSize="13sp" />
+                android:layout_marginTop="16dp" android:textColor="@color/offex_text_dim" android:textSize="13sp" />
         </LinearLayout>
     </LinearLayout>
 </ScrollView>
@@ -215,4 +228,4 @@ W(RES+"/values/strings.xml","""<?xml version="1.0" encoding="utf-8"?>
 for rel,c in F.items():
     os.makedirs(os.path.dirname(rel),exist_ok=True)
     open(rel,"w",encoding="utf-8").write(c)
-print("H:",len(F))
+print("H premium:",len(F))

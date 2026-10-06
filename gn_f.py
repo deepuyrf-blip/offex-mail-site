@@ -128,6 +128,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -142,6 +143,7 @@ public class MainActivity extends Activity {
     private final Handler poll=new Handler(Looper.getMainLooper());
     private EditText nameBox; private Spinner domainBox; private Button createBtn;
     private LinearLayout activeCard, historyBox; private TextView addrText,countdownText,emptyText,historyEmpty;
+    private ScrollView rootScroll; private RecyclerView msgList;
     private MailAdapter adapter; private final List<Mail> mails=new ArrayList<>();
     private final List<String> domains=new ArrayList<>();
     private Runnable pollTask;
@@ -150,11 +152,13 @@ public class MainActivity extends Activity {
         if(!Prefs.onboarded()){ startActivity(new Intent(this,OnboardingActivity.class)); finish(); return; }
         setContentView(R.layout.activity_main);
         askNotify();
+        rootScroll=findViewById(R.id.rootScroll);
         nameBox=findViewById(R.id.nameBox); domainBox=findViewById(R.id.domainBox); createBtn=findViewById(R.id.createBtn);
         activeCard=findViewById(R.id.activeCard); addrText=findViewById(R.id.addrText);
         countdownText=findViewById(R.id.countdownText); emptyText=findViewById(R.id.emptyText);
         historyBox=findViewById(R.id.historyBox); historyEmpty=findViewById(R.id.historyEmpty);
-        RecyclerView list=findViewById(R.id.msgList);
+        msgList=findViewById(R.id.msgList);
+        RecyclerView list=msgList;
         list.setLayoutManager(new LinearLayoutManager(this));
         adapter=new MailAdapter(mails,this::openMail);
         list.setAdapter(adapter);
@@ -167,12 +171,47 @@ public class MainActivity extends Activity {
         findViewById(R.id.settingsBtn).setOnClickListener(v->startActivity(new Intent(this,AdminActivity.class)));
         loadDomains();
         renderHistory();
+        wireNav();
         if(!Prefs.address().isEmpty()){ activeCard.setVisibility(View.VISIBLE); addrText.setText(Prefs.address()); loadMessages(); startPolling(); }
     }
     private void askNotify(){
         if(Build.VERSION.SDK_INT>=33 && checkSelfPermission("android.permission.POST_NOTIFICATIONS")!=PackageManager.PERMISSION_GRANTED){
             requestPermissions(new String[]{"android.permission.POST_NOTIFICATIONS"},77);
         }
+    }
+    private void wireNav(){
+        final View[] items={findViewById(R.id.navEmail),findViewById(R.id.navInbox),findViewById(R.id.navSwitch),findViewById(R.id.navMore)};
+        final View[] inds={findViewById(R.id.navIndEmail),findViewById(R.id.navIndInbox),findViewById(R.id.navIndSwitch),findViewById(R.id.navIndMore)};
+        final TextView[] icons={findViewById(R.id.navIconEmail),findViewById(R.id.navIconInbox),findViewById(R.id.navIconSwitch),findViewById(R.id.navIconMore)};
+        for(int i=0;i<items.length;i++){
+            final int idx=i;
+            if(items[i]!=null) items[i].setOnClickListener(v->{ selectNav(idx,inds,icons); navAction(idx); });
+        }
+        selectNav(0,inds,icons);
+    }
+    private void selectNav(int idx,View[] inds,TextView[] icons){
+        for(int i=0;i<inds.length;i++){
+            final View ind=inds[i];
+            if(ind==null) continue;
+            if(i==idx){
+                ind.setVisibility(View.VISIBLE); ind.setAlpha(0f);
+                ind.animate().alpha(1f).setDuration(220).start();
+            } else {
+                ind.animate().alpha(0f).setDuration(120).withEndAction(()->ind.setVisibility(View.INVISIBLE)).start();
+            }
+            if(icons[i]!=null){
+                icons[i].setTextColor(Color.parseColor(i==idx?"#8B6CFF":"#6E7396"));
+                icons[i].animate().scaleX(i==idx?1.12f:1f).scaleY(i==idx?1.12f:1f).setDuration(170).start();
+            }
+        }
+    }
+    private void navAction(int idx){
+        try {
+            if(idx==0){ if(rootScroll!=null) rootScroll.smoothScrollTo(0,0); }
+            else if(idx==1){ if(rootScroll!=null&&msgList!=null) rootScroll.smoothScrollTo(0,Math.max(0,msgList.getTop()-24)); }
+            else if(idx==2){ if(rootScroll!=null&&historyBox!=null) rootScroll.smoothScrollTo(0,Math.max(0,historyBox.getTop()-24)); }
+            else { Menu.open(this); }
+        } catch(Exception e){}
     }
     private void loadDomains(){
         new Thread(()->{
@@ -240,15 +279,15 @@ public class MainActivity extends Activity {
                 row.setElevation(2f);
                 LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
                 lp.topMargin=10; row.setLayoutParams(lp);
-                row.setPadding(28,26,28,26);
+                row.setPadding(32,30,32,30);
                 TextView t=new TextView(this);
-                t.setText(addr+(addr.equals(cur)?"  \u2022 active":""));
-                t.setTextSize(14); t.setTextColor(Color.parseColor(addr.equals(cur)?"#4B2FD6":"#101227"));
+                t.setText(addr+(addr.equals(cur)?"  \\u2022 active":""));
+                t.setTextSize(14); t.setTextColor(Color.parseColor(addr.equals(cur)?"#8B6CFF":"#F4F5FF"));
                 t.setTypeface(null,Typeface.BOLD);
                 LinearLayout.LayoutParams tp=new LinearLayout.LayoutParams(0,LinearLayout.LayoutParams.WRAP_CONTENT,1f);
                 t.setLayoutParams(tp);
                 TextView del=new TextView(this);
-                del.setText("\u2715"); del.setTextSize(16); del.setTextColor(Color.parseColor("#E5484D"));
+                del.setText("\\u2715"); del.setTextSize(16); del.setTextColor(Color.parseColor("#FF5C6C"));
                 del.setPadding(24,0,0,0);
                 del.setOnClickListener(v->{ removeHistory(addr); if(addr.equals(Prefs.address())){ Prefs.setAddress(""); Prefs.setLastMsgId(0); activeCard.setVisibility(View.GONE); mails.clear(); adapter.notifyDataSetChanged(); emptyText.setVisibility(View.VISIBLE); } renderHistory(); });
                 row.addView(t); row.addView(del);
