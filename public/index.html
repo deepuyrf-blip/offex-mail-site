@@ -396,6 +396,36 @@
     .wrap{padding:0 14px}
     h1{font-size:30px}
   }
+
+  /* ---------- app-download promo (always-visible banner + repeating sheet) ---------- */
+  .appdl{max-width:1180px;margin:16px auto 0;padding:0 20px}
+  .appdl-in{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center;text-align:center;
+    background:var(--grad);color:#fff;border-radius:16px;padding:12px 16px;box-shadow:0 12px 30px rgba(109,77,255,.3)}
+  .appdl-tx{font-size:14px;font-weight:700;line-height:1.35;flex:1 1 220px;min-width:0}
+  .appdl-tx b{font-weight:900}
+  .appdl-btn{display:inline-flex;align-items:center;gap:7px;background:#fff;color:#3a22b8;text-decoration:none;
+    font-weight:800;font-size:14px;padding:10px 18px;border-radius:999px;white-space:nowrap;flex:none;
+    box-shadow:0 6px 16px rgba(0,0,0,.18);transition:transform .15s}
+  .appdl-btn:hover{transform:translateY(-2px)}
+  @media(max-width:600px){.appdl{padding:0 14px;margin-top:12px}.appdl-tx{flex:1 1 100%;order:2;font-size:13.5px}
+    .appdl-btn{order:3;width:100%;justify-content:center}}
+  /* repeating, dismissible reminder — bottom-anchored card, never covers content */
+  .app-sheet{position:fixed;left:50%;transform:translate(-50%,170%);bottom:16px;z-index:9500;width:calc(100% - 28px);max-width:480px;
+    background:var(--reader);border:1px solid var(--border2);border-radius:18px;box-shadow:var(--shadow2);
+    padding:14px 16px;display:flex;align-items:center;gap:12px;opacity:0;pointer-events:none;
+    transition:transform .35s cubic-bezier(.2,.8,.2,1),opacity .3s}
+  .app-sheet.on{transform:translate(-50%,0);opacity:1;pointer-events:auto}
+  .app-sheet-ic{font-size:24px;line-height:1;flex:none}
+  .app-sheet-body{min-width:0;flex:1 1 auto}
+  .app-sheet-body h4{margin:0 0 2px;font-size:14px;font-weight:800;letter-spacing:-.2px}
+  .app-sheet-body p{margin:0;font-size:12.5px;line-height:1.45;color:var(--muted)}
+  .app-sheet-cta{flex:none;background:var(--grad);color:#fff;text-decoration:none;font-weight:800;font-size:13px;
+    padding:10px 15px;border-radius:12px;white-space:nowrap;box-shadow:0 8px 20px rgba(109,77,255,.35)}
+  .app-sheet-x{position:absolute;top:-10px;inset-inline-end:-6px;width:28px;height:28px;border-radius:50%;border:1px solid var(--border2);
+    background:var(--surface);color:var(--text);font-size:13px;line-height:1;cursor:pointer;font-family:inherit;display:grid;place-items:center;box-shadow:var(--shadow)}
+  .app-sheet-x:hover{border-color:var(--danger);color:var(--danger)}
+  @media(max-width:420px){.app-sheet{padding:12px;gap:10px}.app-sheet-cta{padding:9px 12px;font-size:12px}.app-sheet-body p{display:none}}
+  @media(prefers-reduced-motion:reduce){.app-sheet{transition:opacity .2s}}
 </style>
 
   <style id="svc-css">
@@ -482,6 +512,14 @@
     </div>
   </div>
 </header>
+
+<!-- app-download promo: always-visible banner -->
+<div class="appdl" role="complementary" aria-label="Download the Offex Mail Android app">
+  <div class="appdl-in">
+    <span class="appdl-tx" data-i18n-html="appdl_banner">📱 Better experience on the app — <b>Download Offex Mail</b></span>
+    <a class="appdl-btn" data-apk href="https://github.com/deepuyrf-blip/offex-mail-site/releases/latest/download/OffexMail.apk" download rel="noopener" data-i18n="appdl_btn">⬇ Download</a>
+  </div>
+</div>
 
 <main>
   <section class="hero wrap">
@@ -732,7 +770,73 @@
   </div>
 </div>
 
-<script src="/i18n.js?v=8"></script>
+<script src="/i18n.js?v=9"></script>
+<!-- app-download promo: repeating, dismissible reminder (never blocks the tool) -->
+<div class="app-sheet" id="appSheet" role="region" aria-label="Download the Offex Mail app">
+  <button class="app-sheet-x" id="appSheetX" type="button" data-i18n-aria="appdl_close" aria-label="Close">✕</button>
+  <span class="app-sheet-ic" aria-hidden="true">📱</span>
+  <div class="app-sheet-body">
+    <h4 data-i18n="appdl_sheet_title">Better experience on the app</h4>
+    <p data-i18n="appdl_sheet_text">Install the Offex Mail Android app for instant new-mail alerts and one-tap access to your inbox. Free — no signup.</p>
+  </div>
+  <a class="app-sheet-cta" data-apk href="https://github.com/deepuyrf-blip/offex-mail-site/releases/latest/download/OffexMail.apk" download rel="noopener" data-i18n="appdl_sheet_cta">⬇ Download app</a>
+</div>
+
+<script>
+/* app-download promo: repeating, dismissible reminder.
+   Shows at most once per page view (after 60s) and again every 3rd page view.
+   Dismissal is remembered for the session. It is a small bottom card with a
+   clear close button, so it NEVER covers or blocks the temp-mail tool. */
+(function(){
+  "use strict";
+  var APK = "https://github.com/deepuyrf-blip/offex-mail-site/releases/latest/download/OffexMail.apk";
+  Array.prototype.forEach.call(document.querySelectorAll("[data-apk]"), function(a){ a.href = APK; });
+
+  /* localize the close button's aria-label (data-i18n-aria) */
+  function applyAria(){
+    var lang = "en"; try{ lang = localStorage.getItem("offex_lang") || "en"; }catch(e){}
+    var d = (window.OFFEX_STR && window.OFFEX_STR[lang]) || {};
+    var en = (window.OFFEX_STR && window.OFFEX_STR.en) || {};
+    Array.prototype.forEach.call(document.querySelectorAll("[data-i18n-aria]"), function(el){
+      var k = el.getAttribute("data-i18n-aria");
+      el.setAttribute("aria-label", d[k] || en[k] || "Close");
+    });
+  }
+  applyAria();
+  var sel = document.getElementById("langSel");
+  if(sel) sel.addEventListener("change", applyAria);
+
+  var sheet = document.getElementById("appSheet");
+  var x = document.getElementById("appSheetX");
+  var pwa = document.getElementById("pwaInstall");
+  if(!sheet) return;
+
+  var KEY = "offex_apppromo";
+  function isDismissed(){ try{ return sessionStorage.getItem(KEY) === "1"; }catch(e){ return false; } }
+  function dismiss(){ try{ sessionStorage.setItem(KEY, "1"); }catch(e){} }
+  function bumpViews(){
+    var n = 0; try{ n = parseInt(sessionStorage.getItem(KEY + "_v") || "0", 10) || 0; }catch(e){}
+    n += 1; try{ sessionStorage.setItem(KEY + "_v", String(n)); }catch(e){}
+    return n;
+  }
+  function show(){
+    if(isDismissed()) return;
+    sheet.classList.add("on");
+    if(pwa) pwa.style.display = "none";
+  }
+  function hide(){ sheet.classList.remove("on"); }
+  function close(){ hide(); dismiss(); }
+
+  if(x) x.addEventListener("click", close);
+  if(isDismissed()) return;
+
+  var views = bumpViews();
+  var t1 = setTimeout(show, 60000);            /* ~60s after load */
+  if(views > 1 && views % 3 === 0) setTimeout(show, 8000);   /* every 3rd page view */
+  window.addEventListener("pagehide", function(){ clearTimeout(t1); });
+})();
+</script>
+
 <script>
 (function(){
   "use strict";

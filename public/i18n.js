@@ -778,3 +778,22 @@ ja:{
 };
   for (var k in F) { if (window.OFFEX_STR && window.OFFEX_STR[k]) { for (var s in F[k]) window.OFFEX_STR[k][s] = F[k][s]; } }
 })();
+
+
+
+/* Offex app-download promo strings (banner + repeating reminder) */
+(function(){
+  var A = {
+    en:{ appdl_banner:"📱 Better experience on the app — <b>Download Offex Mail</b>", appdl_btn:"⬇ Download", appdl_sheet_title:"Better experience on the app", appdl_sheet_text:"Install the Offex Mail Android app for instant new-mail alerts and one-tap access to your inbox. Free — no signup.", appdl_sheet_cta:"⬇ Download app", appdl_close:"Close" },
+    hi:{ appdl_banner:"📱 App par better experience — <b>Offex Mail download karo</b>", appdl_btn:"⬇ Download", appdl_sheet_title:"App par better experience", appdl_sheet_text:"Offex Mail Android app install karo — nayi mail ka instant alert aur ek tap mein inbox. Free, no signup.", appdl_sheet_cta:"⬇ App download karo", appdl_close:"Band karo" },
+    es:{ appdl_banner:"📱 Mejor experiencia en la app — <b>Descarga Offex Mail</b>", appdl_btn:"⬇ Descargar", appdl_sheet_title:"Mejor experiencia en la app", appdl_sheet_text:"Instala la app de Offex Mail para Android: avisos instantáneos de correo nuevo y acceso a tu bandeja con un toque. Gratis, sin registro.", appdl_sheet_cta:"⬇ Descargar app", appdl_close:"Cerrar" },
+    fr:{ appdl_banner:"📱 Meilleure expérience sur l'appli — <b>Téléchargez Offex Mail</b>", appdl_btn:"⬇ Télécharger", appdl_sheet_title:"Meilleure expérience sur l'appli", appdl_sheet_text:"Installez l'application Offex Mail pour Android : alertes instantanées de nouveau courrier et accès à votre boîte en un geste. Gratuit, sans inscription.", appdl_sheet_cta:"⬇ Télécharger l'appli", appdl_close:"Fermer" },
+    de:{ appdl_banner:"📱 Bessere Erfahrung in der App — <b>Offex Mail herunterladen</b>", appdl_btn:"⬇ Herunterladen", appdl_sheet_title:"Bessere Erfahrung in der App", appdl_sheet_text:"Installiere die Offex-Mail-App für Android: sofortige Hinweise bei neuer Mail und Zugriff auf dein Postfach mit einem Tipp. Kostenlos, ohne Anmeldung.", appdl_sheet_cta:"⬇ App herunterladen", appdl_close:"Schließen" },
+    pt:{ appdl_banner:"📱 Melhor experiência no app — <b>Baixe o Offex Mail</b>", appdl_btn:"⬇ Baixar", appdl_sheet_title:"Melhor experiência no app", appdl_sheet_text:"Instale o app Offex Mail para Android: alertas instantâneos de novo e-mail e acesso à sua caixa com um toque. Grátis, sem cadastro.", appdl_sheet_cta:"⬇ Baixar app", appdl_close:"Fechar" },
+    ru:{ appdl_banner:"📱 Удобнее в приложении — <b>Скачайте Offex Mail</b>", appdl_btn:"⬇ Скачать", appdl_sheet_title:"Удобнее в приложении", appdl_sheet_text:"Установите приложение Offex Mail для Android — мгновенные уведомления о новой почте и доступ к ящику в одно касание. Бесплатно, без регистрации.", appdl_sheet_cta:"⬇ Скачать приложение", appdl_close:"Закрыть" },
+    ar:{ appdl_banner:"📱 تجربة أفضل في التطبيق — <b>حمّل Offex Mail</b>", appdl_btn:"⬇ تحميل", appdl_sheet_title:"تجربة أفضل في التطبيق", appdl_sheet_text:"ثبّت تطبيق Offex Mail لأندرويد لتصلك تنبيهات فورية بالبريد الجديد وتصل إلى صندوقك بلمسة واحدة. مجانًا وبدون تسجيل.", appdl_sheet_cta:"⬇ حمّل التطبيق", appdl_close:"إغلاق" },
+    zh:{ appdl_banner:"📱 应用体验更佳 — <b>下载 Offex Mail</b>", appdl_btn:"⬇ 下载", appdl_sheet_title:"应用体验更佳", appdl_sheet_text:"安装 Offex Mail 安卓应用，新邮件即时提醒，一键打开收件箱。免费，无需注册。", appdl_sheet_cta:"⬇ 下载应用", appdl_close:"关闭" },
+    ja:{ appdl_banner:"📱 アプリのほうが快適 — <b>Offex Mail をダウンロード</b>", appdl_btn:"⬇ ダウンロード", appdl_sheet_title:"アプリのほうが快適", appdl_sheet_text:"Offex Mail のAndroidアプリをインストール。新着メールをすぐ通知し、ワンタップで受信トレイを開けます。無料・登録不要。", appdl_sheet_cta:"⬇ アプリをダウンロード", appdl_close:"閉じる" }
+  };
+  for (var k in A) { if (window.OFFEX_STR && window.OFFEX_STR[k]) { for (var s in A[k]) window.OFFEX_STR[k][s] = A[k][s]; } }
+})();
