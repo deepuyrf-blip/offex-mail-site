@@ -1,0 +1,24 @@
+name: Admin Config Set
+on: workflow_dispatch
+permissions:
+  contents: read
+jobs:
+  set:
+    runs-on: ubuntu-latest
+    steps:
+      - name: read then set app-config
+        run: |
+          set +e
+          UA='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
+          echo "===== BEFORE ====="
+          curl -sS --max-time 40 -A "$UA" -H 'Accept: application/json' -H 'Origin: https://mytemp-mail.online' -H 'Referer: https://mytemp-mail.online/' 'https://api.mytemp-mail.online/api/app-config'
+          echo
+          cat > /tmp/payload.json <<'JSON'
+          {"announcement":{"on":true,"text":"Good morning \ud83c\udf05"},"ads":{"on":true,"app_id":"ca-app-pub-7802179098119853-8006460361","banner":"","interstitial":"","rewarded":""},"update":{"latest":"3.4","min":"","url":"https://github.com/deepuyrf-blip/offex-mail-site/releases/download/v3.4/OffexMail.apk","force":true},"push":{"title":"Hi","body":"Hc","ts":1791266321}}
+          JSON
+          echo "===== POST ====="
+          curl -sS -X POST --max-time 40 -A "$UA" -H 'Content-Type: application/json' -H 'x-admin-code: Hyco' -H 'Origin: https://api.mytemp-mail.online' -H 'Referer: https://api.mytemp-mail.online/admin?code=Hyco' --data-binary @/tmp/payload.json 'https://api.mytemp-mail.online/api/admin/app-config'
+          echo
+          echo "===== AFTER ====="
+          curl -sS --max-time 40 -A "$UA" -H 'Accept: application/json' -H 'Origin: https://mytemp-mail.online' -H 'Referer: https://mytemp-mail.online/' 'https://api.mytemp-mail.online/api/app-config'
+          echo
