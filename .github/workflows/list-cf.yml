@@ -4,32 +4,25 @@ on:
 jobs:
   list:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     steps:
-      - uses: actions/checkout@v4
-      - name: Releases
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          echo "=== RELEASES ==="
-          gh release list --limit 6
-          echo "=== v4.1 ASSET ==="
-          gh release view v4.1 --json tagName,assets -q '.tagName, (.assets[]|"\(.name) \(.size)")'
-          echo "=== PANEL UPDATE ==="
+      - run: |
           A=https://api.mytemp-mail.online
           UA="Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Mobile Safari/537.36"
           H1="x-admin-code: Hyco"
           curl -s --max-time 30 -A "$UA" -H "$H1" -H "Origin: $A" -H "Referer: $A/admin?code=Hyco" "$A/api/app-config" > /tmp/cfg.json
-          echo "BEFORE: $(python3 -c "import json;print(json.dumps(json.load(open('/tmp/cfg.json')).get('update')))")"
           python3 - <<'PY'
           import json
           c=json.load(open('/tmp/cfg.json'))
           u=c.setdefault('update',{})
-          u['latest']="4.1"; u['force']=False
-          u['url']="https://github.com/deepuyrf-blip/offex-mail-site/releases/download/v4.1/OffexMail.apk"
+          u['latest']="4.3"; u['force']=False
+          u['url']="https://github.com/deepuyrf-blip/offex-mail-site/releases/download/v4.3/OffexMail.apk"
           json.dump(c,open('/tmp/new.json','w'))
           PY
           curl -s -X POST --max-time 30 -A "$UA" -H "$H1" -H "Content-Type: application/json" -H "Origin: $A" -H "Referer: $A/admin?code=Hyco" --data @/tmp/new.json "$A/api/admin/app-config" > /dev/null
           sleep 3
-          echo "AFTER: $(curl -s --max-time 30 -A "$UA" -H "$H1" -H "Origin: $A" -H "Referer: $A/admin?code=Hyco" "$A/api/app-config" | python3 -c "import sys,json;print(json.dumps(json.load(sys.stdin).get('update')))")"
+          echo "UPDATE: $(curl -s --max-time 30 -A "$UA" -H "$H1" -H "Origin: $A" -H "Referer: $A/admin?code=Hyco" "$A/api/app-config" | python3 -c "import sys,json;d=json.load(sys.stdin);print(json.dumps(d.get('update')));a=d.get('appearance') or {};print('appearance keys:',len(a));print('accent:',a.get('accent'))")"
+          echo "=== ADMIN PAGE MARKERS ==="
+          P=$(curl -sL --max-time 30 -A "$UA" "$A/admin?code=Hyco")
+          echo "DEVICES-CARD: $(printf '%s' "$P" | grep -c 'OFFEX-DEVICES-CARD')"
+          echo "APPEARANCE-CARD: $(printf '%s' "$P" | grep -c 'OFFEX-APPEARANCE-CARD')"
+          echo "SUPPORT-CARD: $(printf '%s' "$P" | grep -c 'OFFEX-SUPPORT-CARD')"
