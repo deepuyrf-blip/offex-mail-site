@@ -4,27 +4,25 @@ on:
 jobs:
   list:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      - run: |
-          A=https://api.mytemp-mail.online
-          UA="Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Mobile Safari/537.36"
-          H1="x-admin-code: Hyco"
-          curl -s --max-time 30 -A "$UA" -H "$H1" -H "Origin: $A" -H "Referer: $A/admin?code=Hyco" "$A/api/app-config" > /tmp/cfg.json
-          echo "BEFORE: $(cat /tmp/cfg.json | head -c 400)"
-          python3 - <<'PY'
-          import json
-          c=json.load(open('/tmp/cfg.json'))
-          ann=c.setdefault('announcement',{}); ann['on']=True
-          if not ann.get('text'): ann['text']="Good morning 🌅"
-          a=c.setdefault('ads',{}); a['on']=True
-          if not a.get('app_id'): a['app_id']="ca-app-pub-7802179098119853~8006460361"
-          for k in ('banner','interstitial','rewarded'): a.setdefault(k,'')
-          u=c.setdefault('update',{})
-          u['latest']="3.7"; u['force']=False
-          u['url']="https://github.com/deepuyrf-blip/offex-mail-site/releases/download/v3.7/OffexMail.apk"
-          c.setdefault('push',{}); c['push'].setdefault('title',''); c['push'].setdefault('body',''); c['push'].setdefault('ts',0)
-          json.dump(c,open('/tmp/new.json','w'))
-          PY
-          curl -s -X POST --max-time 30 -A "$UA" -H "$H1" -H "Content-Type: application/json" -H "Origin: $A" -H "Referer: $A/admin?code=Hyco" --data @/tmp/new.json "$A/api/admin/app-config" > /dev/null
-          sleep 3
-          echo "AFTER: $(curl -s --max-time 30 -A "$UA" -H "$H1" -H "Origin: $A" -H "Referer: $A/admin?code=Hyco" "$A/api/app-config")"
+      - uses: actions/checkout@v4
+      - name: Releases
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "=== RELEASES ==="
+          gh release list --limit 8 || true
+          echo "=== v3.8 ASSETS ==="
+          gh release view v3.8 --json tagName,name,assets -q '.tagName, .name, (.assets[]|"\(.name) \(.size)")' || echo "v3.8 NOT FOUND"
+          echo "=== DOWNLOAD v3.8 APK ==="
+          mkdir -p pub
+          gh release download v3.8 -p OffexMail.apk -D pub --clobber || echo "download failed"
+          ls -la pub/ || true
+          echo "=== COMMIT APK FOR FETCH ==="
+          git config user.name "gha"; git config user.email "gha@local"
+          cp pub/OffexMail.apk public/OffexMail-v3.8.apk || true
+          git add public/OffexMail-v3.8.apk || true
+          git commit -m "publish v3.8 apk for fetch" || echo "nothing to commit"
+          git push || echo "push failed"
