@@ -7,11 +7,14 @@ jobs:
     steps:
       - run: |
           A=https://api.mytemp-mail.online
-          echo "=== PUBLIC APP CONFIG ==="
-          curl -s --max-time 30 "$A/api/app-config" | head -c 1500; echo
-          echo "=== ADMIN APP CONFIG (code=Hyco) ==="
-          curl -s --max-time 30 "$A/api/admin/app-config?code=Hyco" | head -c 1500; echo
-          echo "=== ADMIN PANEL FORM FIELDS ==="
-          curl -sL --max-time 30 "$A/admin?code=Hyco" | grep -oE 'name="[^"]*"|id="[^"]*"|action="[^"]*"|<input[^>]*>|<textarea[^>]*>' | head -40
-          echo "=== ADMIN PAGE SCRIPT (endpoints) ==="
-          curl -sL --max-time 30 "$A/admin?code=Hyco" | grep -oE "/api/[a-zA-Z0-9/_{}-]*" | sort -u | head -20
+          curl -sL --max-time 30 "$A/admin?code=Hyco" > /tmp/a.html
+          echo "=== SCRIPT BLOCK ==="
+          python3 - <<'PY'
+          import re
+          h=open('/tmp/a.html',encoding='utf-8').read()
+          for m in re.findall(r'<script[^>]*>(.*?)</script>', h, re.S):
+              if 'app-config' in m or 'fetch' in m:
+                  print(m[:3000])
+          PY
+          echo "=== ADMIN GET (verbose) ==="
+          curl -s -i --max-time 30 "$A/api/admin/app-config?code=Hyco" | head -c 800; echo
