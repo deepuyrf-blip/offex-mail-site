@@ -818,10 +818,10 @@ sp = RES + "/values/strings.xml"
 s = R(sp)
 NEW_STR = [
     ("notif_gate_title", "Notifications are required"),
-    ("notif_gate_body", "Offex Mail ka poora kaam notifications par chalta hai - naya mail ya OTP aate hi hum turant batate hain. Notification allow kiye bina app use nahi ho sakta. Tap Allow and choose \\u201cAllow\\u201d."),
+    ("notif_gate_body", "Offex Mail ka poora kaam notifications par chalta hai - naya mail ya OTP aate hi hum turant batate hain. Notification allow kiye bina app use nahi ho sakta. Tap Allow notifications and choose Allow to continue."),
     ("notif_gate_allow", "Allow notifications"),
     ("notif_gate_settings", "Open settings"),
-    ("feature_whats_new", "What's new"),
+    ("feature_whats_new", "What is new"),
     ("feature_ok", "Got it"),
 ]
 block = ""
