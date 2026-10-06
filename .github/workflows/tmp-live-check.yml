@@ -1,0 +1,22 @@
+name: tmp-live-check
+on: workflow_dispatch
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: curl API with browser headers
+        run: |
+          UA='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
+          ORIGIN='https://mytemp-mail.online'
+          REF="$ORIGIN/"
+          echo "=== GET /health ==="
+          curl -sS -i -A "$UA" -H "Origin: $ORIGIN" -H "Referer: $REF" --max-time 30 https://api.mytemp-mail.online/health
+          echo
+          echo "=== POST /api/auth ==="
+          curl -sS -i -A "$UA" -H "Origin: $ORIGIN" -H "Referer: $REF" -H "Content-Type: application/json" -X POST --data '{"code":""}' --max-time 30 https://api.mytemp-mail.online/api/auth
+          echo
+          echo "=== GET /api/status (no code) ==="
+          curl -sS -i -A "$UA" -H "Origin: $ORIGIN" -H "Referer: $REF" --max-time 30 https://api.mytemp-mail.online/api/status | head -25
+          echo
+          echo "=== GET / (root) ==="
+          curl -sS -o /dev/null -w "root http=%{http_code}\n" -A "$UA" -H "Origin: $ORIGIN" -H "Referer: $REF" --max-time 30 https://api.mytemp-mail.online/
