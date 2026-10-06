@@ -35,7 +35,8 @@ jobs:
           set -u
           UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
           ADDR="${LOCAL}@offexmail.online"
-          echo "ACTION=${ACTION}  LOCAL=${LOCAL}  ADDR=${ADDR}  MARKER=${MARKER}"
+          DEVTOKEN="GHA-DEVICE-${MARKER}"
+          echo "ACTION=${ACTION}  LOCAL=${LOCAL}  ADDR=${ADDR}  MARKER=${MARKER}  DEVTOKEN=${DEVTOKEN}"
           for BASE in "https://api.mytemp-mail.online" "https://factblink514-compiled.hf.space"; do
             echo "############ BASE=${BASE} ############"
             if [ "${ACTION}" = "write" ]; then
@@ -45,6 +46,12 @@ jobs:
                 -H "Accept: application/json" -H "Content-Type: application/json" \
                 -X POST "${BASE}/api/support" \
                 --data "{\"message\":\"${MARKER}\",\"category\":\"PersistenceTest\",\"address\":\"${ADDR}\",\"version\":\"1.0\",\"device\":\"gha\"}"
+              echo "== POST /api/device (token ${DEVTOKEN}) =="
+              curl -s -m 30 -w "\nHTTP %{http_code}\n" \
+                -H "User-Agent: ${UA}" -H "Origin: https://offexmail.online" -H "Referer: https://offexmail.online/" \
+                -H "Accept: application/json" -H "Content-Type: application/json" \
+                -X POST "${BASE}/api/device" \
+                --data "{\"token\":\"${DEVTOKEN}\",\"address\":\"${ADDR}\",\"platform\":\"android\"}"
               echo "== POST /api/inbox (custom ${LOCAL}) =="
               curl -s -m 30 -w "\nHTTP %{http_code}\n" \
                 -H "User-Agent: ${UA}" -H "Origin: https://offexmail.online" -H "Referer: https://offexmail.online/" \
