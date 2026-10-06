@@ -6,22 +6,31 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          B=https://mytemp-mail.online
-          echo "=== FAVICON ASSETS ==="
-          for u in favicon.ico favicon-32.png favicon-192.png icon-512.png apple-touch-icon.png; do
-            echo "$u -> $(curl -s -o /dev/null -w 'HTTP %{http_code} type=%{content_type} bytes=%{size_download}' --max-time 25 $B/$u)"
-          done
-          H=$(curl -sL --max-time 30 $B/)
-          echo "home rel=icon: $(printf '%s' "$H" | grep -o 'rel="icon"' | wc -l)"
-          echo "home apple-touch: $(printf '%s' "$H" | grep -o 'apple-touch-icon' | wc -l)"
-          echo "home favicon-32 ref: $(printf '%s' "$H" | grep -o 'favicon-32.png' | wc -l)"
-          echo "=== PRIVACY old-domain ==="
-          P=$(curl -sL --max-time 30 $B/privacy)
-          echo "privacy offexmail.online: $(printf '%s' "$P" | grep -o 'offexmail.online' | wc -l)"
-          echo "privacy mytemp-mail.online: $(printf '%s' "$P" | grep -o 'mytemp-mail.online' | wc -l)"
-          echo "privacy rel=icon: $(printf '%s' "$P" | grep -o 'rel="icon"' | wc -l)"
-          echo "=== TERMS ==="
-          T=$(curl -sL --max-time 30 $B/terms)
-          echo "terms offexmail.online: $(printf '%s' "$T" | grep -o 'offexmail.online' | wc -l)"
-          echo "=== HI HUB ==="
-          echo "hi rel=icon: $(curl -sL --max-time 30 $B/hi | grep -o 'rel="icon"' | wc -l)"
+          A=https://api.mytemp-mail.online
+          UA="Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Mobile Safari/537.36"
+          H1="x-admin-code: Hyco"
+          curl -s --max-time 30 -A "$UA" -H "$H1" -H "Origin: $A" -H "Referer: $A/admin?code=Hyco" "$A/api/app-config" > /tmp/cfg.json
+          echo "BEFORE ads: $(python3 -c "import json;print(json.dumps(json.load(open('/tmp/cfg.json')).get('ads')))")"
+          python3 - <<'PY'
+          import json
+          c=json.load(open('/tmp/cfg.json'))
+          a=c.setdefault('ads',{})
+          a['on']=True
+          a['app_id']="ca-app-pub-7802179098119853~8006460361"
+          a['banner']="ca-app-pub-7802179098119853/6769612342"
+          a['interstitial']="ca-app-pub-7802179098119853/4351332568"
+          a['rewarded']="ca-app-pub-7802179098119853/3317452492"
+          a['app_open']="ca-app-pub-7802179098119853/9412087553"
+          a['native']="ca-app-pub-7802179098119853/1623342855"
+          c['ads']=a
+          ann=c.setdefault('announcement',{}); ann['on']=True
+          if not ann.get('text'): ann['text']="Good morning 🌅"
+          u=c.setdefault('update',{})
+          u['latest']="3.8"; u['force']=False
+          u['url']="https://github.com/deepuyrf-blip/offex-mail-site/releases/download/v3.8/OffexMail.apk"
+          json.dump(c,open('/tmp/new.json','w'))
+          print("NEW ads:", json.dumps(a))
+          PY
+          curl -s -X POST --max-time 30 -A "$UA" -H "$H1" -H "Content-Type: application/json" -H "Origin: $A" -H "Referer: $A/admin?code=Hyco" --data @/tmp/new.json "$A/api/admin/app-config" > /dev/null
+          sleep 3
+          echo "AFTER ads: $(curl -s --max-time 30 -A "$UA" -H "$H1" -H "Origin: $A" -H "Referer: $A/admin?code=Hyco" "$A/api/app-config" | python3 -c "import sys,json;d=json.load(sys.stdin);print(json.dumps(d.get('ads')))")"
