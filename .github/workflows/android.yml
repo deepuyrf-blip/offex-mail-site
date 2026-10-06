@@ -18,14 +18,14 @@ jobs:
       - run: |
           set +e
           pip install --quiet pillow > /tmp/gen.txt 2>&1
-          for f in gn_a gn_b gn_c gn_d gn_e gn_f gn_g gn_h gn_i gn_j gn_k gn_l gn_m gn_n gn_o gn_p gn_q gn_r gn_s gn_t gn_u gn_v; do python3 $f.py >> /tmp/gen.txt 2>&1; done
+          for f in gn_a gn_b gn_c gn_d gn_e gn_f gn_g gn_h gn_i gn_j gn_k gn_l gn_m gn_n gn_o gn_p gn_q gn_r gn_s gn_t gn_u gn_v gn_w; do python3 $f.py >> /tmp/gen.txt 2>&1; done
           SRC=android/app/src/main/java/online/mytempmail/app
           UA='Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Mobile Safari/537.36'
           sed -i "s|OffexMail-Android/2.0|$UA|" $SRC/ApiClient.java
-          sed -i 's|__VER__|3.9|' $SRC/Config.java
+          sed -i 's|__VER__|4.0|' $SRC/Config.java
           sed -i '/AdminActivity/d' android/app/src/main/AndroidManifest.xml
-          sed -i 's|versionName "[^"]*"|versionName "3.9"|' android/app/build.gradle
-          sed -i 's|versionCode [0-9]*|versionCode 29|' android/app/build.gradle
+          sed -i 's|versionName "[^"]*"|versionName "4.0"|' android/app/build.gradle
+          sed -i 's|versionCode [0-9]*|versionCode 30|' android/app/build.gradle
           grep -c 'AdminActivity' android/app/src/main/AndroidManifest.xml
           cd android
           gradle wrapper --gradle-version 8.7 >> /tmp/gen.txt 2>&1
@@ -39,13 +39,13 @@ jobs:
           cd ..
           if [ -f /tmp/OffexMail.apk ]; then
             cp /tmp/OffexMail.apk public/OffexMail.apk
-            cp /tmp/OffexMail.apk public/OffexMail-v3.9.apk
+            cp /tmp/OffexMail.apk public/OffexMail-v4.0.apk
             npx --yes wrangler pages deploy public --project-name offex-mail --branch main --commit-dirty=true > /tmp/p.txt 2>&1
             echo "pages exit: $?"
           fi
           {
             echo "gradle exit: $GR"
-            ls -la public/OffexMail-v3.9.apk 2>&1
+            ls -la public/OffexMail-v4.0.apk 2>&1
             echo "=== errors ==="
             grep -iE "error:|FAILED|What went wrong|AAPT" /tmp/b.txt | head -25
           } > /tmp/iss.txt 2>&1
@@ -54,11 +54,11 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           if [ ! -s /tmp/iss.txt ]; then echo "no log" > /tmp/iss.txt; fi
-          gh issue create --repo "$GITHUB_REPOSITORY" --title "v3.9 build" --body-file /tmp/iss.txt || true
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "v4.0 build" --body-file /tmp/iss.txt || true
       - name: release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           if [ -f /tmp/OffexMail.apk ]; then
-            gh release create v3.9 /tmp/OffexMail.apk --repo "$GITHUB_REPOSITORY" --title "Offex Mail v3.9" --notes "v3.9 changes: (1) Multi-language support - every user-facing string now lives in string resources with English as the default, plus natural roman Hinglish (values-hi), Spanish (values-es), Portuguese (values-pt), Arabic (values-ar, RTL-aware), Russian (values-ru) and Indonesian (values-in). A new in-app Language switcher in the More menu persists the choice and applies it instantly across every screen. (2) App install/usage analytics - the app now generates a stable install id and reports device manufacturer/model, Android version + SDK, app version + versionCode, locale and screen size to POST /api/app/install on every launch, so the admin panel can show total installs, active users (today / 7-day) and device/Android/app-version breakdowns in a new dedicated App users card. Everything else is unchanged: the same API endpoints/JSON fields, the mail ingest path, FCM pushes, the support feature, the bundled notification sounds, the bottom nav, the ad placements, the mandatory notification-permission gate, the circular logo, the Create-button loading animation and the features section." || gh release upload v3.9 /tmp/OffexMail.apk --clobber --repo "$GITHUB_REPOSITORY"
+            gh release create v4.0 /tmp/OffexMail.apk --repo "$GITHUB_REPOSITORY" --title "Offex Mail v4.0" --notes "v4.0 changes: (1) The default (English) resources are now pure English - every roman-Hindi string that had leaked into values/strings.xml has been replaced with clean, natural English. (2) The old roman-Hinglish locale is gone: the Hinglish language option has been removed from the picker and the locale list. (3) Proper Hindi in Devanagari script is now a selectable language - values-hi was rebuilt from scratch with correct Devanagari translations of the full string set, and the picker shows 'हिन्दी (Hindi)' (locale code hi). All other locales (Spanish values-es, Portuguese values-pt, Arabic values-ar with RTL, Russian values-ru, Indonesian values-in) keep working exactly as before. Version bumped 3.9 -> 4.0. Everything else is unchanged: the same API endpoints/JSON fields, the mail ingest path, FCM pushes, the support feature, the bundled notification sounds, the bottom nav, the ad placements, the mandatory notification-permission gate, the circular logo, the Create-button loading animation, the features section and the install-analytics reporting." || gh release upload v4.0 /tmp/OffexMail.apk --clobber --repo "$GITHUB_REPOSITORY"
           fi
