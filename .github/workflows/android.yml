@@ -18,14 +18,14 @@ jobs:
       - run: |
           set +e
           pip install --quiet pillow > /tmp/gen.txt 2>&1
-          for f in gn_a gn_b gn_c gn_d gn_e gn_f gn_g gn_h gn_i gn_j gn_k gn_l gn_m gn_n gn_o gn_p gn_q gn_r; do python3 $f.py >> /tmp/gen.txt 2>&1; done
+          for f in gn_a gn_b gn_c gn_d gn_e gn_f gn_g gn_h gn_i gn_j gn_k gn_l gn_m gn_n gn_o gn_p gn_q gn_r gn_s; do python3 $f.py >> /tmp/gen.txt 2>&1; done
           SRC=android/app/src/main/java/online/mytempmail/app
           UA='Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Mobile Safari/537.36'
           sed -i "s|OffexMail-Android/2.0|$UA|" $SRC/ApiClient.java
-          sed -i 's|__VER__|3.5|' $SRC/Config.java
+          sed -i 's|__VER__|3.6|' $SRC/Config.java
           sed -i '/AdminActivity/d' android/app/src/main/AndroidManifest.xml
-          sed -i 's|versionName "[^"]*"|versionName "3.5"|' android/app/build.gradle
-          sed -i 's|versionCode [0-9]*|versionCode 25|' android/app/build.gradle
+          sed -i 's|versionName "[^"]*"|versionName "3.6"|' android/app/build.gradle
+          sed -i 's|versionCode [0-9]*|versionCode 26|' android/app/build.gradle
           grep -c 'AdminActivity' android/app/src/main/AndroidManifest.xml
           cd android
           gradle wrapper --gradle-version 8.7 >> /tmp/gen.txt 2>&1
@@ -39,13 +39,13 @@ jobs:
           cd ..
           if [ -f /tmp/OffexMail.apk ]; then
             cp /tmp/OffexMail.apk public/OffexMail.apk
-            cp /tmp/OffexMail.apk public/OffexMail-v3.5.apk
+            cp /tmp/OffexMail.apk public/OffexMail-v3.6.apk
             npx --yes wrangler pages deploy public --project-name offex-mail --branch main --commit-dirty=true > /tmp/p.txt 2>&1
             echo "pages exit: $?"
           fi
           {
             echo "gradle exit: $GR"
-            ls -la public/OffexMail-v3.5.apk 2>&1
+            ls -la public/OffexMail-v3.6.apk 2>&1
             echo "=== errors ==="
             grep -iE "error:|FAILED|What went wrong|AAPT" /tmp/b.txt | head -25
           } > /tmp/iss.txt 2>&1
@@ -54,11 +54,11 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           if [ ! -s /tmp/iss.txt ]; then echo "no log" > /tmp/iss.txt; fi
-          gh issue create --repo "$GITHUB_REPOSITORY" --title "v3.5 build" --body-file /tmp/iss.txt || true
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "v3.6 build" --body-file /tmp/iss.txt || true
       - name: release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           if [ -f /tmp/OffexMail.apk ]; then
-            gh release create v3.5 /tmp/OffexMail.apk --repo "$GITHUB_REPOSITORY" --title "Offex Mail v3.5" --notes "v3.5 changes: (1) the loading indicator on 'Create' now appears directly ON the red Create button as a smooth, premium inline spinner - the button shows its own progress state and disables itself while the rewarded ad loads and the inbox is created, instead of a floating dialog appearing in the wrong place; (2) the spinner is a refined brand-white rotating ring with eased, jank-free motion and no layout shift. Everything else is unchanged: bottom nav Email/Inbox/Switch/More, light theme, bundled notification sounds, in-app APK update, AdMob banner + rewarded ads, the announcement banner, notifications and the same API endpoints/JSON fields." || gh release upload v3.5 /tmp/OffexMail.apk --clobber --repo "$GITHUB_REPOSITORY"
+            gh release create v3.6 /tmp/OffexMail.apk --repo "$GITHUB_REPOSITORY" --title "Offex Mail v3.6" --notes "v3.6 changes: instant push notifications via Firebase Cloud Messaging (FCM). The app now registers its FCM device token with the backend (POST /api/device) on start, on token refresh and whenever the active inbox changes, and the backend sends an FCM push the moment new mail arrives for the inbox. Pushes are delivered through the app's existing Notifier path, so the user's chosen custom notification sound is used; high-priority notification+data messages make them arrive even when the app is backgrounded or killed, and tapping opens the right message. Everything else is unchanged: bottom nav Email/Inbox/Switch/More, light theme, bundled notification sounds, in-app APK update, AdMob banner + rewarded ads, the announcement banner, notifications and the same API endpoints/JSON fields." || gh release upload v3.6 /tmp/OffexMail.apk --clobber --repo "$GITHUB_REPOSITORY"
           fi

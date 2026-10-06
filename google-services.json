@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "550179658866",
+    "project_id": "thug-5607f",
+    "storage_bucket": "thug-5607f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:550179658866:android:60fe0a1f0217d2de0476eb",
+        "android_client_info": {
+          "package_name": "com.antidetection.mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA7QwXJArY2yDfArTssuCTHm1X6pVh1SCU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:550179658866:android:fdaa3d2957d6d2410476eb",
+        "android_client_info": {
+          "package_name": "online.mytempmail.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA7QwXJArY2yDfArTssuCTHm1X6pVh1SCU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
