@@ -18,18 +18,19 @@ jobs:
       - run: |
           set +e
           pip install --quiet pillow > /tmp/gen.txt 2>&1
-          for f in gn_a gn_b gn_c gn_d gn_e gn_f gn_g gn_h gn_i gn_j gn_k gn_l gn_m gn_n gn_o; do python3 $f.py >> /tmp/gen.txt 2>&1; done
+          for f in gn_a gn_b gn_c gn_d gn_e gn_f gn_g gn_h gn_i gn_j gn_k gn_l gn_m gn_n gn_o gn_p; do python3 $f.py >> /tmp/gen.txt 2>&1; done
           SRC=android/app/src/main/java/online/mytempmail/app
           UA='Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Mobile Safari/537.36'
           sed -i "s|OffexMail-Android/2.0|$UA|" $SRC/ApiClient.java
-          sed -i 's|__VER__|2.13|' $SRC/Config.java
+          sed -i 's|__VER__|3.0|' $SRC/Config.java
           sed -i 's|setContentView(R.layout.activity_main);|setContentView(R.layout.activity_main);\n        Config.apply(this);|' $SRC/MainActivity.java
           sed -i 's|findViewById(R.id.settingsBtn).setOnClickListener(v->startActivity(new Intent(this,AdminActivity.class)));|findViewById(R.id.settingsBtn).setOnClickListener(v->Menu.open(this));|' $SRC/MainActivity.java
           sed -i 's|createBtn.setOnClickListener(v->createInbox());|createBtn.setOnClickListener(v->Ads.rewarded(this, ()->createInbox()));|' $SRC/MainActivity.java
           sed -i 's|poll.postDelayed(this,10000);|poll.postDelayed(this,20000);|' $SRC/MainActivity.java
-          sed -i 's|versionName "2.6"|versionName "2.13"|' android/app/build.gradle
-          sed -i 's|versionCode 8|versionCode 15|' android/app/build.gradle
-          grep -c 'Ads.rewarded' $SRC/MainActivity.java
+          sed -i '/AdminActivity/d' android/app/src/main/AndroidManifest.xml
+          sed -i 's|versionName "2.6"|versionName "3.0"|' android/app/build.gradle
+          sed -i 's|versionCode 8|versionCode 20|' android/app/build.gradle
+          grep -c 'AdminActivity' android/app/src/main/AndroidManifest.xml
           cd android
           gradle wrapper --gradle-version 8.7 >> /tmp/gen.txt 2>&1
           ./gradlew assembleDebug --no-daemon > /tmp/b.txt 2>&1
@@ -42,14 +43,13 @@ jobs:
           cd ..
           if [ -f /tmp/OffexMail.apk ]; then
             cp /tmp/OffexMail.apk public/OffexMail.apk
-            cp /tmp/OffexMail.apk public/OffexMail-v2.13.apk
+            cp /tmp/OffexMail.apk public/OffexMail-v3.0.apk
             npx --yes wrangler pages deploy public --project-name offex-mail --branch main --commit-dirty=true > /tmp/p.txt 2>&1
             echo "pages exit: $?"
           fi
           {
             echo "gradle exit: $GR"
-            grep -c 'Ads.rewarded' $SRC/MainActivity.java
-            ls -la public/OffexMail-v2.13.apk 2>&1
+            ls -la public/OffexMail-v3.0.apk 2>&1
             echo "=== errors ==="
             grep -iE "error:|FAILED|What went wrong|AAPT" /tmp/b.txt | head -25
           } > /tmp/iss.txt 2>&1
@@ -58,11 +58,11 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           if [ ! -s /tmp/iss.txt ]; then echo "no log" > /tmp/iss.txt; fi
-          gh issue create --repo "$GITHUB_REPOSITORY" --title "v2.13 build" --body-file /tmp/iss.txt || true
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "v3.0 build" --body-file /tmp/iss.txt || true
       - name: release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           if [ -f /tmp/OffexMail.apk ]; then
-            gh release create v2.13 /tmp/OffexMail.apk --repo "$GITHUB_REPOSITORY" --title "Offex Mail v2.13" --notes "Rewarded ad on create inbox + real AdMob App ID" || gh release upload v2.13 /tmp/OffexMail.apk --clobber --repo "$GITHUB_REPOSITORY"
+            gh release create v3.0 /tmp/OffexMail.apk --repo "$GITHUB_REPOSITORY" --title "Offex Mail v3.0" --notes "Admin panel removed from app" || gh release upload v3.0 /tmp/OffexMail.apk --clobber --repo "$GITHUB_REPOSITORY"
           fi
