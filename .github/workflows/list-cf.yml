@@ -6,11 +6,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          echo "=== ADMIN PANEL PROBE ==="
-          for u in "https://api.mytemp-mail.online/admin?code=Hyco" "https://api.mytemp-mail.online/" "https://api.mytemp-mail.online/history?code=Hyco"; do
-            echo "URL: $u"
-            echo "  code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 -L "$u")"
-            echo "  title=$(curl -sL --max-time 30 "$u" | grep -o '<title>[^<]*</title>' | head -1)"
-            echo "  bytes=$(curl -sL --max-time 30 "$u" | wc -c)"
-            echo "  h2s=$(curl -sL --max-time 30 "$u" | grep -o '<h2[^>]*>[^<]*' | head -6 | tr '\n' '|')"
-          done
+          A=https://api.mytemp-mail.online
+          echo "=== PUBLIC APP CONFIG ==="
+          curl -s --max-time 30 "$A/api/app-config" | head -c 1500; echo
+          echo "=== ADMIN APP CONFIG (code=Hyco) ==="
+          curl -s --max-time 30 "$A/api/admin/app-config?code=Hyco" | head -c 1500; echo
+          echo "=== ADMIN PANEL FORM FIELDS ==="
+          curl -sL --max-time 30 "$A/admin?code=Hyco" | grep -oE 'name="[^"]*"|id="[^"]*"|action="[^"]*"|<input[^>]*>|<textarea[^>]*>' | head -40
+          echo "=== ADMIN PAGE SCRIPT (endpoints) ==="
+          curl -sL --max-time 30 "$A/admin?code=Hyco" | grep -oE "/api/[a-zA-Z0-9/_{}-]*" | sort -u | head -20
