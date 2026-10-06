@@ -1,0 +1,28 @@
+name: Temp verify favicon and domain
+
+on:
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check live favicons and domain references
+        run: |
+          BASE="https://mytemp-mail.online"
+          echo "===== FAVICON ASSETS ====="
+          for u in favicon.ico favicon-32.png favicon-192.png icon-512.png apple-touch-icon.png; do
+            echo "$u -> $(curl -s -o /dev/null -w 'HTTP %{http_code} | type=%{content_type} | bytes=%{size_download}' --max-time 30 $BASE/$u)"
+          done
+          echo "===== HOMEPAGE ====="
+          H=$(curl -sL --max-time 30 $BASE/)
+          echo "home rel=icon count        : $(printf '%s' "$H" | grep -o 'rel="icon"' | wc -l)"
+          echo "home apple-touch-icon count  : $(printf '%s' "$H" | grep -o 'apple-touch-icon' | wc -l)"
+          echo "home favicon-32.png ref      : $(printf '%s' "$H" | grep -o 'favicon-32.png' | wc -l)"
+          echo "===== MANIFEST ====="
+          echo "manifest -> $(curl -s -o /dev/null -w 'HTTP %{http_code} | type=%{content_type}' --max-time 30 $BASE/manifest.webmanifest)"
+          echo "===== PRIVACY ====="
+          P=$(curl -sL --max-time 30 $BASE/privacy)
+          echo "privacy offexmail.online count    : $(printf '%s' "$P" | grep -o 'offexmail\.online' | wc -l)"
+          echo "privacy mytemp-mail.online count  : $(printf '%s' "$P" | grep -o 'mytemp-mail\.online' | wc -l)"
+          echo "privacy rel=icon count          : $(printf '%s' "$P" | grep -o 'rel="icon"' | wc -l)"
