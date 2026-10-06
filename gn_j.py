@@ -11,8 +11,8 @@ android {
         applicationId "online.mytempmail.app"
         minSdk 24
         targetSdk 34
-        versionCode 8
-        versionName "2.6"
+        versionCode 22
+        versionName "3.2"
     }
     buildTypes { release { minifyEnabled false; signingConfig signingConfigs.debug } }
     compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }

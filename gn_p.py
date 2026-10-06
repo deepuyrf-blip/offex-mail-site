@@ -9,13 +9,15 @@ import android.widget.Toast;
 public class Menu {
     public static void open(final Activity a){
         final String notif = "Notifications: " + (Prefs.notifyOn() ? "ON" : "OFF");
-        final String[] items = {"About Offex Mail", "Contact us", notif};
+        final String theme = "Theme: " + (Prefs.isDark() ? "Dark" : "Light");
+        final String[] items = {"About Offex Mail", "Contact us", theme, notif};
         new AlertDialog.Builder(a)
             .setTitle("More")
             .setItems(items, (d,w)->{
                 try {
                     if(w==0) a.startActivity(new Intent(a, AboutActivity.class));
                     else if(w==1) a.startActivity(new Intent(a, ContactActivity.class));
+                    else if(w==2) { Prefs.setThemeMode(Prefs.isDark() ? "light" : "dark"); a.recreate(); }
                     else {
                         Prefs.setNotify(!Prefs.notifyOn());
                         if(Prefs.notifyOn()) Notifier.ensure(a);

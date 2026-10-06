@@ -21,6 +21,9 @@ public class Prefs {
     public static void setLastMsgId(int i){ sp.edit().putInt("last_msg",i).apply(); }
     public static String history(){ return sp.getString("history","[]"); }
     public static void setHistory(String j){ sp.edit().putString("history",j).apply(); }
+    public static String themeMode(){ return sp.getString("theme","light"); }
+    public static void setThemeMode(String m){ sp.edit().putString("theme",m).apply(); }
+    public static boolean isDark(){ return "dark".equals(themeMode()); }
 }
 """)
 
@@ -142,13 +145,14 @@ public class MainActivity extends Activity {
     private final Handler ui=new Handler(Looper.getMainLooper());
     private final Handler poll=new Handler(Looper.getMainLooper());
     private EditText nameBox; private Spinner domainBox; private Button createBtn;
-    private LinearLayout activeCard, historyBox; private TextView addrText,countdownText,emptyText,historyEmpty;
+    private LinearLayout activeCard, historyBox; private TextView addrText,countdownText,emptyText,historyEmpty,inboxAddr;
     private ScrollView rootScroll; private RecyclerView msgList;
     private MailAdapter adapter; private final List<Mail> mails=new ArrayList<>();
     private final List<String> domains=new ArrayList<>();
     private Runnable pollTask;
     @Override protected void onCreate(Bundle b){
         super.onCreate(b);
+        Skin.apply(this);
         if(!Prefs.onboarded()){ startActivity(new Intent(this,OnboardingActivity.class)); finish(); return; }
         setContentView(R.layout.activity_main);
         askNotify();
@@ -157,6 +161,7 @@ public class MainActivity extends Activity {
         activeCard=findViewById(R.id.activeCard); addrText=findViewById(R.id.addrText);
         countdownText=findViewById(R.id.countdownText); emptyText=findViewById(R.id.emptyText);
         historyBox=findViewById(R.id.historyBox); historyEmpty=findViewById(R.id.historyEmpty);
+        inboxAddr=findViewById(R.id.inboxAddr);
         msgList=findViewById(R.id.msgList);
         RecyclerView list=msgList;
         list.setLayoutManager(new LinearLayoutManager(this));
@@ -200,7 +205,7 @@ public class MainActivity extends Activity {
                 ind.animate().alpha(0f).setDuration(120).withEndAction(()->ind.setVisibility(View.INVISIBLE)).start();
             }
             if(icons[i]!=null){
-                icons[i].setTextColor(Color.parseColor(i==idx?"#8B6CFF":"#6E7396"));
+                icons[i].setTextColor(i==idx?0xFF6D4DFF:0xFF8A87A0);
                 icons[i].animate().scaleX(i==idx?1.12f:1f).scaleY(i==idx?1.12f:1f).setDuration(170).start();
             }
         }
@@ -212,6 +217,10 @@ public class MainActivity extends Activity {
             else if(idx==2){ if(rootScroll!=null&&historyBox!=null) rootScroll.smoothScrollTo(0,Math.max(0,historyBox.getTop()-24)); }
             else { Menu.open(this); }
         } catch(Exception e){}
+    }
+    private int resolveText(){
+        try { android.util.TypedValue tv=new android.util.TypedValue();
+            getTheme().resolveAttribute(R.attr.oxText,tv,true); return tv.data; } catch(Exception e){ return 0xFF1B1730; }
     }
     private void loadDomains(){
         new Thread(()->{
@@ -282,12 +291,12 @@ public class MainActivity extends Activity {
                 row.setPadding(32,30,32,30);
                 TextView t=new TextView(this);
                 t.setText(addr+(addr.equals(cur)?"  \\u2022 active":""));
-                t.setTextSize(14); t.setTextColor(Color.parseColor(addr.equals(cur)?"#8B6CFF":"#F4F5FF"));
+                t.setTextSize(14); t.setTextColor(addr.equals(cur)?0xFF6D4DFF:resolveText());
                 t.setTypeface(null,Typeface.BOLD);
                 LinearLayout.LayoutParams tp=new LinearLayout.LayoutParams(0,LinearLayout.LayoutParams.WRAP_CONTENT,1f);
                 t.setLayoutParams(tp);
                 TextView del=new TextView(this);
-                del.setText("\\u2715"); del.setTextSize(16); del.setTextColor(Color.parseColor("#FF5C6C"));
+                del.setText("\\u2715"); del.setTextSize(16); del.setTextColor(0xFFE5484D);
                 del.setPadding(24,0,0,0);
                 del.setOnClickListener(v->{ removeHistory(addr); if(addr.equals(Prefs.address())){ Prefs.setAddress(""); Prefs.setLastMsgId(0); activeCard.setVisibility(View.GONE); mails.clear(); adapter.notifyDataSetChanged(); emptyText.setVisibility(View.VISIBLE); } renderHistory(); });
                 row.addView(t); row.addView(del);
@@ -300,6 +309,7 @@ public class MainActivity extends Activity {
     }
     private void loadMessages(){
         final String addr=Prefs.address();
+        if(inboxAddr!=null) inboxAddr.setText(addr);
         if(addr.isEmpty()) return;
         new Thread(()->{
             try {
@@ -330,6 +340,7 @@ public class MainActivity extends Activity {
             removeHistory(addr);
             Prefs.setAddress(""); Prefs.setLastMsgId(0);
             ui.post(()->{ activeCard.setVisibility(View.GONE); mails.clear(); adapter.notifyDataSetChanged();
+                if(inboxAddr!=null) inboxAddr.setText("");
                 emptyText.setVisibility(View.VISIBLE); renderHistory(); Toast.makeText(this,"Inbox deleted",Toast.LENGTH_SHORT).show(); });
         }).start();
     }

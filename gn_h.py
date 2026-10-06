@@ -31,6 +31,7 @@ public class AdminActivity extends Activity {
     private TextView statsText;
     @Override protected void onCreate(Bundle b){
         super.onCreate(b);
+        Skin.apply(this);
         setContentView(R.layout.activity_admin);
         codeBox=findViewById(R.id.codeBox);
         panel=findViewById(R.id.panel);
@@ -198,7 +199,11 @@ W(RES+"/values/strings.xml","""<?xml version="1.0" encoding="utf-8"?>
     <string name="ob2_body">The app keeps checking in the background, so you get a notification the moment new mail arrives.</string>
     <string name="ob3_title">Free - No signup</string>
     <string name="ob3_body">No account, no password. Every inbox expires on its own after a while.</string>
-    <string name="ob_next">Next</string>
+    <string name="ob4_title">Your email, your way</string>
+    <string name="ob4_body">Pick a name and choose the domain you like before your inbox is created.</string>
+    <string name="ob5_title">Quick inbox access</string>
+    <string name="ob5_body">Switch between saved inboxes and read new mail the moment it lands.</string>
+    <string name="ob_next">Continue</string>
     <string name="ob_start">Get started</string>
     <string name="ob_skip">Skip</string>
     <string name="new_inbox">New inbox</string>
@@ -211,6 +216,15 @@ W(RES+"/values/strings.xml","""<?xml version="1.0" encoding="utf-8"?>
     <string name="delete">Delete</string>
     <string name="copied">Address copied</string>
     <string name="messages">Messages</string>
+    <string name="inbox_title">Inbox</string>
+    <string name="switch_title">Switch email</string>
+    <string name="choose_email">Choose your email address</string>
+    <string name="create_new_email">Create new email</string>
+    <string name="nav_email">Email</string>
+    <string name="nav_inbox">Inbox</string>
+    <string name="nav_switch">Switch</string>
+    <string name="nav_more">More</string>
+    <string name="message_label">MESSAGE</string>
     <string name="history">History</string>
     <string name="history_empty">Your past inboxes will appear here. Tap one to switch back to it.</string>
     <string name="no_messages">No mail yet. Paste this address wherever you need it and mail will land here.</string>

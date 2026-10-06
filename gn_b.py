@@ -156,10 +156,11 @@ import android.widget.Button;
 import android.widget.TextView;
 public class OnboardingActivity extends Activity {
     private int step=0;
-    private final int[] titles={R.string.ob1_title,R.string.ob2_title,R.string.ob3_title};
-    private final int[] bodies={R.string.ob1_body,R.string.ob2_body,R.string.ob3_body};
+    private final int[] titles={R.string.ob1_title,R.string.ob2_title,R.string.ob3_title,R.string.ob4_title,R.string.ob5_title};
+    private final int[] bodies={R.string.ob1_body,R.string.ob2_body,R.string.ob3_body,R.string.ob4_body,R.string.ob5_body};
     @Override protected void onCreate(Bundle b){
         super.onCreate(b);
+        Skin.apply(this);
         setContentView(R.layout.activity_onboarding);
         final TextView title=findViewById(R.id.obTitle), body=findViewById(R.id.obBody), dots=findViewById(R.id.obDots);
         final Button next=findViewById(R.id.obNext);
@@ -190,15 +191,19 @@ import org.json.JSONObject;
 public class ReaderActivity extends Activity {
     @Override protected void onCreate(Bundle b){
         super.onCreate(b);
+        Skin.apply(this);
         setContentView(R.layout.activity_reader);
+        findViewById(R.id.readerBack).setOnClickListener(v->finish());
         final int id=getIntent().getIntExtra("id",0);
         final TextView subject=findViewById(R.id.rSubject), from=findViewById(R.id.rFrom), bodyBox=findViewById(R.id.rBody);
+        final TextView avatar=findViewById(R.id.rAvatar);
         final Handler ui=new Handler(Looper.getMainLooper());
         new Thread(()->{
             try {
                 JSONObject j=new JSONObject(ApiClient.get("/api/message/"+id));
                 final String s=j.optString("subject"), f=j.optString("sender"), html=j.optString("html"), txt=j.optString("body");
                 ui.post(()->{ subject.setText(s); from.setText(f);
+                    if(avatar!=null&&f!=null&&!f.isEmpty()) avatar.setText(f.substring(0,1).toUpperCase());
                     if(html!=null&&!html.isEmpty()) bodyBox.setText(Html.fromHtml(html,Html.FROM_HTML_MODE_LEGACY));
                     else bodyBox.setText(txt); });
             } catch(final Exception e){
