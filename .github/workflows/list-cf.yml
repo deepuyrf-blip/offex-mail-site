@@ -6,24 +6,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          A=https://api.mytemp-mail.online
-          UA="Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Mobile Safari/537.36"
-          H1="x-admin-code: Hyco"
-          curl -s --max-time 30 -A "$UA" -H "$H1" -H "Origin: $A" -H "Referer: $A/admin?code=Hyco" "$A/api/app-config" > /tmp/cfg.json
-          echo "BEFORE: $(head -c 500 /tmp/cfg.json)"
-          python3 - <<'PY'
-          import json
-          c=json.load(open('/tmp/cfg.json'))
-          ann=c.setdefault('announcement',{}); ann['on']=True
-          if not ann.get('text'): ann['text']="Good morning 🌅"
-          a=c.setdefault('ads',{}); a['on']=True
-          for k in ('app_id','banner','interstitial','rewarded','app_open','native'): a.setdefault(k,'')
-          u=c.setdefault('update',{})
-          u['latest']="3.8"; u['force']=False
-          u['url']="https://github.com/deepuyrf-blip/offex-mail-site/releases/download/v3.8/OffexMail.apk"
-          c.setdefault('push',{}); c['push'].setdefault('title',''); c['push'].setdefault('body',''); c['push'].setdefault('ts',0)
-          json.dump(c,open('/tmp/new.json','w'))
-          PY
-          curl -s -X POST --max-time 30 -A "$UA" -H "$H1" -H "Content-Type: application/json" -H "Origin: $A" -H "Referer: $A/admin?code=Hyco" --data @/tmp/new.json "$A/api/admin/app-config" > /dev/null
-          sleep 3
-          echo "AFTER: $(curl -s --max-time 30 -A "$UA" -H "$H1" -H "Origin: $A" -H "Referer: $A/admin?code=Hyco" "$A/api/app-config")"
+          B=https://mytemp-mail.online
+          echo "=== FAVICON ASSETS ==="
+          for u in favicon.ico favicon-32.png favicon-192.png icon-512.png apple-touch-icon.png; do
+            echo "$u -> $(curl -s -o /dev/null -w 'HTTP %{http_code} type=%{content_type} bytes=%{size_download}' --max-time 25 $B/$u)"
+          done
+          H=$(curl -sL --max-time 30 $B/)
+          echo "home rel=icon: $(printf '%s' "$H" | grep -o 'rel="icon"' | wc -l)"
+          echo "home apple-touch: $(printf '%s' "$H" | grep -o 'apple-touch-icon' | wc -l)"
+          echo "home favicon-32 ref: $(printf '%s' "$H" | grep -o 'favicon-32.png' | wc -l)"
+          echo "=== PRIVACY old-domain ==="
+          P=$(curl -sL --max-time 30 $B/privacy)
+          echo "privacy offexmail.online: $(printf '%s' "$P" | grep -o 'offexmail.online' | wc -l)"
+          echo "privacy mytemp-mail.online: $(printf '%s' "$P" | grep -o 'mytemp-mail.online' | wc -l)"
+          echo "privacy rel=icon: $(printf '%s' "$P" | grep -o 'rel="icon"' | wc -l)"
+          echo "=== TERMS ==="
+          T=$(curl -sL --max-time 30 $B/terms)
+          echo "terms offexmail.online: $(printf '%s' "$T" | grep -o 'offexmail.online' | wc -l)"
+          echo "=== HI HUB ==="
+          echo "hi rel=icon: $(curl -sL --max-time 30 $B/hi | grep -o 'rel="icon"' | wc -l)"
