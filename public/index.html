@@ -1043,7 +1043,7 @@
     state.address = null; state.messages = []; state.seen = {}; state.firstLoad = true; state.selectedId = null; state.autoOpened = false;
     try{ localStorage.removeItem("offex_last_addr"); }catch(e){}
     $("addrBox").classList.remove("show"); renderMessages([]);
-    if(state.poll) clearInterval(state.poll); setStatus(t("ready"));
+    stopPolling(); setStatus(t("ready"));
   }
   function switchInbox(addr){
     state.address = addr; state.messages = []; state.seen = {}; state.firstLoad = true; state.selectedId = null; state.autoOpened = false;
@@ -1199,7 +1199,22 @@
   }
   function closeReader(){ $("overlay").classList.remove("show"); $("reader").classList.remove("show"); }
 
-  function startPolling(){ if(state.poll) clearInterval(state.poll); state.poll = setInterval(function(){ loadMessages(true); }, 6000); }
+  /* Auto-refresh is now 30s (was 6s) and only runs while the tab is visible
+     and an inbox exists, to keep backend request volume low. */
+  function startPolling(){
+    if(state.poll) clearInterval(state.poll);
+    state.poll = null;
+    if(!state.address) return;              /* no active inbox -> never poll */
+    if(document.hidden) return;             /* tab hidden -> stay paused */
+    state.poll = setInterval(function(){ loadMessages(true); }, 30000);
+  }
+  function stopPolling(){ if(state.poll){ clearInterval(state.poll); state.poll = null; } }
+  /* Pause polling while the browser tab is hidden; resume (with one immediate
+     refresh) when it becomes visible again. */
+  document.addEventListener("visibilitychange", function(){
+    if(document.hidden){ stopPolling(); }
+    else if(state.address){ loadMessages(true); startPolling(); }
+  });
   function tickExpiry(){
     if(state.timer) clearInterval(state.timer);
     state.timer = setInterval(function(){
