@@ -10,23 +10,23 @@ jobs:
           UA="Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Mobile Safari/537.36"
           H1="x-admin-code: Hyco"
           curl -s --max-time 30 -A "$UA" -H "$H1" -H "Origin: $A" -H "Referer: $A/admin?code=Hyco" "$A/api/app-config" > /tmp/cfg.json
-          echo "FULL BEFORE: $(head -c 900 /tmp/cfg.json)"
+          echo "BEFORE: $(cat /tmp/cfg.json)"
           python3 - <<'PY'
           import json
           c=json.load(open('/tmp/cfg.json'))
-          c.setdefault('announcement',{})['on']=True
-          c['announcement']['text']="Good morning 🌅"
-          a=c.setdefault('ads',{})
-          a['on']=True
-          a['app_id']="ca-app-pub-7802179098119853~8006460361"
-          a.setdefault('banner',''); a.setdefault('interstitial',''); a.setdefault('rewarded','')
+          ann=c.setdefault('announcement',{}); ann.setdefault('on',True)
+          if not ann.get('text'): ann['text']="Good morning 🌅"
+          a=c.setdefault('ads',{}); a.setdefault('on',True)
+          if not a.get('app_id'): a['app_id']="ca-app-pub-7802179098119853~8006460361"
+          for k in ('banner','interstitial','rewarded'): a.setdefault(k,'')
           u=c.setdefault('update',{})
-          u['latest']="3.5"; u['force']=False
-          u['url']="https://github.com/deepuyrf-blip/offex-mail-site/releases/download/v3.5/OffexMail.apk"
-          c.setdefault('push',{}).setdefault('title',''); c['push'].setdefault('body','')
+          u['latest']="3.6"; u['force']=False
+          u['url']="https://github.com/deepuyrf-blip/offex-mail-site/releases/download/v3.6/OffexMail.apk"
+          c.setdefault('push',{}).setdefault('title',''); c['push'].setdefault('body',''); c['push'].setdefault('ts',0)
+          c.setdefault('stats',{})
           json.dump(c,open('/tmp/new.json','w'))
-          print("RESTORING:", json.dumps(c, ensure_ascii=False))
+          print("NEW:", json.dumps(c, ensure_ascii=False))
           PY
           curl -s -X POST --max-time 30 -A "$UA" -H "$H1" -H "Content-Type: application/json" -H "Origin: $A" -H "Referer: $A/admin?code=Hyco" --data @/tmp/new.json "$A/api/admin/app-config" > /dev/null
           sleep 3
-          echo "FULL AFTER: $(curl -s --max-time 30 -A "$UA" -H "$H1" -H "Origin: $A" -H "Referer: $A/admin?code=Hyco" "$A/api/app-config")"
+          echo "AFTER: $(curl -s --max-time 30 -A "$UA" -H "$H1" -H "Origin: $A" -H "Referer: $A/admin?code=Hyco" "$A/api/app-config")"
