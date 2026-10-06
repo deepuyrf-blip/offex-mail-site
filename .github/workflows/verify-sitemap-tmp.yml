@@ -1,0 +1,18 @@
+name: Verify Sitemap Live
+on:
+  workflow_dispatch:
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check sitemaps
+        run: |
+          echo "=== sitemap.xml ==="
+          curl -sS -o /tmp/sitemap.xml -w "SITEMAP_HTTP_CODE:%{http_code}\nSITEMAP_CONTENT_TYPE:%{content_type}\n" https://mytemp-mail.online/sitemap.xml
+          echo "SITEMAP_LOC_COUNT:$(grep -o '<loc>' /tmp/sitemap.xml | wc -l)"
+          echo "SITEMAP_XHTML_LINK_COUNT:$(grep -o 'xhtml:link' /tmp/sitemap.xml | wc -l)"
+          echo "=== landing-sitemap.xml ==="
+          curl -sS -o /tmp/landing.xml -w "LANDING_HTTP_CODE:%{http_code}\nLANDING_CONTENT_TYPE:%{content_type}\n" https://mytemp-mail.online/landing-sitemap.xml
+          echo "LANDING_LOC_COUNT:$(grep -o '<loc>' /tmp/landing.xml | wc -l)"
+          echo "=== first 3 locs ==="
+          grep -o '<loc>[^<]*</loc>' /tmp/sitemap.xml | head -3
