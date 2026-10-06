@@ -18,14 +18,14 @@ jobs:
       - run: |
           set +e
           pip install --quiet pillow > /tmp/gen.txt 2>&1
-          for f in gn_a gn_b gn_c gn_d gn_e gn_f gn_g gn_h gn_i gn_j gn_k gn_l gn_m gn_n gn_o gn_p gn_q gn_r gn_s gn_t gn_u gn_v gn_w gn_x; do python3 $f.py >> /tmp/gen.txt 2>&1; done
+          for f in gn_a gn_b gn_c gn_d gn_e gn_f gn_g gn_h gn_i gn_j gn_k gn_l gn_m gn_n gn_o gn_p gn_q gn_r gn_s gn_t gn_u gn_v gn_w gn_x gn_y; do python3 $f.py >> /tmp/gen.txt 2>&1; done
           SRC=android/app/src/main/java/online/mytempmail/app
           UA='Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Mobile Safari/537.36'
           sed -i "s|OffexMail-Android/2.0|$UA|" $SRC/ApiClient.java
-          sed -i 's|__VER__|4.1|' $SRC/Config.java
+          sed -i 's|__VER__|4.2|' $SRC/Config.java
           sed -i '/AdminActivity/d' android/app/src/main/AndroidManifest.xml
-          sed -i 's|versionName "[^"]*"|versionName "4.1"|' android/app/build.gradle
-          sed -i 's|versionCode [0-9]*|versionCode 31|' android/app/build.gradle
+          sed -i 's|versionName "[^"]*"|versionName "4.2"|' android/app/build.gradle
+          sed -i 's|versionCode [0-9]*|versionCode 32|' android/app/build.gradle
           grep -c 'AdminActivity' android/app/src/main/AndroidManifest.xml
           cd android
           gradle wrapper --gradle-version 8.7 >> /tmp/gen.txt 2>&1
@@ -39,13 +39,13 @@ jobs:
           cd ..
           if [ -f /tmp/OffexMail.apk ]; then
             cp /tmp/OffexMail.apk public/OffexMail.apk
-            cp /tmp/OffexMail.apk public/OffexMail-v4.1.apk
+            cp /tmp/OffexMail.apk public/OffexMail-v4.2.apk
             npx --yes wrangler pages deploy public --project-name offex-mail --branch main --commit-dirty=true > /tmp/p.txt 2>&1
             echo "pages exit: $?"
           fi
           {
             echo "gradle exit: $GR"
-            ls -la public/OffexMail-v4.1.apk 2>&1
+            ls -la public/OffexMail-v4.2.apk 2>&1
             echo "=== errors ==="
             grep -iE "error:|FAILED|What went wrong|AAPT" /tmp/b.txt | head -25
           } > /tmp/iss.txt 2>&1
@@ -54,11 +54,11 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           if [ ! -s /tmp/iss.txt ]; then echo "no log" > /tmp/iss.txt; fi
-          gh issue create --repo "$GITHUB_REPOSITORY" --title "v4.1 build" --body-file /tmp/iss.txt || true
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "v4.2 build" --body-file /tmp/iss.txt || true
       - name: release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           if [ -f /tmp/OffexMail.apk ]; then
-            gh release create v4.1 /tmp/OffexMail.apk --repo "$GITHUB_REPOSITORY" --title "Offex Mail v4.1" --notes "v4.1 changes: OTP detection is now PRECISE across the app, the backend API and the website. A message is only flagged as an OTP when a 4-8 digit code stands alone AND sits next to an OTP word (code / otp / pin / verification / one-time - in English, Hinglish and Hindi), so toll-free numbers, prices (Rs 1,299 / 1,499.00), years (2026), phone numbers, order ids and numbers inside URLs or e-mail addresses are no longer mistaken for codes; when several candidates exist the one closest to its context word wins. Version bumped 4.0 -> 4.1. Everything else is unchanged: the same API endpoints/JSON fields, the mail ingest path, FCM pushes, the support feature, the bundled notification sounds, the bottom nav, the ad placements, the mandatory notification-permission gate, the circular logo, the Create-button loading animation, the features section, the multi-language support (English default + Hindi Devanagari + es/pt/ar/ru/in) and the install-analytics reporting." || gh release upload v4.1 /tmp/OffexMail.apk --clobber --repo "$GITHUB_REPOSITORY"
+            gh release create v4.2 /tmp/OffexMail.apk --repo "$GITHUB_REPOSITORY" --title "Offex Mail v4.2" --notes "v4.2 changes: two reader bugs fixed across the app, the backend API and the website. (1) HTML entities are now stripped and decoded BEFORE any OTP detection, so a zero-width-space entity such as #8203; can no longer be misread as the code 8203 - an ElevenLabs verification mail that contained no numeric code no longer shows a fake VERIFICATION CODE card; digits inside HTML attributes, CSS and URLs are never scanned, only visible text is. (2) Verification links and buttons are now tappable: a href anchors and bare URLs open in the external browser, including the common case where the button is an a element wrapping an image or styled text; only http and https are opened, any other scheme is ignored. The precise v4.1 OTP rule is preserved (real codes still detected; prices, years, phone numbers, order ids and entities rejected). Version bumped 4.1 -> 4.2. Everything else is unchanged: the same API endpoints/JSON fields, the mail ingest path, FCM pushes, the support feature, the bundled notification sounds, the bottom nav, the ad placements, the mandatory notification-permission gate, the circular logo, the Create-button loading animation, the features section, the multi-language support (English default + Hindi Devanagari + es/pt/ar/ru/in) and the install-analytics reporting." || gh release upload v4.2 /tmp/OffexMail.apk --clobber --repo "$GITHUB_REPOSITORY"
           fi
