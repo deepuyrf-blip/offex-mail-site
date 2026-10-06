@@ -929,13 +929,51 @@
   var toastTimer;
   function toast(msg, kind){ var el = $("toast"); el.textContent = msg; el.className = "toast show" + (kind ? " "+kind : ""); clearTimeout(toastTimer); toastTimer = setTimeout(function(){ el.className = "toast"; }, 3200); }
   function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+  // Precise OTP detection. A candidate must be 4-8 digits, stand alone (not
+  // part of a longer number), not be a price/amount/percentage or a bare year,
+  // and appear NEAR an OTP-indicating word (code/otp/pin/verification/one-time
+  // in English, Hinglish or Hindi). The closest-to-context candidate wins.
   function detectOtp(txt){
     if(!txt) return null;
     var t = String(txt);
-    var m = t.match(/(?:otp|code|pin|verification|verify|passcode|password|security)[^0-9]{0,24}(\d{4,8})/i);
-    if(m) return m[1];
-    m = t.match(/\b(\d{4,8})\b/);
-    return m ? m[1] : null;
+    t = t.replace(/<[^>]+>/g, " ")
+         .replace(/\b(?:https?:\/\/|www\.)\S+/gi, " ")
+         .replace(/\b[\w.+-]+@[\w-]+\.[\w.-]+/gi, " ");
+    var CTX = /(?:\b(?:otp|code|pin|passcode|password|verification|verify|verifying|auth|authentication)\b|one[\s-]?time(?:[\s-]?(?:code|pin|password))?|security\s+code|confirmation\s+code|login\s+code|access\s+code|सत्यापन|कोड|ओटीपी|वेरिफिकेशन|पिन|पासकोड)/gi;
+    var ctx = [], cm;
+    while((cm = CTX.exec(t)) !== null){
+      ctx.push([cm.index, cm.index + cm[0].length]);
+      if(CTX.lastIndex === cm.index) CTX.lastIndex++;
+    }
+    var CAND = /\d{4,8}/g, m, best = null, bestScore = -1e9, bestStart = 1e9;
+    var cur = "₹$€£¥";
+    while((m = CAND.exec(t)) !== null){
+      var s = m.index, e = s + m[0].length, code = m[0];
+      if(s > 0 && /\d/.test(t.charAt(s-1))) continue;
+      if(e < t.length && /\d/.test(t.charAt(e))) continue;
+      if(s > 0 && (cur.indexOf(t.charAt(s-1)) >= 0 || t.charAt(s-1) === '%')) continue;
+      if(s > 1 && (t.charAt(s-1) === ',' || t.charAt(s-1) === '.') && /\d/.test(t.charAt(s-2))) continue;
+      if(e < t.length && t.charAt(e) === '%') continue;
+      if(e + 1 < t.length && (t.charAt(e) === ',' || t.charAt(e) === '.') && /\d/.test(t.charAt(e+1))) continue;
+      var dist = null, i;
+      for(i = 0; i < ctx.length; i++){
+        var cs = ctx[i][0], ce = ctx[i][1];
+        if(ce <= s){ var d = s - ce; if(d <= 40 && (dist === null || d < dist)) dist = d; }
+        else if(cs >= e){ var d2 = cs - e; if(d2 <= 20 && (dist === null || d2 < dist)) dist = d2; }
+      }
+      if(dist === null) continue;
+      if(code.length === 4){
+        var n = parseInt(code, 10);
+        if(n >= 1900 && n <= 2099){
+          var near = false;
+          for(i = 0; i < ctx.length; i++){ if(ctx[i][1] <= s && s - ctx[i][1] >= 0 && s - ctx[i][1] <= 12){ near = true; break; } }
+          if(!near) continue;
+        }
+      }
+      var score = 1000 - dist;
+      if(score > bestScore || (score === bestScore && s < bestStart)){ bestScore = score; bestStart = s; best = code; }
+    }
+    return best;
   }
   function markOtp(addr, otp, service){
     if(!addr || !otp) return;
