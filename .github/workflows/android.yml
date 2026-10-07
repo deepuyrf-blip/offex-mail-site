@@ -18,19 +18,19 @@ jobs:
         run: |
           set -euo pipefail
           pip install --quiet pillow
-          for f in gn_a gn_b gn_c gn_d gn_e gn_f gn_g gn_h gn_i gn_j gn_k gn_l gn_m gn_n gn_o gn_p gn_q gn_r gn_s gn_t gn_u gn_v gn_w gn_x gn_y gn_z gn_aa gn_ab gn_ac gn_ad gn_ae; do
+          for f in gn_a gn_b gn_c gn_d gn_e gn_f gn_g gn_h gn_i gn_j gn_k gn_l gn_m gn_n gn_o gn_p gn_q gn_r gn_s gn_t gn_u gn_v gn_w gn_x gn_y gn_z gn_aa gn_ab gn_ac gn_ad gn_ae gn_af; do
             echo "== generating $f =="
             python3 "$f.py"
           done
           SRC=android/app/src/main/java/online/mytempmail/app
           UA='Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Mobile Safari/537.36'
           sed -i "s|OffexMail-Android/2.0|$UA|" "$SRC/ApiClient.java"
-          sed -i 's|__VER__|4.8|' "$SRC/Config.java"
+          sed -i 's|__VER__|4.9|' "$SRC/Config.java"
           sed -i '/AdminActivity/d' android/app/src/main/AndroidManifest.xml
-          sed -i 's|versionName "[^"]*"|versionName "4.8"|' android/app/build.gradle
-          sed -i 's|versionCode [0-9]*|versionCode 38|' android/app/build.gradle
-          grep -q 'versionName "4.8"' android/app/build.gradle
-          grep -q 'versionCode 38' android/app/build.gradle
+          sed -i 's|versionName "[^"]*"|versionName "4.9"|' android/app/build.gradle
+          sed -i 's|versionCode [0-9]*|versionCode 39|' android/app/build.gradle
+          grep -q 'versionName "4.9"' android/app/build.gradle
+          grep -q 'versionCode 39' android/app/build.gradle
           cd android
           gradle wrapper --gradle-version 8.7
           ./gradlew assembleDebug --no-daemon
@@ -55,36 +55,36 @@ jobs:
           fi
           ls -la /tmp/OffexMail.apk
           cp /tmp/OffexMail.apk public/OffexMail.apk
-          cp /tmp/OffexMail.apk public/OffexMail-v4.8.apk
+          cp /tmp/OffexMail.apk public/OffexMail-v4.9.apk
           echo "staged public/OffexMail.apk ($(stat -c%s public/OffexMail.apk) bytes)"
       - name: Commit signed APK to public/
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add public/OffexMail.apk public/OffexMail-v4.8.apk
+          git add public/OffexMail.apk public/OffexMail-v4.9.apk
           if git diff --cached --quiet; then
             echo "committed public APK is unchanged; nothing to commit"
           else
-            git commit -m "chore(apk): publish signed OffexMail v4.8 APK (versionName 4.8 / versionCode 38)"
+            git commit -m "chore(apk): publish signed OffexMail v4.9 APK (versionName 4.9 / versionCode 39)"
             git push
             echo "pushed updated public/OffexMail.apk"
           fi
-      - name: Create or update GitHub Release v4.8
+      - name: Create or update GitHub Release v4.9
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           cat > /tmp/notes.txt <<'NOTES'
-          v4.8 changes: fixes the JavaScript bridge in the WebView UI so every control actually works. The v4.8 page invoked each bridge method with two arguments, but the Android WebView Java bridge matches a method by its ARGUMENT COUNT, so the 0- and 1-argument methods (refresh, deleteInbox, copyAddress, openSettings, openMore, pickDomain, openMessage, switchTo, deleteSaved, nav, openLink) never matched and the call failed silently - the UI looked perfect but was inert. The bundled page now forwards exactly the arguments each method declares, and every control is wired with addEventListener (static controls) or a single delegated listener (message rows and saved inboxes), so Copy, Refresh, Delete, Create inbox (with a visible loading spinner), opening a message, switching/deleting a saved inbox, the bottom-nav tabs, the domain selector and the More/settings menu all reach native code. JS and bridge failures are no longer swallowed: window.onerror and console output are routed to logcat through a WebChromeClient.onConsoleMessage and a log() bridge method. The CSS and markup are unchanged. Version bumped 4.7 to 4.8.
+          v4.9 changes: four fixes to the WebView UI and notifications. (1) Deleting an inbox no longer shows a confirmation dialog - the Delete control now deletes directly (the native Delete button already did, and deleting a saved inbox never confirmed). (2) The Inbox item in the bottom navigation now opens a dedicated, separate Inbox screen (a full-screen view in the bundled page) that lists the received mail - sender, subject, service/OTP tags and time - with tap-to-open on each message and a back arrow to return; the original page's CSS and markup are unchanged, only additive wiring was added. (3) Tapping a new-mail notification now opens the app directly on that mail: the notification's PendingIntent carries the message id and address and the app opens the reader for that message, whether it was closed (cold start) or in the background (singleTop onNewIntent). (4) The three notification tones were replaced with new, higher-quality, pleasant two-tone message bells in a Samsung/Vivo style (~1.25 s, soft attack, short tail); the More -> Notification sound picker keeps working and the default is the nicest one ("Bell"). Version bumped 4.8 to 4.9.
           NOTES
-          if ! gh release view v4.8 --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
-            gh release create v4.8 --repo "$GITHUB_REPOSITORY" --title "Offex Mail v4.8" --notes-file /tmp/notes.txt || true
+          if ! gh release view v4.9 --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release create v4.9 --repo "$GITHUB_REPOSITORY" --title "Offex Mail v4.9" --notes-file /tmp/notes.txt || true
           fi
-          gh release edit v4.8 --repo "$GITHUB_REPOSITORY" --title "Offex Mail v4.8" --notes-file /tmp/notes.txt --draft=false
-          gh release upload v4.8 /tmp/OffexMail.apk --clobber --repo "$GITHUB_REPOSITORY"
-          echo "=== release v4.8 ==="
-          gh release view v4.8 --repo "$GITHUB_REPOSITORY" --json tagName,name,isDraft,assets
+          gh release edit v4.9 --repo "$GITHUB_REPOSITORY" --title "Offex Mail v4.9" --notes-file /tmp/notes.txt --draft=false
+          gh release upload v4.9 /tmp/OffexMail.apk --clobber --repo "$GITHUB_REPOSITORY"
+          echo "=== release v4.9 ==="
+          gh release view v4.9 --repo "$GITHUB_REPOSITORY" --json tagName,name,isDraft,assets
       - name: Deploy site to Cloudflare Pages
         continue-on-error: true
         run: |
