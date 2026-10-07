@@ -1,0 +1,47 @@
+name: CF cleanup
+on:
+  workflow_dispatch:
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: list-and-delete
+        env:
+          T: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          API=https://api.cloudflare.com/client/v4/accounts/d33504e28650ba4603dc9cafc46d0ec9
+          echo "=== PAGES PROJECTS ==="
+          curl -s -H "Authorization: Bearer $T" "$API/pages/projects?per_page=50" -o pg.json
+          python3 -c "
+import json
+d=json.load(open('pg.json'))
+print('ok:',d.get('success'))
+for p in (d.get('result') or []):
+    print('PAGES|'+str(p.get('name'))+'|'+str(p.get('subdomain'))+'|'+str(p.get('created_on')))
+"
+          echo "=== WORKERS ==="
+          curl -s -H "Authorization: Bearer $T" "$API/workers/scripts" -o wk.json
+          python3 -c "
+import json
+d=json.load(open('wk.json'))
+print('ok:',d.get('success'))
+for w in (d.get('result') or []):
+    print('WORKER|'+str(w.get('id'))+'|'+str(w.get('modified_on')))
+"
+          echo "=== ZONE WORKER ROUTES ==="
+          for z in 5c5fca6f2e8bf44362a8ca850dbb3b76 900aba0bd69a63d84d137029b15da481; do
+            curl -s -H "Authorization: Bearer $T" "https://api.cloudflare.com/client/v4/zones/$z/workers/routes" -o rt.json
+            python3 -c "
+import json
+d=json.load(open('rt.json'))
+for r in (d.get('result') or []):
+    print('ROUTE|$z|'+str(r.get('pattern'))+'|'+str(r.get('script')))
+"
+          done
+          echo "=== DELETE KNOWN-BAD ==="
+          for p in vzb offex-ads; do
+            echo "deleting pages $p -> $(curl -s -X DELETE -H "Authorization: Bearer $T" "$API/pages/projects/$p" -o /dev/null -w '%{http_code}')"
+          done
+          for w in vzb offex-ads; do
+            echo "deleting worker $w -> $(curl -s -X DELETE -H "Authorization: Bearer $T" "$API/workers/scripts/$w" -o /dev/null -w '%{http_code}')"
+          done
