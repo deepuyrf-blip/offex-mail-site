@@ -18,19 +18,19 @@ jobs:
         run: |
           set -euo pipefail
           pip install --quiet pillow
-          for f in gn_a gn_b gn_c gn_d gn_e gn_f gn_g gn_h gn_i gn_j gn_k gn_l gn_m gn_n gn_o gn_p gn_q gn_r gn_s gn_t gn_u gn_v gn_w gn_x gn_y gn_z gn_aa gn_ab gn_ac gn_ad; do
+          for f in gn_a gn_b gn_c gn_d gn_e gn_f gn_g gn_h gn_i gn_j gn_k gn_l gn_m gn_n gn_o gn_p gn_q gn_r gn_s gn_t gn_u gn_v gn_w gn_x gn_y gn_z gn_aa gn_ab gn_ac gn_ad gn_ae; do
             echo "== generating $f =="
             python3 "$f.py"
           done
           SRC=android/app/src/main/java/online/mytempmail/app
           UA='Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Mobile Safari/537.36'
           sed -i "s|OffexMail-Android/2.0|$UA|" "$SRC/ApiClient.java"
-          sed -i 's|__VER__|4.7|' "$SRC/Config.java"
+          sed -i 's|__VER__|4.8|' "$SRC/Config.java"
           sed -i '/AdminActivity/d' android/app/src/main/AndroidManifest.xml
-          sed -i 's|versionName "[^"]*"|versionName "4.7"|' android/app/build.gradle
-          sed -i 's|versionCode [0-9]*|versionCode 37|' android/app/build.gradle
-          grep -q 'versionName "4.7"' android/app/build.gradle
-          grep -q 'versionCode 37' android/app/build.gradle
+          sed -i 's|versionName "[^"]*"|versionName "4.8"|' android/app/build.gradle
+          sed -i 's|versionCode [0-9]*|versionCode 38|' android/app/build.gradle
+          grep -q 'versionName "4.8"' android/app/build.gradle
+          grep -q 'versionCode 38' android/app/build.gradle
           cd android
           gradle wrapper --gradle-version 8.7
           ./gradlew assembleDebug --no-daemon
@@ -55,36 +55,36 @@ jobs:
           fi
           ls -la /tmp/OffexMail.apk
           cp /tmp/OffexMail.apk public/OffexMail.apk
-          cp /tmp/OffexMail.apk public/OffexMail-v4.7.apk
+          cp /tmp/OffexMail.apk public/OffexMail-v4.8.apk
           echo "staged public/OffexMail.apk ($(stat -c%s public/OffexMail.apk) bytes)"
       - name: Commit signed APK to public/
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add public/OffexMail.apk public/OffexMail-v4.7.apk
+          git add public/OffexMail.apk public/OffexMail-v4.8.apk
           if git diff --cached --quiet; then
             echo "committed public APK is unchanged; nothing to commit"
           else
-            git commit -m "chore(apk): publish signed OffexMail v4.7 APK (versionName 4.7 / versionCode 37)"
+            git commit -m "chore(apk): publish signed OffexMail v4.8 APK (versionName 4.8 / versionCode 38)"
             git push
             echo "pushed updated public/OffexMail.apk"
           fi
-      - name: Create or update GitHub Release v4.7
+      - name: Create or update GitHub Release v4.8
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           cat > /tmp/notes.txt <<'NOTES'
-          v4.7 changes: the main screen is now the supplied HTML UI rendered in a WebView, so it matches the approved design exactly and can be updated remotely later. The HTML is bundled as app/src/main/assets/offex_ui.html with everything inlined (CSS + SVG icons, no external requests). A JavaScript interface (OffexNative) bridges the page to the EXISTING native code - createInbox, refresh, deleteInbox, copyAddress, openMessage, switchTo, deleteSaved, openSettings, openMore, pickDomain, nav and openLink all call the same methods/API the old buttons did, so no business logic was reimplemented. Java pushes live data into the page via window.OffexUI.render(state): current address, message list (sender/subject/tags/timestamp/otp), saved inboxes, the N-new count, the live/expiry status, the section toggles, the announcement/banner text, and the remote appearance (accent/gradient/radius/titles) as CSS variables. An FCM push now refreshes the open WebView and still posts the system notification. Every view id the generated Java looks up is kept in the layout under the WebView, so nothing else had to change: the same API endpoints/JSON fields, the support screen, the bundled notification sounds, the AdMob placements, the notification-permission gate, the 7-locale multi-language support (English default + Hindi Devanagari + es/pt/ar/ru/in, driven by string resources), the install analytics, the OTP precision fix, the tappable verification links and the circular logo. Version bumped 4.6 to 4.7.
+          v4.8 changes: fixes the JavaScript bridge in the WebView UI so every control actually works. The v4.8 page invoked each bridge method with two arguments, but the Android WebView Java bridge matches a method by its ARGUMENT COUNT, so the 0- and 1-argument methods (refresh, deleteInbox, copyAddress, openSettings, openMore, pickDomain, openMessage, switchTo, deleteSaved, nav, openLink) never matched and the call failed silently - the UI looked perfect but was inert. The bundled page now forwards exactly the arguments each method declares, and every control is wired with addEventListener (static controls) or a single delegated listener (message rows and saved inboxes), so Copy, Refresh, Delete, Create inbox (with a visible loading spinner), opening a message, switching/deleting a saved inbox, the bottom-nav tabs, the domain selector and the More/settings menu all reach native code. JS and bridge failures are no longer swallowed: window.onerror and console output are routed to logcat through a WebChromeClient.onConsoleMessage and a log() bridge method. The CSS and markup are unchanged. Version bumped 4.7 to 4.8.
           NOTES
-          if ! gh release view v4.7 --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
-            gh release create v4.7 --repo "$GITHUB_REPOSITORY" --title "Offex Mail v4.7" --notes-file /tmp/notes.txt || true
+          if ! gh release view v4.8 --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release create v4.8 --repo "$GITHUB_REPOSITORY" --title "Offex Mail v4.8" --notes-file /tmp/notes.txt || true
           fi
-          gh release edit v4.7 --repo "$GITHUB_REPOSITORY" --title "Offex Mail v4.7" --notes-file /tmp/notes.txt --draft=false
-          gh release upload v4.7 /tmp/OffexMail.apk --clobber --repo "$GITHUB_REPOSITORY"
-          echo "=== release v4.7 ==="
-          gh release view v4.7 --repo "$GITHUB_REPOSITORY" --json tagName,name,isDraft,assets
+          gh release edit v4.8 --repo "$GITHUB_REPOSITORY" --title "Offex Mail v4.8" --notes-file /tmp/notes.txt --draft=false
+          gh release upload v4.8 /tmp/OffexMail.apk --clobber --repo "$GITHUB_REPOSITORY"
+          echo "=== release v4.8 ==="
+          gh release view v4.8 --repo "$GITHUB_REPOSITORY" --json tagName,name,isDraft,assets
       - name: Deploy site to Cloudflare Pages
         continue-on-error: true
         run: |
