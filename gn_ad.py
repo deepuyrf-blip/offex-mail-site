@@ -83,8 +83,7 @@ WEBVIEW = (
     '    <WebView android:id="@+id/webUi"\n'
     '        android:layout_width="match_parent" android:layout_height="match_parent"\n'
     '        android:background="#020A27" android:scrollbars="none"\n'
-    '        android:overScrollMode="never" android:verticalScrollBarEnabled="false"\n'
-    '        android:horizontalScrollBarEnabled="false"/>\n')
+    '        android:overScrollMode="never"/>\n')
 wrapped = FRAME_OPEN + inner.rstrip("\n") + "\n" + WEBVIEW + "</FrameLayout>\n"
 W(amp, wrapped)
 print("AD: wrapped activity_main.xml (WebView host over the native tree)")
