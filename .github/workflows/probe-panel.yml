@@ -1,0 +1,55 @@
+name: probe-panel
+on:
+  workflow_dispatch:
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch admin panel HTML
+        run: |
+          curl -sS -D headers.txt \
+            -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36" \
+            -H "Origin: https://api.mytemp-mail.online" \
+            -H "Referer: https://api.mytemp-mail.online/admin?code=Hyco" \
+            -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" \
+            "https://api.mytemp-mail.online/admin?code=Hyco" -o admin.html
+          echo "--- response headers ---"
+          cat headers.txt
+          echo "--- bytes ---"
+          wc -c admin.html
+          echo "--- first 200 chars ---"
+          head -c 200 admin.html; echo
+
+      - name: Extract script block and node --check
+        run: |
+          node --version
+          python3 - <<'PY'
+          import re
+          html = open('admin.html', encoding='utf-8', errors='replace').read()
+          m = re.search(r'<script>(.*?)</script>', html, re.S)
+          assert m, 'NO script block found'
+          open('panel.js', 'w').write(m.group(1))
+          print('script bytes:', len(m.group(1)))
+          PY
+          echo "--- node --check panel.js ---"
+          node --check panel.js && echo "NODE_CHECK: PASS" || { echo "NODE_CHECK: FAIL"; exit 1; }
+
+      - name: Check card markers
+        run: |
+          for m in OFFEX-DEVICES-CARD OFFEX-APPEARANCE-CARD OFFEX-SUPPORT-CARD OFFEX-ADMIN-V2 OFFEX-ADMIN-V3-HARDENED; do
+            if grep -q "$m" admin.html; then echo "MARKER OK: $m"; else echo "MARKER MISSING: $m"; fi
+          done
+
+      - name: Probe data endpoints
+        run: |
+          for ep in /api/admin/devices /api/admin/support /api/admin/installs /api/admin/app-log /api/app-config; do
+            code=$(curl -sS -o body.txt -w "%{http_code}" \
+              -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36" \
+              -H "Origin: https://api.mytemp-mail.online" \
+              -H "Referer: https://api.mytemp-mail.online/admin?code=Hyco" \
+              -H "x-admin-code: Hyco" \
+              "https://api.mytemp-mail.online${ep}?code=Hyco")
+            echo "=== ${ep} -> HTTP ${code}"
+            head -c 400 body.txt; echo; echo
+          done
