@@ -1,0 +1,31 @@
+name: Temp verify hex colour picker
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch admin panel and verify colour picker
+        run: |
+          set +e
+          URL='https://api.mytemp-mail.online/admin?code=Hyco'
+          UA='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
+          CODE=$(curl -sS -L -o /tmp/body.html -w '%{http_code}' --max-time 45 -A "$UA" -H 'Origin: https://api.mytemp-mail.online' -H 'Referer: https://api.mytemp-mail.online/admin?code=Hyco' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' -H 'Accept-Language: en-US,en;q=0.9' "$URL")
+          echo "HTTP_CODE=$CODE"
+          echo "BODY_BYTES=$(wc -c < /tmp/body.html)"
+          echo "--- markers ---"
+          grep -q 'id="cpHex"' /tmp/body.html && echo 'HEX_INPUT_MARKER=FOUND' || echo 'HEX_INPUT_MARKER=MISSING'
+          grep -q 'cp-suggest' /tmp/body.html && echo 'SWATCH_MARKER=FOUND' || echo 'SWATCH_MARKER=MISSING'
+          grep -q 'CP_PRESETS' /tmp/body.html && echo 'PRESET_ARRAY=FOUND' || echo 'PRESET_ARRAY=MISSING'
+          grep -q 'Reset to default' /tmp/body.html && echo 'RESET_BUTTON=FOUND' || echo 'RESET_BUTTON=MISSING'
+          grep -q 'OFFEX-COLORPICKER-V1' /tmp/body.html && echo 'PICKER_MARKER=FOUND' || echo 'PICKER_MARKER=MISSING'
+          echo "--- node --check ---"
+          node -v
+          python3 -c "import re;h=open('/tmp/body.html',encoding='utf-8',errors='replace').read();s=re.findall(r'<script>(.*?)</script>',h,re.S);print('script_blocks=',len(s));open('/tmp/panel.js','w').write('\n;\n'.join(s))"
+          node --check /tmp/panel.js && echo 'NODE_CHECK=PASS' || echo 'NODE_CHECK=FAIL'
+          grep -oE '<title>[^<]*</title>' /tmp/body.html | head -1
