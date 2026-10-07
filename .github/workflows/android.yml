@@ -24,7 +24,7 @@ jobs:
           sed -i "s|OffexMail-Android/2.0|$UA|" $SRC/ApiClient.java
           sed -i 's|__VER__|4.7|' $SRC/Config.java
           sed -i '/AdminActivity/d' android/app/src/main/AndroidManifest.xml
-          sed -i 's|versionName \"[^\"]*\"|versionName \"4.7\"|' android/app/build.gradle
+          sed -i 's|versionName "[^"]*"|versionName "4.7"|' android/app/build.gradle
           sed -i 's|versionCode [0-9]*|versionCode 37|' android/app/build.gradle
           grep -c 'AdminActivity' android/app/src/main/AndroidManifest.xml
           cd android
@@ -54,11 +54,11 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           if [ ! -s /tmp/iss.txt ]; then echo "no log" > /tmp/iss.txt; fi
-          gh issue create --repo \"$GITHUB_REPOSITORY\" --title \"v4.7 build\" --body-file /tmp/iss.txt || true
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "v4.7 build" --body-file /tmp/iss.txt || true
       - name: release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           if [ -f /tmp/OffexMail.apk ]; then
-            gh release create v4.7 /tmp/OffexMail.apk --repo \"$GITHUB_REPOSITORY\" --title \"Offex Mail v4.7\" --notes \"v4.7 changes: the main screen is now the supplied HTML UI rendered in a WebView, so it matches the approved design exactly and can be updated remotely later. The HTML is bundled as app/src/main/assets/offex_ui.html with everything inlined (CSS + SVG icons, no external requests). A JavaScript interface (OffexNative) bridges the page to the EXISTING native code - createInbox, refresh, deleteInbox, copyAddress, openMessage, switchTo, deleteSaved, openSettings, openMore, pickDomain, nav and openLink all call the same methods/API the old buttons did, so no business logic was reimplemented. Java pushes live data into the page via window.OffexUI.render(state): current address, message list (sender/subject/tags/timestamp/otp), saved inboxes, the N-new count, the live/expiry status, the section toggles, the announcement/banner text, and the remote appearance (accent/gradient/radius/titles) as CSS variables. An FCM push now refreshes the open WebView and still posts the system notification. Every view id the generated Java looks up is kept in the layout under the WebView, so nothing else had to change: the same API endpoints/JSON fields, the support screen, the bundled notification sounds, the AdMob placements, the notification-permission gate, the 7-locale multi-language support (English default + Hindi Devanagari + es/pt/ar/ru/in, driven by string resources), the install analytics, the OTP precision fix, the tappable verification links and the circular logo. Version bumped 4.6 to 4.7.\" || gh release upload v4.7 /tmp/OffexMail.apk --clobber --repo \"$GITHUB_REPOSITORY\"
+            gh release create v4.7 /tmp/OffexMail.apk --repo "$GITHUB_REPOSITORY" --title "Offex Mail v4.7" --notes "v4.7 changes: the main screen is now the supplied HTML UI rendered in a WebView, so it matches the approved design exactly and can be updated remotely later. The HTML is bundled as app/src/main/assets/offex_ui.html with everything inlined (CSS + SVG icons, no external requests). A JavaScript interface (OffexNative) bridges the page to the EXISTING native code - createInbox, refresh, deleteInbox, copyAddress, openMessage, switchTo, deleteSaved, openSettings, openMore, pickDomain, nav and openLink all call the same methods/API the old buttons did, so no business logic was reimplemented. Java pushes live data into the page via window.OffexUI.render(state): current address, message list (sender/subject/tags/timestamp/otp), saved inboxes, the N-new count, the live/expiry status, the section toggles, the announcement/banner text, and the remote appearance (accent/gradient/radius/titles) as CSS variables. An FCM push now refreshes the open WebView and still posts the system notification. Every view id the generated Java looks up is kept in the layout under the WebView, so nothing else had to change: the same API endpoints/JSON fields, the support screen, the bundled notification sounds, the AdMob placements, the notification-permission gate, the 7-locale multi-language support (English default + Hindi Devanagari + es/pt/ar/ru/in, driven by string resources), the install analytics, the OTP precision fix, the tappable verification links and the circular logo. Version bumped 4.6 to 4.7." || gh release upload v4.7 /tmp/OffexMail.apk --clobber --repo "$GITHUB_REPOSITORY"
           fi
