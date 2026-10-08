@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>Offex Audio</title>
-<!-- Offex Audio app-ui :: APPUI_VERSION=2.0 :: cache-bust build 2026-10-08 -->
-<meta name="app-ui-version" content="2.0">
-<meta name="offex-cache-bust" content="2026-10-08">
+<!-- Offex Audio app-ui :: APPUI_VERSION=2.1 :: cache-bust build 2026-10-08b :: OA-UPBOX-NAME-PCT OA-VIZ -->
+<meta name="app-ui-version" content="2.1">
+<meta name="offex-cache-bust" content="2026-10-08b">
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
@@ -71,6 +71,38 @@ body{
 .drop .t{margin-top:9px;font-size:12.5px;font-weight:600}
 .drop .f{margin-top:6px;font-size:11px;color:var(--muted);word-break:break-all}
 .drop.has{border-style:solid;border-color:rgba(52,211,153,.5);background:rgba(52,211,153,.07)}
+/* OA-UPBOX-NAME-PCT : selected file name + live upload % live inside the drop box */
+.drop .dprog{display:none;margin-top:11px}
+.drop .dprog.show{display:block}
+.drop .dprog .bar{height:7px;border-radius:6px;background:rgba(255,255,255,.06);border:1px solid var(--line);overflow:hidden}
+.drop .dprog .bar i{display:block;height:100%;width:0;background:var(--grad);transition:width .25s}
+.drop .dprog .lbl2{margin-top:7px;font:600 10.5px var(--mono);color:var(--muted);display:flex;justify-content:space-between;gap:8px}
+.drop .dprog .lbl2 b{color:var(--text)}
+.drop .dprog.done .lbl2 b{color:var(--ok)}
+.drop .dprog.done .bar i{background:linear-gradient(100deg,#22c55e,#0ea5b7)}
+.drop .dprog.err .lbl2 b{color:var(--bad)}
+/* OA-VIZ-REMOVE / OA-VIZ-ENHANCE / OA-VIZ-ISOLATE : per-tool live processing animations */
+.viz{display:none;margin-top:14px;height:104px;border-radius:16px;position:relative;overflow:hidden;
+  background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.015));border:1px solid var(--line);
+  transition:border-color .3s}
+.viz.show{display:block}
+.viz.done{border-color:rgba(52,211,153,.5)}
+.viz .cap{position:absolute;top:9px;left:13px;font:700 9px var(--mono);letter-spacing:1.3px;color:var(--muted2);text-transform:uppercase;z-index:4}
+.viz .pctv{position:absolute;top:8px;right:13px;font:800 11px var(--mono);color:var(--text);z-index:4}
+.viz .layer{position:absolute;left:12px;right:12px;top:28px;bottom:12px}
+.viz .row{position:absolute;left:0;right:0;height:46%;display:flex;align-items:flex-end;gap:2px}
+.viz .row.top{top:0}.viz .row.bot{bottom:0}
+.viz .row i{flex:1 1 0;min-width:1px;border-radius:2px 2px 0 0;background:linear-gradient(180deg,var(--brand2),var(--brand1));transform-origin:bottom;will-change:transform,opacity}
+.viz .row i.q{background:linear-gradient(180deg,rgba(217,70,239,.55),rgba(99,102,241,.55))}
+.viz .scan{position:absolute;top:24px;bottom:8px;width:2px;border-radius:2px;left:5%;z-index:3;
+  background:linear-gradient(180deg,transparent,var(--brand2),transparent);box-shadow:0 0 12px var(--brand2)}
+.viz .noise{position:absolute;inset:0;z-index:2;pointer-events:none;opacity:.5;mix-blend-mode:screen;
+  background-image:radial-gradient(rgba(255,255,255,.55) .5px,transparent 1.4px);background-size:7px 7px}
+.viz .shimmer{position:absolute;top:0;bottom:0;width:34%;z-index:3;pointer-events:none;left:-40%;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.22),transparent)}
+.viz.isolate .sep{position:absolute;left:0;right:0;top:50%;height:1px;background:var(--line2);z-index:1}
+.oa-ann{margin:2px 0 4px;padding:11px 14px;border-radius:14px;font-size:12px;font-weight:600;text-align:center;
+  background:linear-gradient(100deg,rgba(99,102,241,.22),rgba(34,211,238,.18));border:1px solid var(--line2);color:var(--text)}
 
 .field{margin-top:12px;display:flex;align-items:center;gap:10px;background:var(--raised);border:1px solid var(--line);
   border-radius:14px;padding:10px 13px}
@@ -162,11 +194,13 @@ select{background:#050b1c;border:1px solid var(--line2);color:var(--text);border
         <div class="ic">&#9835;</div>
         <div class="t" data-i18n="drop_hint">Tap to choose an audio or video file</div>
         <div class="f" id="fileRemoveName" data-i18n="no_file">No file selected</div>
+        <div class="dprog" id="progRemove"><div class="bar"><i></i></div><div class="lbl2"><span>Upload</span><b>0%</b></div></div>
       </div>
       <input type="file" id="inputRemove" accept="audio/*,video/*" style="display:none">
       <div class="field"><label data-i18n="keep_silence">Keep silence (seconds)</label>
         <input type="number" id="keepSec" min="0" max="10" step="0.01" value="0.02"></div>
       <button class="btn" id="runRemove"><span data-i18n="process">Process</span></button>
+      <div class="viz" id="vizRemove"></div>
       <div class="meter" id="meterRemove"><i></i></div>
       <div class="stage"><span id="stageRemove">IDLE</span><b id="pctRemove">0%</b></div>
       <div class="hint" id="hintRemove"></div>
@@ -189,6 +223,7 @@ select{background:#050b1c;border:1px solid var(--line2);color:var(--text);border
         <div class="ic">&#9836;</div>
         <div class="t" data-i18n="drop_hint">Tap to choose an audio or video file</div>
         <div class="f" id="fileEnhanceName" data-i18n="no_file">No file selected</div>
+        <div class="dprog" id="progEnhance"><div class="bar"><i></i></div><div class="lbl2"><span>Upload</span><b>0%</b></div></div>
       </div>
       <input type="file" id="inputEnhance" accept="audio/*,video/*" style="display:none">
       <div class="seg" id="enhanceModes">
@@ -197,6 +232,7 @@ select{background:#050b1c;border:1px solid var(--line2);color:var(--text);border
         <button data-mode="Strong" data-i18n="mode_strong">Strong</button>
       </div>
       <button class="btn" id="runEnhance"><span data-i18n="process">Process</span></button>
+      <div class="viz" id="vizEnhance"></div>
       <div class="meter" id="meterEnhance"><i></i></div>
       <div class="stage"><span id="stageEnhance">IDLE</span><b id="pctEnhance">0%</b></div>
       <div class="hint" id="hintEnhance"></div>
@@ -219,11 +255,13 @@ select{background:#050b1c;border:1px solid var(--line2);color:var(--text);border
         <div class="ic">&#9834;</div>
         <div class="t" data-i18n="drop_hint">Tap to choose an audio or video file</div>
         <div class="f" id="fileIsolateName" data-i18n="no_file">No file selected</div>
+        <div class="dprog" id="progIsolate"><div class="bar"><i></i></div><div class="lbl2"><span>Upload</span><b>0%</b></div></div>
       </div>
       <input type="file" id="inputIsolate" accept="audio/*,video/*" style="display:none">
       <div class="field"><label data-i18n="separation_model">Separation quality</label>
         <select id="sepModel"><option value="Fast">Fast</option><option value="Balanced" selected>Balanced</option><option value="Best">Best</option></select></div>
       <button class="btn" id="runIsolate"><span data-i18n="process">Process</span></button>
+      <div class="viz" id="vizIsolate"></div>
       <div class="meter" id="meterIsolate"><i></i></div>
       <div class="stage"><span id="stageIsolate">IDLE</span><b id="pctIsolate">0%</b></div>
       <div class="hint" id="hintIsolate"></div>
@@ -374,9 +412,11 @@ select{background:#050b1c;border:1px solid var(--line2);color:var(--text);border
     try { window.scrollTo(0,0); } catch(e){}
   }
   function meter(kind, pct, stage){
-    var m = $("meter"+cap(kind)); if(m) m.firstChild.style.width = Math.max(0,Math.min(100,pct))+"%";
+    pct = Math.max(0,Math.min(100,pct));
+    var m = $("meter"+cap(kind)); if(m) m.firstChild.style.width = pct+"%";
     var s = $("stage"+cap(kind)); if(s && stage) s.textContent = stage;
     var p = $("pct"+cap(kind)); if(p) p.textContent = Math.round(pct)+"%";
+    vizProgress(kind, pct);
   }
   function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
   function setBusy(kind, on){
@@ -385,6 +425,170 @@ select{background:#050b1c;border:1px solid var(--line2);color:var(--text);border
   function hint(kind, msg, color){
     var h = $("hint"+cap(kind)); if(!h) return;
     h.textContent = msg || ""; h.style.color = color || "var(--warn)";
+  }
+  /* OA-UPBOX-NAME-PCT : the drop box shows the file name (set in wireDrop) AND the
+     live upload percentage while the file uploads to the backend. */
+  function dropReset(kind){
+    var d = $("prog"+cap(kind)); if(!d) return;
+    d.className = "dprog"; d.querySelector(".bar i").style.width = "0%";
+    d.querySelector(".lbl2 span").textContent = "Upload";
+    d.querySelector(".lbl2 b").textContent = "0%";
+  }
+  function dropProgress(kind, pct, label, done, err){
+    var d = $("prog"+cap(kind)); if(!d) return;
+    pct = Math.max(0, Math.min(100, Math.round(pct||0)));
+    d.className = "dprog show" + (done ? " done" : "") + (err ? " err" : "");
+    d.querySelector(".bar i").style.width = pct + "%";
+    d.querySelector(".lbl2 span").textContent = label || "Upload";
+    d.querySelector(".lbl2 b").textContent = done ? "Uploaded \u2713" : (pct + "%");
+  }
+
+  /* ---------------------- per-tool live processing visualisers ----------------------
+     Each tool gets a DISTINCT animation while it works, driven by the REAL job
+     progress (upload % then the job's status progress) and stopped at completion.
+     Pure CSS + a lightweight requestAnimationFrame loop; honours reduced motion. */
+  var VIZ = { remove:null, enhance:null, isolate:null };
+  var REDUCED = false;
+  try { REDUCED = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches); } catch(e){}
+  function _vh(i,N,seed){ var x = Math.sin((i+1)*(seed*1.7+1.3))*0.5+0.5; return Math.round(22 + x*74); }
+  function vizStart(kind){
+    var box = $("viz"+cap(kind)); if(!box) return;
+    box.className = "viz show" + (kind === "isolate" ? " isolate" : "");
+    var capText = kind === "remove" ? "TRIMMING SILENCE" : (kind === "enhance" ? "CLEANING AUDIO" : "SPLITTING VOICES");
+    var N = 30;
+    var h = '<div class="cap">' + capText + '</div><div class="pctv" id="vizp' + cap(kind) + '">0%</div>';
+    if(kind === "isolate") h += '<div class="sep"></div>';
+    h += '<div class="layer">';
+    if(kind === "isolate"){
+      h += '<div class="row top">';
+      for(var i=0;i<N;i++) h += '<i style="height:' + _vh(i,N,1) + '%"></i>';
+      h += '</div><div class="row bot">';
+      for(var j=0;j<N;j++) h += '<i style="height:' + _vh(j,N,2) + '%"></i>';
+      h += '</div>';
+    } else {
+      h += '<div class="row">';
+      for(var k=0;k<N;k++){
+        var quiet = (kind === "remove") && (k%5===2 || k%9===4 || k%7===6);
+        h += '<i class="' + (quiet ? "q" : "") + '" style="height:' + _vh(k,N,1) + '%"></i>';
+      }
+      h += '</div>';
+      if(kind === "enhance") h += '<div class="noise"></div><div class="shimmer"></div>';
+      if(kind === "remove") h += '<div class="scan"></div>';
+    }
+    h += '</div>';
+    box.innerHTML = h;
+    VIZ[kind] = { p:0, t:0, raf:0 };
+    vizTick(kind);
+  }
+  function vizTick(kind){
+    var v = VIZ[kind]; if(!v) return;
+    var box = $("viz"+cap(kind)); if(!box || box.className.indexOf("show") < 0){ v.raf = 0; return; }
+    v.t += REDUCED ? 0 : 0.07;
+    var p = v.p;
+    if(kind === "remove"){
+      var bars = box.querySelectorAll(".row i");
+      for(var i=0;i<bars.length;i++){
+        var b = bars[i];
+        if(b.className.indexOf("q") >= 0){
+          b.style.flexGrow = String(Math.max(0.05, 1-p));
+          b.style.opacity = String(Math.max(0.10, 1-p*0.92));
+        } else {
+          b.style.opacity = String(0.55 + 0.45*Math.min(1,p*1.4));
+          if(!REDUCED) b.style.transform = "scaleY(" + (0.72 + 0.28*Math.abs(Math.sin(v.t + i*0.55))) + ")";
+        }
+      }
+      var sc = box.querySelector(".scan"); if(sc) sc.style.left = (5 + p*90) + "%";
+    } else if(kind === "enhance"){
+      var bb = box.querySelectorAll(".row i");
+      for(var m=0;m<bb.length;m++){
+        var sy = 0.7 + 0.3*(REDUCED ? 0.6 : Math.abs(Math.sin(v.t + m*0.5)));
+        bb[m].style.transform = "scaleY(" + sy + ")";
+        bb[m].style.opacity = String(0.5 + 0.5*Math.min(1,p*1.5));
+      }
+      var nz = box.querySelector(".noise"); if(nz) nz.style.opacity = String(Math.max(0, 0.55*(1-p)));
+      var sh = box.querySelector(".shimmer"); if(sh) sh.style.left = (-40 + p*150) + "%";
+    } else {
+      var rt = box.querySelector(".row.top"), rb = box.querySelector(".row.bot");
+      var off = (1-p)*26;
+      if(rt) rt.style.transform = "translateY(" + off + "%)";
+      if(rb) rb.style.transform = "translateY(-" + off + "%)";
+      var rows = box.querySelectorAll(".row i");
+      for(var q=0;q<rows.length;q++) rows[q].style.opacity = String(0.5 + 0.5*Math.min(1,p*1.5));
+    }
+    var pv = $("vizp"+cap(kind)); if(pv) pv.textContent = Math.round(p*100) + "%";
+    v.raf = requestAnimationFrame(function(){ vizTick(kind); });
+  }
+  function vizProgress(kind, pct){
+    var v = VIZ[kind]; if(!v) return;
+    v.p = Math.max(0, Math.min(1, (pct||0)/100));
+    var pv = $("vizp"+cap(kind)); if(pv) pv.textContent = Math.round(v.p*100) + "%";
+  }
+  function vizStop(kind){
+    var v = VIZ[kind];
+    if(v && v.raf){ try { cancelAnimationFrame(v.raf); } catch(e){} v.raf = 0; }
+    VIZ[kind] = null;
+    var box = $("viz"+cap(kind)); if(!box) return;
+    box.classList.add("done");
+    setTimeout(function(){ box.className = "viz"; box.innerHTML = ""; }, 900);
+  }
+
+  /* ---------------------- audio remote config (admin-driven) ----------------------
+     The app loads this site-hosted page, so the page fetches the AUDIO app config
+     from the backend at startup and applies appearance / section toggles / banner.
+     It also reports processing jobs and the install to the backend. */
+  var AUDIO_CFG_URL = "https://api.mytemp-mail.online/api/audio-app-config";
+  var AUDIO_HISTORY_URL = "https://api.mytemp-mail.online/api/audio-history";
+  var AUDIO_INSTALL_URL = "https://api.mytemp-mail.online/api/app/install";
+  var AUDIO_PKG = "online.offexaudio.app";
+  var ACFG = null;
+
+  function applyAudioConfig(cfg){
+    if(!cfg) return;
+    ACFG = cfg;
+    try { if(cfg.appearance) applyAppearance(cfg.appearance); } catch(e){}
+    try {
+      var fl = cfg.flags || {};
+      function tabVis(scr, show){ var t = document.querySelector('.tab[data-scr="' + scr + '"]'); if(t) t.style.display = (show === false ? "none" : ""); }
+      tabVis("remove", fl.show_remove); tabVis("enhance", fl.show_enhance);
+      tabVis("isolate", fl.show_isolate); tabVis("history", fl.show_history);
+    } catch(e){}
+    try {
+      var ann = cfg.announcement || {};
+      var host = document.querySelector(".content");
+      var ex = $("oaAnnounce");
+      if(ann.on && ann.text && host){
+        if(!ex){ ex = document.createElement("div"); ex.id = "oaAnnounce"; ex.className = "oa-ann"; host.insertBefore(ex, host.firstChild); }
+        ex.textContent = ann.text;
+      } else if(ex){ ex.parentNode.removeChild(ex); }
+    } catch(e){}
+  }
+  function fetchAudioConfig(){
+    try {
+      fetch(AUDIO_CFG_URL + "?ts=" + Date.now(), { cache:"no-store" })
+        .then(function(r){ return r.json(); })
+        .then(function(j){ applyAudioConfig(j); })
+        .catch(function(){});
+    } catch(e){}
+  }
+  function reportAudioHistory(tool, file, detail){
+    try {
+      fetch(AUDIO_HISTORY_URL, { method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({ tool:tool, file:file, detail:detail||"", package:AUDIO_PKG,
+                               version:(S.version||""), at:Date.now() }) })
+        .catch(function(){});
+    } catch(e){}
+  }
+  function reportInstall(){
+    try {
+      var id = "";
+      try { id = localStorage.getItem("offex_audio_install_id") || ""; } catch(e){}
+      if(!id){ id = "oa-" + Math.random().toString(36).slice(2) + Date.now().toString(36); try { localStorage.setItem("offex_audio_install_id", id); } catch(e){} }
+      fetch(AUDIO_INSTALL_URL, { method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({ install_id:id, package:AUDIO_PKG, app_version:(S.version||""),
+                               locale:(S.lang||""), device:((navigator.userAgent||"")).slice(0,120),
+                               last_seen:Math.floor(Date.now()/1000) }) })
+        .catch(function(){});
+    } catch(e){}
   }
   function setPill(isLive){
     var pill = $("livePill"), txt = $("liveText");
@@ -464,20 +668,22 @@ select{background:#050b1c;border:1px solid var(--line2);color:var(--text);border
         if(!e.lengthComputable) return;
         var pct = Math.min(100, Math.round(e.loaded/e.total*100));
         meter(kind, Math.round(pct*0.6), "UPLOADING " + pct + "%");
+        dropProgress(kind, pct, "Uploading", false, false);
       };
       xhr.onload = function(){
-        if(xhr.status < 200 || xhr.status >= 300){ reject(new Error("Upload failed (HTTP " + xhr.status + ")")); return; }
+        if(xhr.status < 200 || xhr.status >= 300){ dropProgress(kind, 0, "Upload failed", false, true); reject(new Error("Upload failed (HTTP " + xhr.status + ")")); return; }
         try {
           var data = JSON.parse(xhr.responseText);
           var first = Array.isArray(data) ? data[0] : data;
           var path = (typeof first === "string") ? first : (first && (first.path || (first.file && first.file.path)));
           if(!path) throw new Error("Upload server returned no file reference");
+          dropProgress(kind, 100, "Uploaded", true, false);
           resolve({ path:path, orig_name:file.name, size:file.size,
                     mime_type:file.type||"application/octet-stream", meta:{_type:"gradio.FileData"} });
-        } catch(e){ reject(e); }
+        } catch(e){ dropProgress(kind, 0, "Upload failed", false, true); reject(e); }
       };
-      xhr.onerror = function(){ reject(new Error("File upload network error")); };
-      xhr.ontimeout = function(){ reject(new Error("File upload timed out")); };
+      xhr.onerror = function(){ dropProgress(kind, 0, "Upload failed", false, true); reject(new Error("File upload network error")); };
+      xhr.ontimeout = function(){ dropProgress(kind, 0, "Upload failed", false, true); reject(new Error("File upload timed out")); };
       xhr.send(form);
     });
   }
@@ -548,6 +754,7 @@ select{background:#050b1c;border:1px solid var(--line2);color:var(--text);border
       var nm = $("file"+cap(kind)+"Name");
       if(nm) nm.textContent = f.name + "  \u00b7  " + (f.size/1048576).toFixed(1) + " MB";
       zone.classList.add("has");
+      dropReset(kind);
       hint(kind, "");
     });
   }
@@ -576,9 +783,11 @@ select{background:#050b1c;border:1px solid var(--line2);color:var(--text);border
     var f = state.remove;
     if(!f){ hint("remove", T("no_file") || "Choose a file first."); return; }
     var sec = Number($("keepSec").value); if(!isFinite(sec) || sec<0 || sec>10) sec = 0.02;
-    setBusy("remove", true); meter("remove", 2, "PREPARING"); hint("remove","");
+    setBusy("remove", true); meter("remove", 2, "PREPARING"); vizStart("remove"); vizProgress("remove", 2); hint("remove","");
     var orig = f.name;
     function done(url, note){
+      vizProgress("remove", 100); vizStop("remove");
+      reportAudioHistory("Remove Silence", fname(orig,"_no_silence"), note||"");
       result.remove = { url:url, name:fname(orig,"_no_silence"), blob:url.indexOf("blob:")===0 };
       showResult("remove", url); setBusy("remove", false);
       meter("remove",100,"COMPLETED"); hint("remove", note||(T("result_ready")||"Result ready"), "var(--ok)");
@@ -604,7 +813,7 @@ select{background:#050b1c;border:1px solid var(--line2);color:var(--text);border
     e.removeSilence(f, sec).then(function(res){
       meter("remove", 92, "ENCODING");
       done(URL.createObjectURL(res.blob), "Removed ~" + Math.round(res.removed) + "s");
-    }).catch(function(er){ setBusy("remove", false); meter("remove",0,"ERROR"); hint("remove", er.message||"Failed"); });
+    }).catch(function(er){ vizStop("remove"); setBusy("remove", false); meter("remove",0,"ERROR"); hint("remove", er.message||"Failed"); });
   }
 
   /* Enhance Audio */
@@ -612,9 +821,11 @@ select{background:#050b1c;border:1px solid var(--line2);color:var(--text);border
     var f = state.enhance;
     if(!f){ hint("enhance", T("no_file") || "Choose a file first."); return; }
     var mode = enhanceMode();
-    setBusy("enhance", true); meter("enhance", 2, "PREPARING"); hint("enhance","");
+    setBusy("enhance", true); meter("enhance", 2, "PREPARING"); vizStart("enhance"); vizProgress("enhance", 2); hint("enhance","");
     var orig = f.name;
     function done(url, note){
+      vizProgress("enhance", 100); vizStop("enhance");
+      reportAudioHistory("Enhance Audio", fname(orig,"_enhanced"), note||(mode+" mode"));
       result.enhance = { url:url, name:fname(orig,"_enhanced"), blob:url.indexOf("blob:")===0 };
       showResult("enhance", url); setBusy("enhance", false);
       meter("enhance",100,"COMPLETED"); hint("enhance", note||(T("result_ready")||"Result ready"), "var(--ok)");
@@ -639,7 +850,7 @@ select{background:#050b1c;border:1px solid var(--line2);color:var(--text);border
     meter("enhance", 30, "CLEANING");
     e.enhance(f, mode).then(function(res){
       done(URL.createObjectURL(res.blob), mode + " mode");
-    }).catch(function(er){ setBusy("enhance", false); meter("enhance",0,"ERROR"); hint("enhance", er.message||"Failed"); });
+    }).catch(function(er){ vizStop("enhance"); setBusy("enhance", false); meter("enhance",0,"ERROR"); hint("enhance", er.message||"Failed"); });
   }
 
   /* Voice / BGM  —  ISOLATE_PARSE_FIX_2026
@@ -666,7 +877,7 @@ select{background:#050b1c;border:1px solid var(--line2);color:var(--text);border
     if(!live){ hint("isolate", T("not_connected") || "Backend offline."); return; }
     var quality = ($("sepModel") && $("sepModel").value) || "Balanced";
     var model = sepModelParam();   /* real endpoint value: "High quality" | "Faster" */
-    setBusy("isolate", true); meter("isolate", 2, "PREPARING"); hint("isolate","");
+    setBusy("isolate", true); meter("isolate", 2, "PREPARING"); vizStart("isolate"); vizProgress("isolate", 2); hint("isolate","");
     var orig = f.name;
     uploadFile(f, "isolate").then(function(fd){
       meter("isolate", 62, "PROCESSING");
@@ -685,12 +896,14 @@ select{background:#050b1c;border:1px solid var(--line2);color:var(--text);border
       $("outIsolate").style.display = "block";
       $("audioVocals").src = vocals; $("audioBgm").src = bgm;
       setBusy("isolate", false); meter("isolate",100,"COMPLETED");
+      vizProgress("isolate", 100); vizStop("isolate");
+      reportAudioHistory("Voice / BGM Isolation", fname(orig,"_vocals_only"), quality + " (" + model + ")");
       hint("isolate", T("result_ready") || "Result ready", "var(--ok)");
       call("jobDone", "Voice / BGM Isolation", quality + " (" + model + ")", vocals, fname(orig,"_vocals_only"));
       call("showInterstitial");
       toast(T("result_ready") || "Result ready");
     }).catch(function(e){
-      setBusy("isolate", false); meter("isolate",0,"ERROR"); hint("isolate", e.message||"Failed");
+      vizStop("isolate"); setBusy("isolate", false); meter("isolate",0,"ERROR"); hint("isolate", e.message||"Failed");
     });
   }
 
@@ -822,6 +1035,9 @@ select{background:#050b1c;border:1px solid var(--line2);color:var(--text);border
     call("ready");
     // ask the real backend health endpoint (drives the Live badge + tool mode)
     startHealth();
+    // read the admin-driven AUDIO config (appearance / flags / banner) and report install
+    fetchAudioConfig();
+    reportInstall();
   }
   if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
   else boot();
