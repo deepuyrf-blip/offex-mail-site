@@ -1,0 +1,45 @@
+name: Temp isolate probe
+on:
+  workflow_dispatch:
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Probe isolate endpoint signature
+        run: |
+          curl -s --max-time 45 "https://offexmail.online/hf/gradio_api/info" -o info.json -w "info HTTP %{http_code}\n"
+          echo "bytes: $(wc -c < info.json)"
+          python3 - <<'PY'
+          import json
+          d = json.load(open("info.json"))
+          named = d.get("named_endpoints", {})
+          dep = d.get("dependencies", [])
+          print("=== ALL NAMED ENDPOINTS ===")
+          for k, v in named.items():
+              print(k, "-> params:", [p.get("parameter_name") for p in v.get("parameters", [])],
+                    "| returns:", len(v.get("returns", [])),
+                    [r.get("label") for r in v.get("returns", [])])
+          print()
+          for name in ("/isolate_voice_bgm",):
+              ep = named.get(name)
+              if not ep:
+                  print("MISSING", name); continue
+              print("=== ", name, " ===")
+              print(json.dumps(ep, indent=2)[:6000])
+          print()
+          print("=== DEPENDENCIES (api_name -> params/returns) ===")
+          for i, dep in enumerate(dep):
+              api = dep.get("api_name")
+              if api in ("/isolate_voice_bgm", "/process_audio", "/enhance_audio"):
+                  print(i, api, "inputs:", dep.get("inputs"), "outputs:", dep.get("outputs"))
+          print()
+          print("=== COMPONENTS (index: type) for isolate deps ===")
+          comps = d.get("components", [])
+          for dep in dep:
+              if dep.get("api_name") == "/isolate_voice_bgm":
+                  for idx in list(dep.get("inputs", [])) + list(dep.get("outputs", [])):
+                      c = comps[idx] if idx < len(comps) else {}
+                      print(idx, c.get("type"), "| label:", c.get("props", {}).get("label"),
+                            "| value/choices:", c.get("props", {}).get("choices") or c.get("props", {}).get("value"))
+          PY
