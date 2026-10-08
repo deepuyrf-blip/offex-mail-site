@@ -1,31 +1,56 @@
 # Offex Audio — Android app (`online.offexaudio.app`)
 
-A WebView-based Android app for the Offex Audio website (offexmail.online), mirroring the
-architecture of the Offex Mail app. Built by a dedicated generator set so the mail app's
-build (`android.yml`, `gn_a…gn_af`) is completely untouched.
+A WebView-based Android app for the Offex Audio website (offexmail.online). Built by a
+dedicated generator set so the mail app's build (`android.yml`, `gn_a…gn_af`) is
+completely untouched.
 
 - **Workflow:** `.github/workflows/android-audio.yml`
 - **Generators:** `gna_1.py` … `gna_6.py` (repo root) → emit `android-audio/`
-- **UI shell:** `audioapp/assets/offex_audio_ui.html` (self-contained; CSS/SVG/JS inline)
-- **Vendored:** `audioapp/assets/gradio_client.js` (a build of `@gradio/client`),
-  `audioapp/assets/audio-engine.js` (the site's in-browser fallback engine)
-- **Package / version:** `online.offexaudio.app` / versionName `1.0` (versionCode 1)
+- **Package / version:** `online.offexaudio.app` / versionName `1.1` (versionCode 2)
+
+## How the app works (v1.1)
+
+The WebView loads the **real audio website** — `https://offexmail.online` — so the tools
+run through the **genuine Gradio / Hugging Face flow** the website uses: real upload
+progress, real server-side processing, real results, the real default silence value and
+the site's own Live / Not-connected badge. The app does **not** fake any of this.
+
+Around the WebView sits a **native shell**:
+
+- **Bottom tab bar** — Remove Silence / Enhance Audio / Voice-BGM scroll the loaded page to
+  the matching tool section (JS `scrollIntoView`); History and More open native panels.
+- **File chooser** — `WebChromeClient.onShowFileChooser` → `ACTION_OPEN_DOCUMENT`
+  (`audio/*`, `video/*`) with a persisted read grant for the picked URI.
+- **Downloads** — (a) the page's finished blob is captured in JS and written to the public
+  **Downloads** folder via MediaStore; (b) any real `http(s)` link the page triggers is
+  saved with `DownloadManager` (`DIRECTORY_DOWNLOADS`, correct mime); (c) a native
+  **Save result** button saves the latest result URL.
+- **Notifications** — FCM (`FcmService`) plus local job alerts through `Notifier`, behind
+  the mandatory POST_NOTIFICATIONS gate.
+- **History** — local store of finished jobs with re-download.
+- **Ads** — AdMob banner / interstitial / rewarded / app-open / native.
+- **Languages** — English, Hindi, Spanish, Portuguese, Arabic (RTL), Russian, Indonesian.
+
+A tiny bundled `assets/offline.html` is shown only if the live site cannot be reached; it
+carries no job logic and simply reloads the site.
+
+### What was removed in v1.1
+
+The old build loaded a bundled `file://` HTML shell and served every backend request
+natively through `MainActivity.BackendProxy` (`shouldInterceptRequest`). That broke the
+Gradio client's real fetch / WebSocket / upload flow, so no genuine job ever ran and the UI
+reported an instant fake "job finished". The shell, the interception path and the fake job
+logic are all gone.
 
 ## Backend
 
-The app reaches the audio backend through the **same `/hf/*` proxy the website uses**:
+The loaded site reaches the audio backend through its own **`/hf/*` proxy** — the app does
+not talk to the backend directly and embeds **no HF token**:
 
 | Purpose | URL |
 | --- | --- |
-| Health check (Live badge) | `https://offexmail.online/health` |
 | Gradio proxy (jobs, uploads, files) | `https://offexmail.online/hf` |
-
-Every request to those hosts is served natively by `MainActivity.BackendProxy`
-(`shouldInterceptRequest`), so there is **no CORS problem and no HF token inside the app** —
-the Cloudflare proxy adds the token from its own environment variables.
-
-When the backend is offline, Remove Silence and Enhance Audio fall back to the bundled
-in-browser `audio-engine.js`. Voice/BGM isolation requires the server.
+| Health / Live badge (rendered by the site) | `https://offexmail.online/health` |
 
 ## Remote config the panel should serve
 
@@ -58,7 +83,7 @@ All keys are optional; anything missing falls back to built-in defaults.
     "show_history": true,
     "show_features": true
   },
-  "update": { "latest": "1.0", "url": "https://.../OffexAudio.apk", "force": false },
+  "update": { "latest": "1.1", "url": "https://.../OffexAudio.apk", "force": false },
   "banner": { "on": false, "text": "", "url": "" },
   "announcement": { "on": false, "text": "" },
   "endpoints": {
