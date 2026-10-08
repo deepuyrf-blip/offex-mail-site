@@ -33,7 +33,7 @@ jobs:
       - name: Install deps
         run: |
           pip install --quiet requests
-          npm install --no-audit --no-fund @gradio/client@1
+          npm install --no-audit --no-fund @gradio/client@latest
       - name: Run raw REST probe (python)
         run: python .github/scripts/hf_probe.py
       - name: Run @gradio/client probe (node) - reproduces the page exactly
