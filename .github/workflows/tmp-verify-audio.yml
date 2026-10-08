@@ -1,0 +1,69 @@
+name: TEMP verify audio fixes
+on: workflow_dispatch
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify live audio fixes end to end
+        run: |
+          set -euo pipefail
+          BASE=https://offexmail.online
+          API=https://api.mytemp-mail.online
+
+          echo "==================== BUG 1: app-ui file-selected fix ===================="
+          CODE=$(curl -s -o /tmp/appui.html -w '%{http_code}' --max-time 30 "$BASE/app-ui")
+          echo "app-ui HTTP              : $CODE"
+          test "$CODE" = "200" || { echo "::error::app-ui not 200"; exit 1; }
+          echo "APPUI_VERSION=2.2 marker : $(grep -c 'APPUI_VERSION=2.2' /tmp/appui.html)"
+          echo "OA-UPBOX-SEL marker      : $(grep -c 'OA-UPBOX-SEL' /tmp/appui.html)"
+          echo "function showSelected    : $(grep -c 'function showSelected' /tmp/appui.html)"
+          echo "data-keep guard          : $(grep -c 'data-keep' /tmp/appui.html)"
+          test "$(grep -c 'OA-UPBOX-SEL' /tmp/appui.html)" -ge 1 || { echo "::error::OA-UPBOX-SEL marker missing"; exit 1; }
+          test "$(grep -c 'function showSelected' /tmp/appui.html)" -ge 1 || { echo "::error::showSelected missing"; exit 1; }
+          test "$(grep -c 'data-keep' /tmp/appui.html)" -ge 3 || { echo "::error::data-keep guard missing"; exit 1; }
+
+          echo "==================== BUG 2: backend reachability ===================="
+          C=""
+          for i in $(seq 1 12); do
+            C=$(curl -s -o /tmp/cfg.json -w '%{http_code}' --max-time 30 "$API/api/audio-app-config" || true)
+            echo "audio-app-config attempt $i -> $C"
+            [ "$C" = "200" ] && break
+            sleep 10
+          done
+          test "$C" = "200" || { echo "::error::audio-app-config not 200"; exit 1; }
+          P=$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$API/audio-admin?code=Hyco")
+          echo "audio-admin panel HTTP   : $P"
+          test "$P" = "200" || { echo "::error::audio-admin not 200"; exit 1; }
+
+          echo "==================== BUG 2: token registration + targeting ===================="
+          echo "-- register a TEST audio device token (package online.offexaudio.app)"
+          curl -s -X POST "$API/api/device" -H 'Content-Type: application/json' \
+            -d '{"token":"TESTAUDIOTOKEN0000000000000000000000000000000000000000000000000001","package":"online.offexaudio.app","platform":"android"}'; echo
+          echo "-- register a TEST mail device token (package online.mytempmail.app)"
+          curl -s -X POST "$API/api/device" -H 'Content-Type: application/json' \
+            -d '{"token":"TESTMAILTOKEN0000000000000000000000000000000000000000000000000002","package":"online.mytempmail.app","platform":"android"}'; echo
+
+          echo "-- audio broadcast target list (/api/admin/audio-tokens) --"
+          curl -s "$API/api/admin/audio-tokens" -H 'x-admin-code: Hyco' -o /tmp/tok.json
+          cat /tmp/tok.json; echo
+
+          echo "-- assert the audio broadcast targets the audio package ONLY --"
+          python3 - <<'PY'
+          import json
+          j = json.load(open('/tmp/tok.json'))
+          toks = j['tokens']
+          print('package                :', j['package'])
+          print('broadcast target count :', j['broadcast_target_count'])
+          assert j['count'] >= 1, 'no audio tokens targeted'
+          assert any(t.startswith('TESTAUDI') for t in toks), 'test audio token not targeted: %r' % toks
+          assert not any(t.startswith('TESTMAIL') for t in toks), 'mail token leaked into audio targets: %r' % toks
+          print('OK: audio broadcast targets the audio package only')
+          PY
+
+          echo "-- exercise the real broadcast path (send_broadcast_push with package) --"
+          curl -s -X POST "$API/api/admin/audio-app-config" -H 'Content-Type: application/json' -H 'x-admin-code: Hyco' \
+            -d '{"push":{"title":"Offex Audio test","body":"Verification broadcast (test)","ts":'"$(date +%s)"'}}' -o /tmp/push.json
+          cat /tmp/push.json | head -c 400; echo
+          python3 -c "import json;j=json.load(open('/tmp/push.json'));assert j.get('ok') is True;print('OK: audio panel broadcast accepted')"
+
+          echo "==================== ALL CHECKS PASSED ===================="
