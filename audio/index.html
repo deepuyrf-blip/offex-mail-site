@@ -67,6 +67,23 @@
 }</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<script type="module">
+(async () => {
+  try {
+    let mod;
+    try {
+      mod = await import("https://cdn.jsdelivr.net/npm/@gradio/client/dist/index.min.js");
+    } catch (e) {
+      mod = await import("https://unpkg.com/@gradio/client/dist/index.min.js");
+    }
+    window.GradioClient = { Client: mod.Client, handle_file: mod.handle_file };
+    window.dispatchEvent(new Event("gradio-client-ready"));
+  } catch (e) {
+    window.GradioClientError = e;
+    window.dispatchEvent(new Event("gradio-client-error"));
+  }
+})();
+</script>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -1494,14 +1511,17 @@ body{
 
 <script>
 const CONFIG={
+  SPACE:"Hydui/YtVideo",
+  SPACE_URL:location.origin+"/hf",
+  DIRECT_SPACE_URL:"https://hydui-ytvideo.hf.space",
   HEALTH_ENDPOINT:"/health",
-  API_BASE:"/api",
   PROCESS_ENDPOINT:"/process_audio",
   ENHANCE_ENDPOINT:"/enhance_audio",
-  ISOLATE_ENDPOINT:"/isolate_voice_bgm"
+  ISOLATE_ENDPOINT:"/isolate_voice_bgm",
+  STATS_ENDPOINT:"/visitor_heartbeat"
 };
-let client=null,activeSpaceURL="/api",removeFile=null,enhanceFile=null,isolateFile=null,processedState=null,healthTimer=null,connectingPromise=null,backendLive=false,backendProcessor=false;
-let processEndpoint=CONFIG.PROCESS_ENDPOINT,enhanceEndpoint=CONFIG.ENHANCE_ENDPOINT,isolateEndpoint=CONFIG.ISOLATE_ENDPOINT;
+let client=null,activeSpaceURL=CONFIG.SPACE_URL,removeFile=null,enhanceFile=null,isolateFile=null,processedState=null,visitorStatsTimer=null,healthTimer=null,healthPromise=null,connectingPromise=null,backendLive=false,backendProcessor=false;
+let processEndpoint=CONFIG.PROCESS_ENDPOINT,enhanceEndpoint=CONFIG.ENHANCE_ENDPOINT,isolateEndpoint=CONFIG.ISOLATE_ENDPOINT,visitorStatsEndpoint=CONFIG.STATS_ENDPOINT;
 let busy={remove:false,enhance:false,isolate:false};
 let clocks={remove:null,enhance:null,isolate:null};
 let starts={remove:0,enhance:0,isolate:0};
@@ -1772,7 +1792,7 @@ function startClock(kind){stopClock(kind);starts[kind]=performance.now();monitor
   }
 },250)}
 function stopClock(kind){if(clocks[kind])clearInterval(clocks[kind]);clocks[kind]=null}
-function resetMonitor(kind,title,estimate=0){const m=M[kind];clearLogs(kind);if(m.panel)$(m.panel)?.classList.add("show");monitorState[kind]={percent:4,estimate:Number(estimate)||0,finished:false,actualAt:0};if($(m.bar))$(m.bar).style.width="4%";if($(m.percent))$(m.percent).textContent="4%";if($(m.eta))$(m.eta).textContent=estimate>0?formatEta(estimate):"starting…";if($(m.stage))$(m.stage).textContent="STARTING";if($(m.stageBar))$(m.stageBar).classList.remove("done","error");if($(m.live)){$(m.live).textContent="LIVE";$(m.live).classList.remove("idle")}if($(m.status))$(m.status).textContent="Preparing in-browser engine…";if($(m.label))$(m.label).textContent=title;startClock(kind);addLog(kind,"Job started · in-browser processing","info");if(estimate>0)addLog(kind,`Client ETA estimate: ${formatEta(estimate)} · live recalculation enabled`,"info")}
+function resetMonitor(kind,title,estimate=0){const m=M[kind];clearLogs(kind);if(m.panel)$(m.panel)?.classList.add("show");monitorState[kind]={percent:4,estimate:Number(estimate)||0,finished:false,actualAt:0};if($(m.bar))$(m.bar).style.width="4%";if($(m.percent))$(m.percent).textContent="4%";if($(m.eta))$(m.eta).textContent=estimate>0?formatEta(estimate):"starting…";if($(m.stage))$(m.stage).textContent="STARTING";if($(m.stageBar))$(m.stageBar).classList.remove("done","error");if($(m.live)){$(m.live).textContent="LIVE";$(m.live).classList.remove("idle")}if($(m.status))$(m.status).textContent="Connecting to processing server…";if($(m.label))$(m.label).textContent=title;startClock(kind);addLog(kind,"Job started · sending audio to backend","info");if(estimate>0)addLog(kind,`Client ETA estimate: ${formatEta(estimate)} · live recalculation enabled`,"info")}
 function safeBackendText(value,fallback=""){const raw=String(value??"").trim();if(!raw)return fallback;if(raw.includes("<")&&raw.includes(">")){const holder=document.createElement("div");holder.innerHTML=raw;return (holder.textContent||holder.innerText||"").replace(/\s+/g," ").trim()||fallback}return raw.replace(/[<>]/g,"").trim()||fallback}
 function applyBackendUpdate(data,kind){if(!Array.isArray(data))return;let status="",logs="",eta="";if(kind==="remove"){status=safeBackendText(data[4]);logs=safeBackendText(data[5]);eta=cleanStatusText(data[6],"—")}else if(kind==="enhance"){status=safeBackendText(data[2]);logs=safeBackendText(data[3]);eta=cleanStatusText(data[4],"—")}else{status=safeBackendText(data[4]);logs=safeBackendText(data[5]);eta=cleanStatusText(data[6],"—")}
   const lines=logs?logs.split(/\r?\n/).filter(Boolean):[];const seen=window.__serverLogs?.[kind]||new Set();window.__serverLogs=window.__serverLogs||{};window.__serverLogs[kind]=seen;
@@ -1780,7 +1800,12 @@ function applyBackendUpdate(data,kind){if(!Array.isArray(data))return;let status
   if(status){const failed=/failed|error|fatal/i.test(status),done=/completed|successfully/i.test(status);setMonitor(kind,{stage:done?"COMPLETED":failed?"ERROR":"PROCESSING",eta:eta||null,status,live:!done&&!failed})}
   if(eta&&/\d/.test(eta)){const cleaned=eta.replace(/^Estimated remaining:\s*/i,"");$(M[kind].eta).textContent=cleaned;const match=cleaned.match(/(?:about\s+)?(\d+)s/);if(match)monitorState[kind].estimate=Math.max(monitorState[kind].estimate,((performance.now()-starts[kind])/1000)+Number(match[1]))}
 }
-async function runRemoteJob(){throw new Error("No remote processor is configured.")}
+async function runGradioJob(endpoint,inputs,kind,onData){if(!client)throw new Error("Backend is not connected.");window.__serverLogs=window.__serverLogs||{};window.__serverLogs[kind]=new Set();let job=client.submit(endpoint,inputs);if(job&&typeof job.on==="function"){job.on("data",data=>{applyBackendUpdate(data,kind);onData(data)});job.on("status",st=>{const text=cleanStatusText(st?.stage||st?.status||st?.message||"","");const pd=st?.progress_data?.[0]||st?.progress_data;if(pd?.progress!=null){const p=Number(pd.progress)*100;monitorState[kind].percent=Math.max(monitorState[kind].percent,p);monitorState[kind].actualAt=performance.now();setMonitor(kind,{percent:p,stage:"PROCESSING",status:cleanStatusText(text),eta:st?.eta??st?.status?.eta??null,live:true})}if(text&&!/successful processing job|not verified unique people|uploaded and processed audio|stats-card/i.test(text))addLog(kind,text,/error|failed/i.test(text)?"err":"info")})}
+  let finalData=null;
+  if(job&&job[Symbol.asyncIterator]){for await(const msg of job){if(msg?.type==="data"){finalData=msg.data;applyBackendUpdate(msg.data,kind);onData(msg.data)}else if(msg?.type==="status"&&msg.status){const st=msg.status,pd=st.progress_data?.[0]||st.progress_data;if(pd?.progress!=null){const p=Number(pd.progress)*100;monitorState[kind].percent=Math.max(monitorState[kind].percent,p);monitorState[kind].actualAt=performance.now();setMonitor(kind,{percent:p,stage:"PROCESSING",status:cleanStatusText(st.message||st.stage||"Processing…"),eta:st.eta??st.status?.eta??null,live:true})}if(st.message&&!/successful processing job|not verified unique people|uploaded and processed audio|stats-card/i.test(st.message))addLog(kind,cleanStatusText(st.message),/error|failed/i.test(st.message)?"err":"info")}}}
+  else if(job&&typeof job.result==="function"){const r=await job.result();finalData=r?.data||r;applyBackendUpdate(finalData,kind);onData(finalData)}
+  else{const r=await client.predict(endpoint,inputs);finalData=r?.data||[];applyBackendUpdate(finalData,kind);onData(finalData)}
+  return finalData||[]}
 function validAudio(file){return file&&(file.type.startsWith("audio/")||/\.(mp3|wav|m4a|ogg|flac|aac)$/i.test(file.name))}
 function fileLabel(file){return `${file.name} · ${(file.size/1024/1024).toFixed(2)} MB`}
 function setBusy(btn,b,txt){const __v={removeBtn:"removeVisual",enhanceBtn:"enhanceVisual",isolateBtn:"isolateVisual"}[btn.id];if(__v&&$(__v))$(__v).classList.toggle("fx-run",!!b);btn.disabled=b;if(b){btn.classList.add("processing");btn.textContent=txt}else{btn.classList.remove("processing");btn.textContent=btn.dataset.normal}}
@@ -1813,9 +1838,50 @@ function setUploadLabel(kind,text){renderUpload(kind,{note:text})}
 function fmtMB(b){return (b/1048576).toFixed(b>=10485760?1:2)}
 function fmtSpeed(bps){if(!isFinite(bps)||bps<=0)return"— MB/s";return bps>=1048576?(bps/1048576).toFixed(2)+" MB/s":Math.round(bps/1024)+" KB/s"}
 const lastUpload={remove:null,enhance:null,isolate:null};
-function uploadOnce(){return Promise.reject(new Error("Local processing — no upload needed."))}
-async function uploadFileToBackend(){throw new Error("Local processing — no server upload needed.")}
-function getUploadedInput(kind,file){return file}
+function uploadOnce(kind,file,base){
+  return new Promise((resolve,reject)=>{
+    const t0=performance.now();let lastT=t0,lastLoaded=0,speed=0,lastRender=0;
+    const xhr=new XMLHttpRequest();
+    const form=new FormData();form.append("files",file,file.name);
+    const target=base.replace(/\/$/,"")+"/gradio_api/upload";
+    /* FIX: withCredentials removed. HF Spaces reply with "Access-Control-Allow-Origin: *",
+       and browsers block that when credentials are included -> instant "network error" at 0%. */
+    xhr.open("POST",target,true);
+    xhr.upload.onprogress=e=>{
+      if(!e.lengthComputable)return;
+      const now=performance.now(),dt=(now-lastT)/1000;
+      if(dt>=0.4||e.loaded>=e.total){const inst=(e.loaded-lastLoaded)/Math.max(dt,0.001);speed=speed?speed*0.6+inst*0.4:inst;lastT=now;lastLoaded=e.loaded}
+      const pct=Math.min(100,Math.round(e.loaded/e.total*100)),done=Math.min(file.size,Math.round(file.size*e.loaded/e.total));
+      const left=speed>0?(file.size-done)/speed:null;
+      if(now-lastRender>90||pct>=100){lastRender=now;renderUpload(kind,{phase:"uploading",pct,done,totalText:" / "+fmtMB(file.size)+" MB",speedText:fmtSpeed(speed),eta:pct>=100?"finishing…":(left!=null?formatEta(left)+" left":"calculating…"),note:""})}
+    };
+    xhr.onerror=()=>reject(new Error("File upload network error ("+target+")"));
+    xhr.ontimeout=()=>reject(new Error("File upload timed out"));xhr.timeout=180000;
+    xhr.onload=()=>{lastUpload[kind]={ms:performance.now()-t0,bytes:file.size};if(xhr.status<200||xhr.status>=300)return reject(new Error(`Upload failed (HTTP ${xhr.status})`));try{const data=JSON.parse(xhr.responseText);const first=Array.isArray(data)?data[0]:data;const path=typeof first==="string"?first:(first?.path||first?.file?.path);if(!path)throw new Error("Upload server returned no file reference");resolve({path,orig_name:file.name,size:file.size,mime_type:file.type||"application/octet-stream",meta:{_type:"gradio.FileData"}})}catch(e){reject(e)}};
+    xhr.send(form);
+  });
+}
+async function uploadFileToBackend(kind,file){
+  /* Try direct HF Space first, then the current/proxy URL; 2 rounds so a sleeping Space can wake up. */
+  const targets=[...new Set([CONFIG.DIRECT_SPACE_URL,activeSpaceURL,CONFIG.SPACE_URL].filter(Boolean))];
+  let lastErr=null;
+  for(let round=0;round<2;round++){
+    for(const t of targets){
+      try{return await uploadOnce(kind,file,t)}
+      catch(e){lastErr=e;console.warn("Upload attempt failed:",t,e?.message||e)}
+    }
+    if(round===0){setUploadLabel(kind,"Server slow hai, dobara try ho raha hai…");await new Promise(r=>setTimeout(r,2500))}
+  }
+  throw lastErr||new Error("Upload failed");
+}
+function getUploadedInput(kind,file){return uploadedFiles[kind]||window.GradioClient.handle_file(file)}
+function refreshToolButtons(){
+  const eng=!!window.OffexEngine;
+  const rm=$("removeBtn"),en=$("enhanceBtn"),iso=$("isolateBtn");
+  if(rm)rm.disabled=!removeFile||!(client||eng);
+  if(en)en.disabled=!enhanceFile||!(client||eng);
+  if(iso)iso.disabled=!isolateFile||!client;
+}
 async function setUpload(kind,file){
   if(!validAudio(file)){alert("Please choose a valid audio file (MP3, WAV, M4A, OGG, FLAC, etc.).");return}
   if(uploadBusy)return;
@@ -1823,11 +1889,24 @@ async function setUpload(kind,file){
   if(kind==="enhance"){enhanceFile=file;$("enhanceFileText").textContent=file.name;$("enhanceFileSub").textContent=fileLabel(file)}
   if(kind==="isolate"){isolateFile=file;$("isolateFileText").textContent=file.name;$("isolateFileSub").textContent=fileLabel(file)}
   resetResultsForNewInput(kind);
-  renderUpload(kind,{phase:"done",pct:100,done:file.size,totalText:" MB",title:"Ready",speedText:"local",eta:"in your browser",note:"Loaded — processing happens on your device."});
+  if(kind==="remove")analyzeSilencePreview(file);
   fileDurations[kind]=await readAudioDuration(file);
-  if(kind==="remove"){analyzeSilencePreview(file);$("removeBtn").disabled=false}
-  if(kind==="enhance"){$("enhanceBtn").disabled=false}
-  if(kind==="isolate"){$("isolateBtn").disabled=true}
+  if(client){
+    uploadedFiles[kind]=null;
+    setUploadButtonsLocked(true);
+    renderUpload(kind,{phase:"uploading",pct:0,done:0,totalText:" / "+fmtMB(file.size)+" MB",speedText:"—",eta:"starting…",note:""});
+    try{
+      uploadedFiles[kind]=await uploadFileToBackend(kind,file);
+      const u=lastUpload[kind],sec=u?u.ms/1000:0;
+      renderUpload(kind,{phase:"done",pct:100,done:file.size,totalText:" MB",title:"Uploaded",speedText:sec>0?"avg "+fmtSpeed(file.size/sec):"—",eta:sec>0?"in "+(sec<60?sec.toFixed(1)+"s":formatEta(sec)):"",note:""});
+    }catch(error){
+      uploadedFiles[kind]=null;console.error(error);
+      renderUpload(kind,{phase:"warn",title:"Will upload on Process",done:file.size,totalText:" MB",eta:"",note:"Pre-upload nahi hui — Process dabate hi file automatically upload ho jayegi."});
+    }finally{setUploadButtonsLocked(false)}
+  }else{
+    renderUpload(kind,{phase:"done",pct:100,done:file.size,totalText:" MB",title:"Ready",speedText:"local",eta:"in your browser",note:"Server offline — processing will use the in-browser engine."});
+  }
+  refreshToolButtons();
 }
 function wireDrop(zoneId,inputId,kind){const zone=$(zoneId),input=$(inputId);input.addEventListener("change",e=>{if(e.target.files?.[0])setUpload(kind,e.target.files[0])});zone.addEventListener("dragover",e=>{e.preventDefault();zone.classList.add("drag")});zone.addEventListener("dragleave",()=>zone.classList.remove("drag"));zone.addEventListener("drop",e=>{e.preventDefault();zone.classList.remove("drag");if(e.dataTransfer.files?.[0])setUpload(kind,e.dataTransfer.files[0])})}
 wireDrop("dropZone","fileInput","remove");wireDrop("enhanceDropZone","enhanceFileInput","enhance");wireDrop("isolateDropZone","isolateFileInput","isolate");
@@ -1842,21 +1921,30 @@ async function removeSilence(){
   resetMonitor("remove","REMOVE SILENCE",clientEstimate("remove",fileDurations.remove));
   startCutViz();
   $("resultBadge").textContent="Processing";
-  apiStatus("busy","Processing in your browser","Analysing the waveform and trimming silence…");
   try{
     const raw=Number($("seconds").value);
     if(!Number.isFinite(raw)||raw<0||raw>10)throw new Error("Silence value 0 se 10 seconds ke beech rakhein.");
     const seconds=Math.round(raw*100)/100;$("seconds").value=seconds.toFixed(2);
     addLog("remove",`Input: ${removeFile.name} · keep silence: ${seconds}s`,"info");
-    setMonitor("remove",{percent:18,stage:"ANALYSING",status:"Decoding audio in your browser…",live:true});
-    if(!window.OffexEngine)throw new Error("Browser audio engine not loaded. Please refresh the page.");
-    const res=await window.OffexEngine.removeSilence(removeFile,seconds);
-    setMonitor("remove",{percent:92,stage:"ENCODING",status:"Writing the processed file…",live:true});
-    const url=URL.createObjectURL(res.blob);
+    let url=null;
+    if(client){
+      apiStatus("busy","Processing Audio","Removing silence chunks on the Hugging Face Space…");
+      const data=await runGradioJob(processEndpoint,[getUploadedInput("remove",removeFile),seconds],"remove",d=>{processedState=d?.[3]});
+      url=getResultURL(data?.[0])||getResultURL(data?.[1]);
+      if(!url){const rawOut=Array.isArray(data)?data.map((x,i)=>`[${i}] ${typeof x==="string"?x:JSON.stringify(x)}`).join(" | "):JSON.stringify(data);throw new Error("API returned no processed audio file. Output: "+(rawOut||"empty"));}
+      if(data?.[2]){$("durationInfo").textContent=safeBackendText(data[2]);$("durationInfo").style.display="block"}
+    }else{
+      apiStatus("busy","Processing in your browser","Server offline — using the in-browser engine…");
+      setMonitor("remove",{percent:18,stage:"ANALYSING",status:"Decoding audio in your browser…",live:true});
+      if(!window.OffexEngine)throw new Error("Backend is not connected and the browser audio engine is unavailable.");
+      const res=await window.OffexEngine.removeSilence(removeFile,seconds);
+      setMonitor("remove",{percent:92,stage:"ENCODING",status:"Writing the processed file…",live:true});
+      url=URL.createObjectURL(res.blob);
+      if(res.removed>0){$("durationInfo").textContent=`Removed about ${fmtDur(res.removed)} · new length ${fmtDur(res.duration)}`;$("durationInfo").style.display="block"}
+    }
     processedAudioURL=url;
-    const out=$("outputAudio");out.src=url;out.style.display="block";$("outputEmpty").style.display="none";
-    if(res.removed>0){$("durationInfo").textContent=`Removed about ${fmtDur(res.removed)} · new length ${fmtDur(res.duration)}`;$("durationInfo").style.display="block"}
-    const link=$("downloadLink");link.dataset.fileUrl=url;link.dataset.filename=makeName(removeFile.name,"_no_silence");link.href="#";link.classList.add("show");
+    $("outputAudio").src=url;$("outputAudio").style.display="block";$("outputEmpty").style.display="none";
+    $("downloadLink").dataset.fileUrl=url;$("downloadLink").dataset.filename=makeName(removeFile.name,"_no_silence");$("downloadLink").href="#";$("downloadLink").classList.add("show");
     $("resultBadge").textContent="Completed";
     setMonitor("remove",{stage:"COMPLETED",percent:100,eta:"0s",status:"Completed — silence removed.",live:false});
     setMonitorDone("remove",true);
@@ -1878,17 +1966,26 @@ async function enhanceAudio(){
   if(busy.enhance)return;
   const btn=$("enhanceBtn");busy.enhance=true;setBusy(btn,true,"Enhancing Audio");
   resetMonitor("enhance","AUDIO ENHANCER",clientEstimate("enhance",fileDurations.enhance));
-  apiStatus("busy","Enhancing in your browser","Applying noise reduction and normalisation…");
   try{
     const strength=$("enhanceStrength").value||"Balanced";
     addLog("enhance",`Input: ${enhanceFile.name} · mode: ${strength}`,"info");
-    setMonitor("enhance",{percent:20,stage:"CLEANING",status:"Cleaning speech in your browser…",live:true});
-    if(!window.OffexEngine)throw new Error("Browser audio engine not loaded. Please refresh the page.");
-    const res=await window.OffexEngine.enhance(enhanceFile,strength);
-    const url=URL.createObjectURL(res.blob);
-    const out=$("enhancedAudio");out.src=url;out.style.display="block";$("enhancedEmpty").style.display="none";
-    const link=$("enhancedDownload");link.dataset.fileUrl=url;link.dataset.filename=makeName(enhanceFile.name,"_enhanced");link.href="#";link.classList.add("show");
-    $("enhanceStatus").textContent=`Enhanced successfully in ${strength} mode.`;
+    let url=null;
+    if(client){
+      apiStatus("busy","Enhancing Audio","Applying noise reduction & normalisation on the Hugging Face Space…");
+      const data=await runGradioJob(enhanceEndpoint,[getUploadedInput("enhance",enhanceFile),strength],"enhance",()=>{});
+      url=getResultURL(data?.[0])||getResultURL(data?.[1]);
+      if(!url)throw new Error("API returned no enhanced audio file.");
+      $("enhanceStatus").textContent=safeBackendText(data?.[2],`Enhanced successfully in ${strength} mode.`);
+    }else{
+      apiStatus("busy","Enhancing in your browser","Server offline — using the in-browser engine…");
+      setMonitor("enhance",{percent:20,stage:"CLEANING",status:"Cleaning speech in your browser…",live:true});
+      if(!window.OffexEngine)throw new Error("Backend is not connected and the browser audio engine is unavailable.");
+      const res=await window.OffexEngine.enhance(enhanceFile,strength);
+      url=URL.createObjectURL(res.blob);
+      $("enhanceStatus").textContent=`Enhanced successfully in ${strength} mode.`;
+    }
+    $("enhancedAudio").src=url;$("enhancedAudio").style.display="block";$("enhancedEmpty").style.display="none";
+    $("enhancedDownload").dataset.fileUrl=url;$("enhancedDownload").dataset.filename=makeName(enhanceFile.name,"_enhanced");$("enhancedDownload").href="#";$("enhancedDownload").classList.add("show");
     setMonitor("enhance",{stage:"COMPLETED",percent:100,eta:"0s",status:"Enhancement completed.",live:false});
     setMonitorDone("enhance",true);
     addLog("enhance","✓ Enhancement completed successfully","ok");
@@ -1906,13 +2003,42 @@ async function enhanceAudio(){
 }
 async function isolateVoiceBgm(){
   if(!isolateFile){alert("Voice / BGM Isolation ke liye pehle alag audio file upload karein.");return}
-  if(!backendProcessor){
-    $("separationStatus").textContent="Not connected — voice / BGM separation needs the server AI processor.";
-    alert("Voice / BGM separation is a server-side AI feature and the processor is not connected right now.\n\nRemove Silence and Enhance Audio still work — they run fully in your browser.");
+  if(!client){
+    $("separationStatus").textContent="Not connected — voice / BGM separation needs the Hugging Face Space processor.";
+    alert("Voice / BGM separation runs on the server AI processor and the Hugging Face Space is not connected right now.\n\nRemove Silence and Enhance Audio still work — they fall back to the in-browser engine.");
     return;
   }
-  $("separationStatus").textContent="Server processor connected, but this build has no separation endpoint wired yet.";
-  alert("Voice / BGM separation endpoint is not configured on this deployment yet.");
+  if(busy.isolate)return;
+  const btn=$("isolateBtn");busy.isolate=true;setBusy(btn,true,"Isolating Voice/BGM");
+  resetMonitor("isolate","VOICE / BGM ISOLATION",clientEstimate("isolate",fileDurations.isolate,$("separationModel").value));
+  apiStatus("busy","Separating Voice & BGM","Running the separation model on the Hugging Face Space…");
+  $("vocalsAudio").style.display="none";$("vocalsEmpty").style.display="block";$("vocalsDownload").classList.remove("show");
+  $("bgmAudio").style.display="none";$("bgmEmpty").style.display="block";$("bgmDownload").classList.remove("show");
+  try{
+    const model=$("separationModel").value;
+    addLog("isolate",`Input: ${isolateFile.name} · quality: ${model}`,"info");
+    const data=await runGradioJob(isolateEndpoint,[getUploadedInput("isolate",isolateFile),model],"isolate",()=>{});
+    const vocals=getResultURL(data?.[0])||getResultURL(data?.[2]),bgm=getResultURL(data?.[1])||getResultURL(data?.[3]);
+    if(!vocals||!bgm){const log=typeof data?.[5]==="string"?data[5]:"";throw new Error(log.split("\n").filter(x=>x.includes("ERROR:")).pop()||data?.[4]||"API returned no separated audio files.")}
+    $("vocalsAudio").src=vocals;$("vocalsAudio").style.display="block";$("vocalsEmpty").style.display="none";
+    $("vocalsDownload").dataset.fileUrl=vocals;$("vocalsDownload").dataset.filename=makeName(isolateFile.name,"_vocals_only");$("vocalsDownload").href="#";$("vocalsDownload").classList.add("show");
+    $("bgmAudio").src=bgm;$("bgmAudio").style.display="block";$("bgmEmpty").style.display="none";
+    $("bgmDownload").dataset.fileUrl=bgm;$("bgmDownload").dataset.filename=makeName(isolateFile.name,"_bgm_only");$("bgmDownload").href="#";$("bgmDownload").classList.add("show");
+    $("separationStatus").textContent=safeBackendText(data?.[4],"Voice and BGM isolated successfully.");
+    setMonitor("isolate",{stage:"COMPLETED",percent:100,eta:"0s",status:"Voice & BGM separation completed.",live:false});
+    setMonitorDone("isolate",true);
+    addLog("isolate","✓ Voice and BGM files are ready","ok");
+    showReadyToast("Voice / BGM Isolation","Voice and BGM outputs are ready");
+    apiStatus("good","Live","Voice / BGM isolation completed successfully");
+    updateVisitorStats();
+  }catch(err){
+    console.error(err);
+    setMonitor("isolate",{stage:"ERROR",status:"Isolation failed.",eta:"—",live:false});
+    setMonitorDone("isolate",false);
+    addLog("isolate","ERROR: "+(err?.message||"Voice / BGM isolation failed"),"err");
+    $("separationStatus").textContent="Isolation failed: "+(err?.message||"unknown error");
+    apiStatus("bad","Separation error",err?.message||"Voice / BGM isolation failed");
+  }finally{busy.isolate=false;stopClock("isolate");setBusy(btn,false)}
 }
 const downloadFormat={remove:"mp3",enhance:"mp3",vocals:"mp3",bgm:"mp3"};
 let __lameLoad=null;
@@ -2037,22 +2163,52 @@ function initDownloadCards(){
 }
 document.addEventListener("DOMContentLoaded",initDownloadCards);
 if(document.readyState!=="loading")initDownloadCards();
-function getResultURL(){return null}
+function getResultURL(result){
+  if(!result)return null;
+  const normalize=v=>{
+    if(!v)return null;
+    v=String(v);
+    if(/^https?:\/\//i.test(v)||v.startsWith("blob:")||v.startsWith("data:"))return v;
+    if(v.startsWith("file://"))v=v.slice(7);
+    if(v.startsWith("/"))return activeSpaceURL+"/gradio_api/file="+encodeURIComponent(v);
+    return activeSpaceURL+"/gradio_api/file="+encodeURIComponent("/"+v);
+  };
+  if(typeof result==="string")return normalize(result);
+  if(typeof result==="object"){
+    return normalize(result.url)
+      || normalize(result.path)
+      || normalize(result.name)
+      || normalize(result.orig_name)
+      || normalize(result.file?.url)
+      || normalize(result.file?.path);
+  }
+  return null;
+}
 function makeName(name,suffix){const dot=name.lastIndexOf(".");const base=dot>0?name.slice(0,dot):name;return base+suffix}
 $("removeBtn").addEventListener("click",removeSilence);$("downloadLink").addEventListener("click",e=>{e.preventDefault();directDownload("downloadLink")});$("enhanceBtn").addEventListener("click",enhanceAudio);$("enhancedDownload").addEventListener("click",e=>{e.preventDefault();directDownload("enhancedDownload")});$("isolateBtn").addEventListener("click",isolateVoiceBgm);$("vocalsDownload").addEventListener("click",e=>{e.preventDefault();directDownload("vocalsDownload")});$("bgmDownload").addEventListener("click",e=>{e.preventDefault();directDownload("bgmDownload")});$("separationModel").addEventListener("change",e=>$("separationModelValue").textContent=e.target.value);
 function openModal(id){$(id).classList.add("open")}function closeModal(id){$(id).classList.remove("open")}
-document.addEventListener("visibilitychange",()=>{if(!document.hidden)checkHealth(false)});
-if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",()=>checkHealth(true))}else{checkHealth(true)}
-function updateVisitorStats(){["liveUsers","totalVisits","topOnline","topVisits"].forEach(id=>{const n=$(id);if(n&&/^(0|—)$/.test(n.textContent.trim()))n.textContent="—"});}
+document.addEventListener("visibilitychange",()=>{if(!document.hidden){checkHealth(false);updateVisitorStats()}});
+window.addEventListener("gradio-client-ready",()=>connectAPI().catch(()=>{}));
+window.addEventListener("gradio-client-error",()=>apiStatus("bad","Client Error","Failed to load the Gradio JavaScript client"));
+if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",()=>{checkHealth(true);if(window.GradioClient)connectAPI().catch(()=>{})})}else{checkHealth(true);if(window.GradioClient)connectAPI().catch(()=>{})}
+function updateVisitorStats(){
+  if(!client||document.hidden)return;
+  client.predict(visitorStatsEndpoint,{}).then(result=>{
+    const d=result?.data;let online=0,visits=0;
+    if(Array.isArray(d)){online=Number(d[0]??0);visits=Number(d[1]??d[0]??0)}else if(d&&typeof d==="object"){online=Number(d.online??d.active??0);visits=Number(d.visits??d.total_visits??0)}
+    const set=(id,val)=>{const n=$(id);if(n)n.textContent=val};
+    set("liveUsers",online.toLocaleString());set("totalVisits",visits.toLocaleString());set("topOnline",online);set("topVisits",visits);
+  }).catch(e=>console.warn("Visitor stats warning:",e));
+}
 function setStatusBadge(){
   const b=$("footStatus");
   if(b){b.classList.remove("live","down","checking");b.classList.add(backendLive?"live":"down");b.innerHTML='<i class="dot"></i>'+(backendLive?"Live":"Not connected")}
   const p=$("processorState");if(p)p.textContent=backendProcessor?"Online":"Not connected";
 }
 async function checkHealth(showBusy){
-  if(connectingPromise)return connectingPromise;
-  connectingPromise=(async()=>{
-    if(showBusy)apiStatus("busy","Checking backend…","Running a quick health check");
+  if(healthPromise)return healthPromise;
+  healthPromise=(async()=>{
+    if(showBusy&&!client)apiStatus("busy","Checking backend…","Pinging the Hugging Face Space");
     const ctrl=new AbortController();
     const timer=setTimeout(()=>ctrl.abort(),4500);
     try{
@@ -2060,20 +2216,67 @@ async function checkHealth(showBusy){
       clearTimeout(timer);
       if(!r.ok)throw new Error("HTTP "+r.status);
       const data=await r.json().catch(()=>({}));
-      backendLive=true;backendProcessor=!!data.processor;
-      apiStatus("good","Live",backendProcessor?"Server processor online — all tools ready":"In-browser audio engine ready — no server needed");
+      backendLive=!!(data.backend??data.processor);
+      backendProcessor=!!(data.processor??data.backend);
     }catch(e){
       clearTimeout(timer);
       backendLive=false;backendProcessor=false;
-      apiStatus("bad","Not connected","Backend health check failed. Retrying automatically…");
     }finally{
-      connectingPromise=null;setStatusBadge();
+      healthPromise=null;setStatusBadge();
+      if(!client){
+        if(backendLive)apiStatus("busy","Connecting to Server…","Establishing connection with the Hugging Face Space");
+        else apiStatus("bad","Not connected","Audio backend unreachable. Retrying automatically…");
+      }
       if(!healthTimer)healthTimer=setInterval(()=>checkHealth(false),25000);
+      if(backendLive&&!client&&!connectingPromise)connectAPI().catch(()=>{});
     }
+  })();
+  return healthPromise;
+}
+async function connectAPI(){
+  if(connectingPromise) return connectingPromise;
+  if(client) return client;
+  connectingPromise=(async()=>{
+    try{
+      apiStatus("busy","Connecting to Server…","Establishing connection with Hugging Face Space");
+      if(!window.GradioClient) throw new Error("Gradio client failed to load.");
+      const targets=[...new Set([CONFIG.SPACE_URL,CONFIG.DIRECT_SPACE_URL].filter(Boolean))];
+      let lastError=null;
+      for(let attempt=0;attempt<3&&!client;attempt++){
+        for(const target of targets){
+          try{
+            client=await Promise.race([
+              window.GradioClient.Client.connect(target),
+              new Promise((_,reject)=>setTimeout(()=>reject(new Error("Backend connection timed out.")),12000))
+            ]);
+            activeSpaceURL=target;
+            break;
+          }catch(error){lastError=error;console.warn("Backend connection attempt failed:",target,error?.message||error);}
+        }
+        if(!client&&attempt<2)await new Promise(resolve=>setTimeout(resolve,1000*(attempt+1)));
+      }
+      if(!client)throw lastError||new Error("Could not connect to the audio processing server.");
+      try{
+        const api=await client.view_api();
+        const p=findEndpoint(api,"process_audio"),e=findEndpoint(api,"enhance_audio"),iso=findEndpoint(api,"isolate_voice_bgm"),v=findEndpoint(api,"visitor_heartbeat")||findEndpoint(api,"register_visitor");
+        if(p)processEndpoint=p;if(e)enhanceEndpoint=e;if(iso)isolateEndpoint=iso;if(v)visitorStatsEndpoint=v;
+      }catch(e){console.warn("API schema lookup warning:",e)}
+      backendLive=true;backendProcessor=true;setStatusBadge();
+      apiStatus("good","Live","CPU audio processing pipeline is online");
+      addLog("remove","Backend connected · Hugging Face Space processing mode","ok");
+      updateVisitorStats();
+      if(!visitorStatsTimer) visitorStatsTimer=setInterval(updateVisitorStats,15000);
+      refreshToolButtons();
+      return client;
+    }catch(err){
+      console.error(err);client=null;backendLive=false;backendProcessor=false;setStatusBadge();
+      apiStatus("bad","Not connected","Audio server temporarily unreachable. Retrying is automatic — please wait a moment and try again.");
+      refreshToolButtons();
+      throw err;
+    }finally{connectingPromise=null;}
   })();
   return connectingPromise;
 }
-async function connectAPI(){return checkHealth(true);}
 </script>
 <script>
 (function(){
