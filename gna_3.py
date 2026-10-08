@@ -250,24 +250,26 @@ public class MainActivity extends AppCompatActivity {
     // ------------------------------------------------------------------ state
     private JSONObject buildStrings() {
         JSONObject t = new JSONObject();
-        String[] keys = {
-                "app_name", "tagline", "live", "not_connected", "checking", "processor", "online",
-                "tab_remove", "tab_enhance", "tab_isolate", "tab_history", "tab_more",
-                "tool_remove_title", "tool_remove_sub", "tool_enhance_title", "tool_enhance_sub",
-                "tool_isolate_title", "tool_isolate_sub",
-                "drop_hint", "choose_file", "change_file", "no_file",
-                "keep_silence", "enhance_mode", "mode_light", "mode_balanced", "mode_strong",
-                "separation_model", "process", "processing", "download", "saving",
-                "saved_to_downloads", "result_ready", "vocals", "bgm", "open_result",
-                "history_title", "history_empty", "history_clear", "history_redownload",
-                "more_title", "more_language", "more_notifications", "more_notifications_on",
-                "more_notifications_off", "more_sound", "more_about", "more_version", "more_backend",
-                "more_backend_value", "more_privacy", "download_started", "download_failed"
-        };
-        for (String k : keys) {
-            int id = getResources().getIdentifier(k, "string", getPackageName());
-            if (id != 0) t.put(k, getString(id));
-        }
+        try {
+            String[] keys = {
+                    "app_name", "tagline", "live", "not_connected", "checking", "processor", "online",
+                    "tab_remove", "tab_enhance", "tab_isolate", "tab_history", "tab_more",
+                    "tool_remove_title", "tool_remove_sub", "tool_enhance_title", "tool_enhance_sub",
+                    "tool_isolate_title", "tool_isolate_sub",
+                    "drop_hint", "choose_file", "change_file", "no_file",
+                    "keep_silence", "enhance_mode", "mode_light", "mode_balanced", "mode_strong",
+                    "separation_model", "process", "processing", "download", "saving",
+                    "saved_to_downloads", "result_ready", "vocals", "bgm", "open_result",
+                    "history_title", "history_empty", "history_clear", "history_redownload",
+                    "more_title", "more_language", "more_notifications", "more_notifications_on",
+                    "more_notifications_off", "more_sound", "more_about", "more_version", "more_backend",
+                    "more_backend_value", "more_privacy", "download_started", "download_failed"
+            };
+            for (String k : keys) {
+                int id = getResources().getIdentifier(k, "string", getPackageName());
+                if (id != 0) t.put(k, getString(id));
+            }
+        } catch (Throwable t2) { }
         return t;
     }
 
@@ -371,10 +373,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override public void onBackPressed() {
+        final MainActivity self = this;
         try {
             if (webUi != null) {
                 webUi.evaluateJavascript("(function(){try{return window.OffexAudioUI&&window.OffexAudioUI.onBack&&window.OffexAudioUI.onBack();}catch(e){return false;}})();",
-                        value -> { if (!"true".equals(value)) MainActivity.super.onBackPressed(); });
+                        value -> { if (!"true".equals(value)) self.finish(); });
                 return;
             }
         } catch (Throwable t) { }
