@@ -22,7 +22,7 @@ jobs:
       - name: Deploy Offex Audio
         run: |
           mkdir -p ad
-          cp audio/*.html audio/_worker.js audio/favicon.svg audio/robots.txt audio/sitemap.xml audio/ads.txt audio/sw.js audio/promo.js ad/
+          cp audio/*.html audio/_worker.js audio/favicon.svg audio/robots.txt audio/sitemap.xml audio/ads.txt audio/sw.js audio/promo.js audio/styles.css audio/audio-engine.js ad/
           npx --yes wrangler@3 pages deploy ad --project-name=audio --branch=main
       - name: Verify
         run: |

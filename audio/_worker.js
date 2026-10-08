@@ -1,131 +1,73 @@
-const DEFAULT_HF_SPACE = "https://hydui-ytvideo.hf.space";
+/**
+ * Offex Audio — Cloudflare Pages advanced-mode worker.
+ *
+ * The site no longer depends on any Hugging Face Space. All core audio tools
+ * (Remove Silence, Enhance Audio) run entirely in the visitor's browser.
+ *
+ * Optional server-side processing can still be attached later by setting the
+ * BACKEND_URL environment variable on the Pages project; when it is present the
+ * worker proxies /api/* to it and /health reports the processor as online.
+ */
 
-function getHFTarget(request, env) {
-  const incoming = new URL(request.url);
-  const hfBase = (env.HF_SPACE_URL || DEFAULT_HF_SPACE).replace(/\/+$/, "");
-  const suffix = incoming.pathname === "/hf" ? "/" : incoming.pathname.slice(3);
-  const target = new URL(hfBase + suffix);
-  target.search = incoming.search;
-  return { incoming, target };
-}
-
-function addHFAuth(headers, env) {
-  headers.delete("host");
-  if (env.HF_TOKEN) {
-    headers.set("Authorization", `Bearer ${env.HF_TOKEN}`);
-    headers.set("X-HF-Authorization", `Bearer ${env.HF_TOKEN}`);
-  }
-  return headers;
-}
-
-async function proxyWebSocket(request, env, target) {
-  const upgrade = request.headers.get("Upgrade");
-  if (!upgrade || upgrade.toLowerCase() !== "websocket") {
-    return new Response("Expected Upgrade: websocket", { status: 426 });
-  }
-
-  const pair = new WebSocketPair();
-  const [client, server] = Object.values(pair);
-
-  const headers = addHFAuth(new Headers(request.headers), env);
-  // The backend is the real WebSocket origin; this avoids origin checks
-  // rejecting the Cloudflare Pages hostname.
-  headers.set("Origin", target.origin);
-  headers.set("Upgrade", "websocket");
-
-  try {
-    const upstream = await fetch(target.toString(), {
-      method: "GET",
-      headers,
-      redirect: "follow"
-    });
-
-    if (upstream.status !== 101 || !upstream.webSocket) {
-      const body = await upstream.text().catch(() => "");
-      return new Response(
-        `Hugging Face WebSocket upgrade failed (${upstream.status})${body ? `: ${body.slice(0, 500)}` : ""}`,
-        { status: 502 }
-      );
+function json(obj, status) {
+  return new Response(JSON.stringify(obj), {
+    status: status || 200,
+    headers: {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "no-store, max-age=0",
+      "access-control-allow-origin": "*"
     }
-
-    const remote = upstream.webSocket;
-
-    server.accept({ allowHalfOpen: true });
-    remote.accept({ allowHalfOpen: true });
-
-    const closeBoth = (code = 1000, reason = "") => {
-      try { if (server.readyState !== WebSocket.CLOSED) server.close(code, reason); } catch {}
-      try { if (remote.readyState !== WebSocket.CLOSED) remote.close(code, reason); } catch {}
-    };
-
-    server.addEventListener("message", event => {
-      try {
-        if (remote.readyState === WebSocket.OPEN) remote.send(event.data);
-      } catch {
-        closeBoth(1011, "WebSocket proxy error");
-      }
-    });
-
-    remote.addEventListener("message", event => {
-      try {
-        if (server.readyState === WebSocket.OPEN) server.send(event.data);
-      } catch {
-        closeBoth(1011, "WebSocket proxy error");
-      }
-    });
-
-    server.addEventListener("close", event => {
-      try { if (remote.readyState !== WebSocket.CLOSED) remote.close(event.code, event.reason || ""); } catch {}
-    });
-
-    remote.addEventListener("close", event => {
-      try { if (server.readyState !== WebSocket.CLOSED) server.close(event.code, event.reason || ""); } catch {}
-    });
-
-    server.addEventListener("error", () => closeBoth(1011, "Client WebSocket error"));
-    remote.addEventListener("error", () => closeBoth(1011, "Upstream WebSocket error"));
-
-    return new Response(null, {
-      status: 101,
-      webSocket: client
-    });
-  } catch (error) {
-    try { server.close(1011, "Upstream connection failed"); } catch {}
-    return new Response(`Hugging Face WebSocket proxy error: ${error?.message || error}`, { status: 502 });
-  }
+  });
 }
 
-async function proxyHTTP(request, env, target) {
-  const headers = addHFAuth(new Headers(request.headers), env);
-  headers.delete("connection");
-  headers.delete("upgrade");
+function backendBase(env) {
+  return String((env && env.BACKEND_URL) || "").replace(/\/+$/, "");
+}
 
-  const init = {
-    method: request.method,
-    headers,
-    redirect: "follow"
-  };
-
-  if (request.method !== "GET" && request.method !== "HEAD") {
-    init.body = request.body;
+async function processorOnline(env) {
+  const base = backendBase(env);
+  if (!base) return false;
+  try {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 3500);
+    const r = await fetch(base + "/health", {
+      method: "GET",
+      signal: ctrl.signal,
+      headers: { "accept": "application/json" }
+    });
+    clearTimeout(timer);
+    return r.ok;
+  } catch (e) {
+    return false;
   }
-
-  return fetch(new Request(target.toString(), init));
 }
 
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
-    if (url.pathname === "/hf" || url.pathname.startsWith("/hf/")) {
-      const { target } = getHFTarget(request, env);
-      const upgrade = request.headers.get("Upgrade");
+    // Lightweight, non-blocking health probe used by the Live / Not connected badge.
+    if (url.pathname === "/health") {
+      const processor = await processorOnline(env);
+      return json({
+        status: "ok",
+        service: "offex-audio",
+        time: new Date().toISOString(),
+        processor: processor
+      });
+    }
 
-      if (upgrade && upgrade.toLowerCase() === "websocket") {
-        return proxyWebSocket(request, env, target);
-      }
-
-      return proxyHTTP(request, env, target);
+    // Optional server processor proxy. Returns 503 when none is configured,
+    // so the UI can degrade gracefully instead of hanging.
+    if (url.pathname === "/api" || url.pathname.startsWith("/api/")) {
+      const base = backendBase(env);
+      if (!base) return json({ error: "No server processor is configured." }, 503);
+      const target = new URL(base + url.pathname.slice(4) + url.search);
+      const headers = new Headers(request.headers);
+      headers.delete("host");
+      const init = { method: request.method, headers: headers, redirect: "follow" };
+      if (request.method !== "GET" && request.method !== "HEAD") init.body = request.body;
+      return fetch(new Request(target.toString(), init));
     }
 
     return env.ASSETS.fetch(request);
