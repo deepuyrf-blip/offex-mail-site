@@ -1,0 +1,31 @@
+name: tmp-browser-sim
+on: workflow_dispatch
+permissions:
+  contents: read
+jobs:
+  sim:
+    runs-on: ubuntu-latest
+    steps:
+      - name: chrome navigation simulation
+        run: |
+          set +e
+          UA='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
+          A='https://api.mytemp-mail.online'
+          NAV=(-H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7' -H 'Accept-Language: en-US,en;q=0.9' -H 'Accept-Encoding: gzip, deflate, br, zstd' -H 'Sec-Fetch-Site: none' -H 'Sec-Fetch-Mode: navigate' -H 'Sec-Fetch-User: ?1' -H 'Sec-Fetch-Dest: document' -H 'Upgrade-Insecure-Requests: 1' -H 'sec-ch-ua: "Chromium";v="124", "Brave";v="124", "Not-A.Brand";v="99"' -H 'sec-ch-ua-mobile: ?0' -H 'sec-ch-ua-platform: "Windows"')
+          echo "### A) REAL CHROME NAV, no Origin/Referer"
+          curl -sS -o /tmp/a.html -D /tmp/ah.txt -w 'admin     -> HTTP %{http_code} size=%{size_download}\n' --max-time 40 -A "$UA" --compressed "${NAV[@]}" "$A/admin?code=Hyco"
+          echo "  ADMIN marker=$(grep -c OFFEX-ADMIN-V2 /tmp/a.html)"
+          curl -sS -o /tmp/b.html -D /tmp/bh.txt -w 'audioadmin-> HTTP %{http_code} size=%{size_download}\n' --max-time 40 -A "$UA" --compressed "${NAV[@]}" "$A/audio-admin?code=Hyco"
+          echo "  AUDIO marker=$(grep -c OFFEX-AUDIO-ADMIN-V2 /tmp/b.html)"
+          echo "  cf-mitigated: $(grep -i 'cf-mitigated' /tmp/ah.txt | tr -d '\r')"
+          echo "### B) panel's own same-origin API calls (as browser sends them)"
+          curl -sS -o /tmp/c.json -w 'api/app-config (ref=panel)     -> HTTP %{http_code} size=%{size_download}\n' --max-time 40 -A "$UA" -H 'x-admin-code: Hyco' -H 'Origin: https://api.mytemp-mail.online' -H 'Referer: https://api.mytemp-mail.online/admin?code=Hyco' "$A/api/app-config"
+          head -c 120 /tmp/c.json; echo
+          curl -sS -o /tmp/d.json -w 'api/admin/devices (ref=panel)   -> HTTP %{http_code} size=%{size_download}\n' --max-time 40 -A "$UA" -H 'x-admin-code: Hyco' -H 'Origin: https://api.mytemp-mail.online' -H 'Referer: https://api.mytemp-mail.online/admin?code=Hyco' "$A/api/admin/devices"
+          head -c 120 /tmp/d.json; echo
+          echo "### C) what if browser strips Referer (Brave shields) but keeps same-origin"
+          curl -sS -o /tmp/e.json -w 'api/app-config NO ref/origin     -> HTTP %{http_code}\n' --max-time 40 -A "$UA" "$A/api/app-config"
+          curl -sS -o /tmp/f.json -w 'api/app-config Origin only      -> HTTP %{http_code}\n' --max-time 40 -A "$UA" -H 'Origin: https://api.mytemp-mail.online' "$A/api/app-config"
+          curl -sS -o /tmp/g.json -w 'api/app-config Referer only     -> HTTP %{http_code}\n' --max-time 40 -A "$UA" -H 'Referer: https://api.mytemp-mail.online/admin?code=Hyco' "$A/api/app-config"
+          echo "### D) audio panel api calls"
+          curl -sS -o /tmp/h.json -w 'api/audio-app-config (ref=panel) -> HTTP %{http_code}\n' --max-time 40 -A "$UA" -H 'x-admin-code: Hyco' -H 'Origin: https://api.mytemp-mail.online' -H 'Referer: https://api.mytemp-mail.online/audio-admin?code=Hyco' "$A/api/audio-app-config"
