@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>Offex Audio</title>
+<!-- Offex Audio app-ui :: APPUI_VERSION=2.0 :: cache-bust build 2026-10-08 -->
+<meta name="app-ui-version" content="2.0">
+<meta name="offex-cache-bust" content="2026-10-08">
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
@@ -259,7 +262,7 @@ select{background:#050b1c;border:1px solid var(--line2);color:var(--text);border
         <div class="sw on" id="notifySw"><i></i></div></div>
       <div class="mrow"><div class="ml" data-i18n="more_sound">Notification sound</div><select id="soundSel"></select></div>
       <div class="mrow"><div class="ml" data-i18n="more_backend">Backend</div><div class="mv" data-i18n="more_backend_value">offexmail.online</div></div>
-      <div class="mrow"><div class="ml" data-i18n="more_version">Version</div><div class="mv" id="moreVer2">1.0</div></div>
+      <div class="mrow"><div class="ml" data-i18n="more_version">Version</div><div class="mv" id="moreVer2">2.0</div></div>
       <button class="btn ghost" id="rewardBtn">Watch an ad to support Offex Audio</button>
       <button class="btn ghost" id="privacyBtn"><span data-i18n="more_privacy">Privacy</span></button>
     </div>
@@ -277,8 +280,8 @@ select{background:#050b1c;border:1px solid var(--line2);color:var(--text);border
 
 <div class="toast" id="toast"></div>
 
-<script src="gradio_client.js"></script>
-<script src="audio-engine.js"></script>
+<script src="gradio_client.js?v=2"></script>
+<script src="audio-engine.js?v=2"></script>
 <!-- Primary Gradio client loader: the exact same ES-module approach the working
      main site (audio/index.html) uses. @gradio/client is an ES module, so it must
      be imported as a module and exposed on window.GradioClient. The bundled
@@ -822,6 +825,26 @@ select{background:#050b1c;border:1px solid var(--line2);color:var(--text);border
   }
   if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
   else boot();
+})();
+</script>
+<script>
+/* Cache-bust: retire any stale service worker and drop cached copies of this
+   page so every visitor is guaranteed the fresh app-UI code. */
+(function(){
+  if("serviceWorker" in navigator){
+    try{
+      navigator.serviceWorker.getRegistrations().then(function(rs){
+        rs.forEach(function(r){ try{ r.unregister(); }catch(e){} });
+      }).catch(function(){});
+    }catch(e){}
+  }
+  try{
+    if(window.caches && caches.keys){
+      caches.keys().then(function(ks){
+        ks.forEach(function(k){ try{ caches.delete(k); }catch(e){} });
+      }).catch(function(){});
+    }
+  }catch(e){}
 })();
 </script>
 </body>

@@ -1032,7 +1032,7 @@ body{
 
 </style>
 <link rel="stylesheet" href="/styles.css">
-<script src="/audio-engine.js" defer></script>
+<script src="/audio-engine.js?v=2" defer></script>
 
 
 
@@ -2447,9 +2447,25 @@ async function connectAPI(){
 </script>
 <script src="/promo.js?v=1" defer></script>
 <script>
-(function(){if(!("serviceWorker" in navigator))return;try{
-navigator.serviceWorker.getRegistrations().then(function(rs){rs.forEach(function(r){try{r.unregister();}catch(e){}});}).catch(function(){});
-}catch(e){}})();
+/* Cache-bust: retire any stale service worker and drop cached copies of this
+   page so every visitor is guaranteed the fresh app-UI code. */
+(function(){
+  if("serviceWorker" in navigator){
+    try{
+      navigator.serviceWorker.getRegistrations().then(function(rs){
+        rs.forEach(function(r){ try{ r.unregister(); }catch(e){} });
+      }).catch(function(){});
+    }catch(e){}
+  }
+  try{
+    if(window.caches && caches.keys){
+      caches.keys().then(function(ks){
+        ks.forEach(function(k){ try{ caches.delete(k); }catch(e){} });
+      }).catch(function(){});
+    }
+  }catch(e){}
+})();
 </script>
+
 </body>
 </html>

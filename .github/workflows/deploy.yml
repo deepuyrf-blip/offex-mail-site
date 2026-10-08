@@ -22,7 +22,7 @@ jobs:
       - name: Deploy Offex Audio
         run: |
           mkdir -p ad
-          cp audio/*.html audio/_worker.js audio/favicon.svg audio/robots.txt audio/sitemap.xml audio/ads.txt audio/sw.js audio/promo.js audio/styles.css audio/audio-engine.js audio/gradio_client.js ad/
+          cp audio/*.html audio/_worker.js audio/_headers audio/favicon.svg audio/robots.txt audio/sitemap.xml audio/ads.txt audio/sw.js audio/promo.js audio/styles.css audio/audio-engine.js audio/gradio_client.js ad/
           npx --yes wrangler@3 pages deploy ad --project-name=audio --branch=main
       - name: Verify
         run: |
@@ -36,3 +36,5 @@ jobs:
           echo "AUDIO load      : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://offexmail.online/)"
           echo "AUDIO app-ui    : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://offexmail.online/app-ui)"
           echo "AUDIO app-ui htm: $(curl -s --max-time 30 https://offexmail.online/app-ui | grep -c 'scr-remove')"
+          echo "AUDIO app-ui ver: $(curl -s --max-time 30 https://offexmail.online/app-ui | grep -c 'APPUI_VERSION=2.0')"
+          echo "AUDIO app-ui cc : $(curl -sI --max-time 30 https://offexmail.online/app-ui | grep -i '^cache-control' | tr -d '\r')"

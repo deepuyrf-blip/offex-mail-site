@@ -161,6 +161,34 @@ async function spaceOnline(env) {
   }
 }
 
+// Pages' `_headers` rules are NOT applied to responses produced by an
+// advanced-mode `_worker.js`, so the cache policy is enforced here instead.
+//   * HTML pages, the pretty /app-ui route and /sw.js  -> always revalidate,
+//     so users never get a stale page after a deploy.
+//   * versioned static assets (.js/.css/.svg/fonts/images) -> cacheable.
+// Everything else is returned untouched.
+function applyCachePolicy(url, res) {
+  const p = url.pathname.toLowerCase();
+  const ct = String(res.headers.get("content-type") || "").toLowerCase();
+  const isHTML = ct.indexOf("text/html") !== -1 || p === "/app-ui" || /\.html$/.test(p);
+
+  if (p === "/sw.js" || isHTML) {
+    const h = new Headers(res.headers);
+    h.set("Cache-Control", "no-cache, no-store, must-revalidate");
+    h.set("Pragma", "no-cache");
+    h.set("Expires", "0");
+    return new Response(res.body, { status: res.status, statusText: res.statusText, headers: h });
+  }
+
+  if (/\.(?:js|css|svg|png|jpe?g|webp|gif|ico|woff2?|ttf|otf)$/.test(p)) {
+    const h = new Headers(res.headers);
+    h.set("Cache-Control", "public, max-age=604800");
+    return new Response(res.body, { status: res.status, statusText: res.statusText, headers: h });
+  }
+
+  return res;
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -190,6 +218,8 @@ export default {
       return proxyHTTP(request, env, target);
     }
 
-    return env.ASSETS.fetch(request);
+    // Serve the static asset, then apply the cache policy above.
+    const asset = await env.ASSETS.fetch(request);
+    return applyCachePolicy(url, asset);
   }
 };
