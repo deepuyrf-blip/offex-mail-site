@@ -1,0 +1,33 @@
+name: Offex HF Isolation Probe (temporary)
+
+on:
+  workflow_dispatch:
+    inputs:
+      endpoint:
+        description: "Gradio api_name to test"
+        required: false
+        default: "/isolate_voice_bgm"
+      model:
+        description: "model_choice value to send"
+        required: false
+        default: "High quality"
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      HF_BASE: https://offexmail.online/hf
+      HF_DIRECT: https://hydui-ytvideo.hf.space
+      HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      PROBE_ENDPOINT: ${{ github.event.inputs.endpoint }}
+      PROBE_MODEL: ${{ github.event.inputs.model }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install deps
+        run: pip install --quiet requests
+      - name: Run real end-to-end probe
+        run: python .github/scripts/hf_probe.py
