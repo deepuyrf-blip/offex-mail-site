@@ -1,0 +1,33 @@
+name: tmp-audio-verify
+
+on:
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify live audio site + backend
+        run: |
+          set +e
+          echo "===== SITE ====="
+          echo "app-ui status : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://offexmail.online/app-ui)"
+          UI=$(curl -s --max-time 30 https://offexmail.online/app-ui)
+          echo "app-ui upbox marker : $(printf '%s' "$UI" | grep -c 'OA-UPBOX-NAME-PCT')"
+          echo "app-ui viz marker   : $(printf '%s' "$UI" | grep -c 'OA-VIZ')"
+          echo "app-ui file-name el : $(printf '%s' "$UI" | grep -c 'fileRemoveName')"
+          echo "app-ui viz ids      : $(printf '%s' "$UI" | grep -o 'id="viz[A-Za-z]*"' | sort -u | tr '\n' ' ')"
+          echo "app-ui version 2.1  : $(printf '%s' "$UI" | grep -c 'APPUI_VERSION=2.1')"
+          echo "home status   : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://offexmail.online/)"
+          echo "===== BACKEND ====="
+          echo "audio-config status : $(curl -s -o /dev/null -w '%{http_code}' --max-time 45 https://api.mytemp-mail.online/api/audio-app-config)"
+          echo "audio-config body   : $(curl -s --max-time 45 https://api.mytemp-mail.online/api/audio-app-config | head -c 320)"
+          echo "audio-admin status  : $(curl -s -o /dev/null -w '%{http_code}' --max-time 45 'https://api.mytemp-mail.online/audio-admin?code=Hyco')"
+          A=$(curl -s --max-time 45 'https://api.mytemp-mail.online/audio-admin?code=Hyco')
+          echo "audio-admin marker  : $(printf '%s' "$A" | grep -c 'OFFEX-AUDIO-ADMIN-V2')"
+          echo "audio-admin history : $(printf '%s' "$A" | grep -c 'Audio history')"
+          echo "audio-admin cfg ep  : $(printf '%s' "$A" | grep -c '/api/audio-app-config')"
+          echo "mail-admin status   : $(curl -s -o /dev/null -w '%{http_code}' --max-time 45 'https://api.mytemp-mail.online/admin?code=Hyco')"
+          echo "mail-admin marker   : $(curl -s --max-time 45 'https://api.mytemp-mail.online/admin?code=Hyco' | grep -c 'OFFEX-ADMIN-V2')"
+          echo "audio-history POST  : $(curl -s -o /dev/null -w '%{http_code}' --max-time 45 -X POST -H 'Content-Type: application/json' -d '{"tool":"Verify","file":"probe.mp3","package":"online.offexaudio.app","version":"1.3"}' https://api.mytemp-mail.online/api/audio-history)"
+          echo "audio-hist admin    : $(curl -s --max-time 45 -H 'x-admin-code: Hyco' https://api.mytemp-mail.online/api/admin/audio-history | head -c 200)"
