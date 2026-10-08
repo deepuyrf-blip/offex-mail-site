@@ -6,8 +6,11 @@
 //     top-level browser navigation. A typed or bookmarked URL sends no Origin
 //     and no Referer, so these routes are never gated by the same-site check.
 //   * History page       /history              -> served directly (same reason).
-//   * API endpoints      /api/*                -> gated: only a same-site
-//     browser request is allowed (stops cross-site abuse).
+//   * API endpoints      /api/*                -> gated: only a request that
+//     really comes from one of our own sites is allowed (stops cross-site
+//     abuse), while a normal browser fetch is still allowed even when the
+//     browser strips Origin/Referer (Brave Shields, Referrer-Policy:
+//     no-referrer, privacy extensions). See sameSite() below.
 // POST /api/inbox requires a valid Cloudflare Turnstile token.
 // The Hugging Face token is injected server-side (the browser never sees it).
 
@@ -35,16 +38,64 @@ function isHistory(path) {
   return path === "/history" || path.startsWith("/history/");
 }
 
-// A request counts as same-site when the browser says it came from one of our own
-// pages. Origin/Referer cover cross-origin API calls; Sec-Fetch-Site is set by the
-// browser (page JavaScript cannot forge it) and also covers same-origin calls from
+// True when a header value (Origin or Referer) belongs to one of our own sites.
+// Exact origin match, or the site followed by a path (Referer). Never a loose
+// prefix match, so "https://mytemp-mail.online.evil.com" is NOT accepted.
+function isOurValue(value) {
+  return !!value && ALLOWED.some((a) => value === a || value.startsWith(a + "/"));
+}
+
+// Heuristic: does this look like a fetch() issued by a real browser from one of
+// our pages, even though the browser removed Origin/Referer? Privacy browsers
+// (Brave Shields) and `Referrer-Policy: no-referrer` strip the Referer, and some
+// configurations drop Origin too, so an Origin/Referer-only gate produced a
+// spurious 403 and inbox creation failed for those users. A plain browser fetch
+// still carries a normal User-Agent, an Accept that includes JSON, and
+// Sec-Fetch-Mode: cors / Sec-Fetch-Dest: empty.
+//
+// This is safe because a third-party page cannot forge it while ALSO omitting
+// Origin: a cross-site fetch issued from JavaScript always sets Origin and
+// Sec-Fetch-Site: cross-site, both of which sameSite() rejects before reaching
+// this check. So this branch only ever sees a browser request with no Origin at
+// all, which for a browser means a same-origin/same-site call from our own page.
+function looksLikeBrowserCall(request) {
+  const ua = request.headers.get("User-Agent") || "";
+  const accept = (request.headers.get("Accept") || "").toLowerCase();
+  const mode = (request.headers.get("Sec-Fetch-Mode") || "").toLowerCase();
+  const dest = (request.headers.get("Sec-Fetch-Dest") || "").toLowerCase();
+  const browserUA = /mozilla|chrome|crios|safari|firefox|fxios|edg\/|edg |opr\/|brave/i.test(ua);
+  const wantsJson = accept.indexOf("application/json") !== -1 || accept.indexOf("*/*") !== -1;
+  const fetchMode = mode === "cors" || mode === "same-origin" || dest === "empty";
+  return browserUA && wantsJson && fetchMode;
+}
+
+// A request counts as same-site when it really came from one of our own pages.
+// Origin/Referer cover cross-origin API calls; Sec-Fetch-Site is set by the
+// browser (page JavaScript cannot forge it) and covers same-origin calls from
 // the admin panels when the browser omits the Referer header.
+//
+// Order matters:
+//   1. An Origin/Referer that is one of ours always passes. This is what makes
+//      offexmail.online -> api.mytemp-mail.online work: it is cross-site, but it
+//      is our own site and its Origin is allow-listed.
+//   2. An explicit Sec-Fetch-Site: cross-site is always rejected.
+//   3. An Origin that is present but NOT one of ours is rejected (third-party JS).
+//   4. Browser-set same-origin / same-site markers are accepted.
+//   5. No Origin and no Referer at all (privacy browser / no-referrer): accept
+//      when the request still looks like a normal browser fetch.
+//   6. Our own client marker header, if a page ever sends one.
 function sameSite(request) {
   const origin = request.headers.get("Origin") || "";
   const referer = request.headers.get("Referer") || "";
-  if (ALLOWED.some((a) => origin.startsWith(a) || referer.startsWith(a))) return true;
   const sfs = (request.headers.get("Sec-Fetch-Site") || "").toLowerCase();
-  return sfs === "same-origin" || sfs === "same-site";
+
+  if (isOurValue(origin) || isOurValue(referer)) return true;
+  if (sfs === "cross-site") return false;
+  if (origin) return false;
+  if (sfs === "same-origin" || sfs === "same-site") return true;
+  if (looksLikeBrowserCall(request)) return true;
+  if (request.headers.get("x-offex-client")) return true;
+  return false;
 }
 
 
