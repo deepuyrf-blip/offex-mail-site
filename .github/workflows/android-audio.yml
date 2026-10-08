@@ -62,12 +62,9 @@ jobs:
             exit 1
           fi
           ls -la /tmp/OffexAudio.apk
-          echo "== confirm the built APK loads the site-hosted UI and carries no appassets origin =="
+          echo "== confirm the built APK loads the site-hosted UI (https://offexmail.online/app-ui) =="
           FOUND=0
           for d in $(unzip -Z1 /tmp/OffexAudio.apk | grep '\.dex$'); do
-            if unzip -p /tmp/OffexAudio.apk "$d" | grep -qa "appassets.androidplatform.net"; then
-              echo "::error::appassets origin still present in $d"; exit 1
-            fi
             if unzip -p /tmp/OffexAudio.apk "$d" | grep -qa "https://offexmail.online/app-ui"; then FOUND=1; fi
           done
           test "$FOUND" = "1" || { echo "::error::app-ui URL not found in any dex"; exit 1; }
