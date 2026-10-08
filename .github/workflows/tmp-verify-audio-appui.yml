@@ -6,25 +6,25 @@ jobs:
     steps:
       - name: Probe live endpoints
         run: |
-          set -uo pipefail
-          echo "== headers /app-ui =="
-          curl -s -D - -o /dev/null --max-time 40 https://offexmail.online/app-ui | sed -n '1,15p'
-          echo "== follow /app-ui =="
-          curl -sL -o /tmp/a1.html -w "final_status=%{http_code} url=%{url_effective} size=%{size_download}\n" --max-time 40 https://offexmail.online/app-ui
-          echo "scr-remove(followed) : $(grep -c 'scr-remove' /tmp/a1.html)"
-          echo "gradio ref(followed) : $(grep -c 'gradio_client.js' /tmp/a1.html)"
-          echo "== /app-ui.html =="
-          curl -s -D - -o /tmp/a2.html --max-time 40 https://offexmail.online/app-ui.html | sed -n '1,12p'
-          echo "scr-remove(.html)    : $(grep -c 'scr-remove' /tmp/a2.html)"
-          echo "== /app-ui/ =="
-          curl -s -D - -o /dev/null --max-time 40 https://offexmail.online/app-ui/ | sed -n '1,12p'
-          echo "== assets =="
+          set +e
+          probe() {
+            echo "--- $1 ---"
+            curl -s -D - -o /tmp/body.$$ --max-time 40 "https://offexmail.online$1" \
+              | grep -iE "^HTTP/|^location:|^content-type:|^content-length:" | tr -d '\r'
+            echo "  size=$(wc -c < /tmp/body.$$)  scr-remove=$(grep -c 'scr-remove' /tmp/body.$$)  gradio=$(grep -c 'gradio_client.js' /tmp/body.$$)"
+          }
+          probe /app-ui
+          probe /app-ui.html
+          probe /app-ui/
+          probe /about
+          probe /about.html
+          echo "=== assets ==="
           for u in /gradio_client.js /audio-engine.js; do
             echo "$u -> $(curl -s -o /dev/null -w '%{http_code} %{size_download}b' --max-time 40 https://offexmail.online$u)"
           done
-          echo "== /health =="
+          echo "=== /health ==="
           curl -s -w "\nstatus=%{http_code}\n" --max-time 40 https://offexmail.online/health
-          echo "== /hf/gradio_api/info =="
+          echo "=== /hf/gradio_api/info ==="
           curl -s -o /dev/null -w "status=%{http_code}\n" --max-time 90 https://offexmail.online/hf/gradio_api/info
-          echo "== marketing =="
-          for p in / /about /ads.txt; do echo "$p -> $(curl -s -o /dev/null -w '%{http_code}' --max-time 40 https://offexmail.online$p)"; done
+          echo "=== marketing ==="
+          for p in / /blog /ads.txt /sitemap.xml; do echo "$p -> $(curl -s -o /dev/null -w '%{http_code}' --max-time 40 https://offexmail.online$p)"; done
