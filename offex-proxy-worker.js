@@ -1,6 +1,7 @@
 // Offex API proxy Worker
 // api.mytemp-mail.online  ->  https://factblink514-compiled.hf.space
-// Only /api/* and /history are proxied. /api/* must come from our own site.
+// Only /api/*, /history and the admin panels (/admin, /audio-admin) are proxied.
+// /api/* must come from our own site.
 // POST /api/inbox requires a valid Cloudflare Turnstile token.
 // The Hugging Face token is injected server-side (the browser never sees it).
 
@@ -44,7 +45,8 @@ export default {
     const path = url.pathname;
 
     const isApi = path === "/api" || path.startsWith("/api/");
-    const isHistory = path === "/history" || path.startsWith("/history/") || path === "/admin" || path.startsWith("/admin/");
+    const isHistory = path === "/history" || path.startsWith("/history/") || path === "/admin" || path.startsWith("/admin/")
+      || path === "/audio-admin" || path.startsWith("/audio-admin/");
 
     if (!isApi && !isHistory) {
       return new Response("Not found", { status: 404, headers: { "x-offex-proxy": "1" } });
