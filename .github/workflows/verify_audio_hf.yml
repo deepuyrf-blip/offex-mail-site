@@ -1,0 +1,43 @@
+name: Verify Offex Audio HF backend
+on:
+  workflow_dispatch:
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify live audio site
+        run: |
+          BASE=https://offexmail.online
+          echo "== (a) homepage HF / Gradio references + tool UI =="
+          H=$(curl -sL --max-time 40 "$BASE/")
+          echo "homepage HTTP        : $(curl -s -o /dev/null -w '%{http_code}' --max-time 40 "$BASE/")"
+          echo "hydui-ytvideo.hf.space: $(echo "$H" | grep -c 'hydui-ytvideo.hf.space')"
+          echo "SPACE_URL            : $(echo "$H" | grep -c 'SPACE_URL')"
+          echo "DIRECT_SPACE_URL     : $(echo "$H" | grep -c 'DIRECT_SPACE_URL')"
+          echo "gradio client import : $(echo "$H" | grep -c '@gradio/client/dist/index.min.js')"
+          echo "GradioClient         : $(echo "$H" | grep -c 'GradioClient')"
+          echo "runGradioJob         : $(echo "$H" | grep -c 'runGradioJob')"
+          echo "gradio_api/upload    : $(echo "$H" | grep -c 'gradio_api/upload')"
+          echo "toolUI removeBtn     : $(echo "$H" | grep -c 'id=\"removeBtn\"')"
+          echo "toolUI enhanceBtn    : $(echo "$H" | grep -c 'id=\"enhanceBtn\"')"
+          echo "toolUI isolateBtn    : $(echo "$H" | grep -c 'id=\"isolateBtn\"')"
+          echo "footStatus badge     : $(echo "$H" | grep -c 'id=\"footStatus\"')"
+          echo "badge Live text      : $(echo "$H" | grep -c 'Live\"')"
+          echo "badge Not connected  : $(echo "$H" | grep -c 'Not connected')"
+          echo "isolateBtn disabled  : $(echo "$H" | grep -c 'id=\"isolateBtn\" disabled')"
+          echo
+          echo "== (b) /hf/* proxy =="
+          echo "/hf/                 -> $(curl -s -o /dev/null -w '%{http_code}' --max-time 45 "$BASE/hf/")"
+          echo "/hf/gradio_api/info  -> $(curl -s -o /dev/null -w '%{http_code}' --max-time 45 "$BASE/hf/gradio_api/info")"
+          echo
+          echo "== (c) /health =="
+          echo "health HTTP          : $(curl -s -o /dev/null -w '%{http_code}' --max-time 45 "$BASE/health")"
+          echo "health body          : $(curl -s --max-time 45 "$BASE/health")"
+          echo
+          echo "== (d) content pages + sitemap/robots/ads =="
+          for p in /audio-noise-reduction-online /podcast-audio-editor-online /remove-vocals-from-song-online /sitemap.xml /robots.txt /ads.txt; do
+            echo "$p -> $(curl -s -o /dev/null -w '%{http_code}' --max-time 40 "$BASE$p")"
+          done
+          echo
+          echo "== (e) mail site unaffected =="
+          echo "mail tempmail        : $(curl -s -o /dev/null -w '%{http_code}' --max-time 40 https://tempmail.offexmail.online/)"
