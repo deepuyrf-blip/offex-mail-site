@@ -639,28 +639,51 @@ select{background:#050b1c;border:1px solid var(--line2);color:var(--text);border
     }).catch(function(er){ setBusy("enhance", false); meter("enhance",0,"ERROR"); hint("enhance", er.message||"Failed"); });
   }
 
-  /* Voice / BGM */
+  /* Voice / BGM  —  ISOLATE_PARSE_FIX_2026
+     The /isolate_voice_bgm endpoint takes TWO inputs: audio_file and model_choice,
+     where model_choice is a Radio whose only real choices are "High quality"
+     (default) and "Faster". The UI offers Fast / Balanced / Best, so map the UI
+     choice onto a real endpoint choice before submitting — otherwise the endpoint
+     rejects the run and no audio files come back. It returns NINE outputs:
+       [0] Voice Only (audio)   [1] BGM Only (audio)
+       [2] Download Voice Only  [3] Download BGM Only
+       [4] status text          [5] live log          [6] estimated time
+     so read vocals from [0]/[2] and BGM from [1]/[3] (the same indices the working
+     main site uses), and surface the endpoint's own status/log on failure. */
+  function sepModelParam(){
+    var v = "";
+    try { v = ($("sepModel") && $("sepModel").value) || ""; } catch(e){ v = ""; }
+    if(v === "High quality" || v === "Faster") return v;   /* already a real endpoint value */
+    var map = { "Fast":"Faster", "Balanced":"High quality", "Best":"High quality" };
+    return map[v] || "High quality";
+  }
   function doIsolate(){
     var f = state.isolate;
     if(!f){ hint("isolate", T("no_file") || "Choose a file first."); return; }
     if(!live){ hint("isolate", T("not_connected") || "Backend offline."); return; }
-    var model = $("sepModel").value;
+    var quality = ($("sepModel") && $("sepModel").value) || "Balanced";
+    var model = sepModelParam();   /* real endpoint value: "High quality" | "Faster" */
     setBusy("isolate", true); meter("isolate", 2, "PREPARING"); hint("isolate","");
     var orig = f.name;
     uploadFile(f, "isolate").then(function(fd){
       meter("isolate", 62, "PROCESSING");
       return runJob(EP.isolate, [fd, model], "isolate");
     }).then(function(d){
-      var vocals = fileUrl(d && d[0]) || fileUrl(d && d[2]);
-      var bgm = fileUrl(d && d[1]) || fileUrl(d && d[3]);
-      if(!vocals || !bgm) throw new Error("no output");
+      var arr = Array.isArray(d) ? d : ((d && d.data) || []);
+      var vocals = fileUrl(arr[0]) || fileUrl(arr[2]);
+      var bgm = fileUrl(arr[1]) || fileUrl(arr[3]);
+      if(!vocals || !bgm){
+        var lg = (typeof arr[5] === "string") ? arr[5] : "";
+        var errLine = lg.split(/\r?\n/).filter(function(x){ return x.indexOf("ERROR:") >= 0; }).pop();
+        throw new Error(errLine || ((typeof arr[4] === "string" && arr[4]) || "API returned no separated audio files."));
+      }
       result.vocals = { url:vocals, name:fname(orig,"_vocals_only"), blob:false };
       result.bgm = { url:bgm, name:fname(orig,"_bgm_only"), blob:false };
       $("outIsolate").style.display = "block";
       $("audioVocals").src = vocals; $("audioBgm").src = bgm;
       setBusy("isolate", false); meter("isolate",100,"COMPLETED");
       hint("isolate", T("result_ready") || "Result ready", "var(--ok)");
-      call("jobDone", "Voice / BGM Isolation", model + " model", vocals, fname(orig,"_vocals_only"));
+      call("jobDone", "Voice / BGM Isolation", quality + " (" + model + ")", vocals, fname(orig,"_vocals_only"));
       call("showInterstitial");
       toast(T("result_ready") || "Result ready");
     }).catch(function(e){
