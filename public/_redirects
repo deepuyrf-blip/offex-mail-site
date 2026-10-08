@@ -62,3 +62,40 @@
 # here. If a soft-404 fallback is wanted, deploy a custom /404.html instead,
 # or use a Cloudflare rule / Worker at the edge. The rules above therefore
 # intentionally end after the explicit redirects.
+
+# --- Old English slugs -> the current clean URL (301) ---
+/temp-mail-for-instagram  /instagram  301
+/temp-mail-for-discord  /discord  301
+/temp-mail-for-facebook  /facebook  301
+/temp-mail-for-tiktok  /tiktok  301
+/temp-mail-for-twitter-x  /twitter-x  301
+/temp-mail-for-reddit  /reddit  301
+/temp-mail-for-spotify  /spotify  301
+/temp-mail-for-netflix  /netflix  301
+/temp-mail-for-amazon  /amazon  301
+/temp-mail-for-flipkart  /flipkart  301
+/temp-mail-for-linkedin  /linkedin  301
+/temp-mail-for-snapchat  /snapchat  301
+/temp-mail-for-pinterest  /pinterest  301
+/temp-mail-for-steam  /steam  301
+/temp-mail-for-uber  /uber  301
+/temp-mail-for-elevenlabs  /elevenlabs  301
+/temp-mail-for-google-pay  /google-pay  301
+/temp-mail-for-airtel  /airtel  301
+/temp-mail-for-cred  /cred  301
+/temp-mail-for-groww  /groww  301
+/temp-mail-for-irctc  /irctc  301
+/temp-mail-for-jio  /jio  301
+/temp-mail-for-meesho  /meesho  301
+/temp-mail-for-minecraft  /minecraft  301
+/temp-mail-for-myntra  /myntra  301
+/temp-mail-for-ola  /ola  301
+/temp-mail-for-openai-chatgpt  /openai-chatgpt  301
+/temp-mail-for-paytm  /paytm  301
+/temp-mail-for-phonepe  /phonepe  301
+/temp-mail-for-razorpay  /razorpay  301
+/temp-mail-for-roblox  /roblox  301
+/temp-mail-for-swiggy  /swiggy  301
+/temp-mail-for-zerodha  /zerodha  301
+/temp-mail-for-zomato  /zomato  301
+/temp-mail-for-epic-games  /epic-games  301
