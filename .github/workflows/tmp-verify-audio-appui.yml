@@ -6,25 +6,33 @@ jobs:
     steps:
       - name: Probe live endpoints
         run: |
-          set +e
-          probe() {
-            echo "--- $1 ---"
-            curl -s -D - -o /tmp/body.$$ --max-time 40 "https://offexmail.online$1" \
-              | grep -iE "^HTTP/|^location:|^content-type:|^content-length:" | tr -d '\r'
-            echo "  size=$(wc -c < /tmp/body.$$)  scr-remove=$(grep -c 'scr-remove' /tmp/body.$$)  gradio=$(grep -c 'gradio_client.js' /tmp/body.$$)"
-          }
-          probe /app-ui
-          probe /app-ui.html
-          probe /app-ui/
-          probe /about
-          probe /about.html
+          set -uo pipefail
+          curl -s -o /tmp/appui.html -w "app-ui status=%{http_code} type=%{content_type} size=%{size_download}\n" --max-time 40 https://offexmail.online/app-ui
+          echo "scr-remove  : $(grep -c 'scr-remove' /tmp/appui.html)"
+          echo "scr-enhance : $(grep -c 'scr-enhance' /tmp/appui.html)"
+          echo "scr-isolate : $(grep -c 'scr-isolate' /tmp/appui.html)"
+          echo "scr-history : $(grep -c 'scr-history' /tmp/appui.html)"
+          echo "scr-more    : $(grep -c 'scr-more' /tmp/appui.html)"
+          echo "gradio ref  : $(grep -c 'gradio_client.js' /tmp/appui.html)"
+          echo "engine ref  : $(grep -c 'audio-engine.js' /tmp/appui.html)"
+          echo "title       : $(grep -o '<title>[^<]*</title>' /tmp/appui.html | head -1)"
+          echo "keep 0.02   : $(grep -c 'value=\"0.02\"' /tmp/appui.html)"
           echo "=== assets ==="
-          for u in /gradio_client.js /audio-engine.js; do
-            echo "$u -> $(curl -s -o /dev/null -w '%{http_code} %{size_download}b' --max-time 40 https://offexmail.online$u)"
-          done
+          for u in /gradio_client.js /audio-engine.js; do echo "$u -> $(curl -s -o /dev/null -w '%{http_code} %{size_download}b' --max-time 40 https://offexmail.online$u)"; done
           echo "=== /health ==="
           curl -s -w "\nstatus=%{http_code}\n" --max-time 40 https://offexmail.online/health
           echo "=== /hf/gradio_api/info ==="
-          curl -s -o /dev/null -w "status=%{http_code}\n" --max-time 90 https://offexmail.online/hf/gradio_api/info
+          curl -s -o /tmp/info.json -w "status=%{http_code} size=%{size_download}\n" --max-time 90 https://offexmail.online/hf/gradio_api/info
+          grep -o '"/process_audio"\|"/enhance_audio"\|"/isolate_voice_bgm"' /tmp/info.json | sort -u || true
           echo "=== marketing ==="
-          for p in / /blog /ads.txt /sitemap.xml; do echo "$p -> $(curl -s -o /dev/null -w '%{http_code}' --max-time 40 https://offexmail.online$p)"; done
+          for p in / /about /blog /privacy /ads.txt /sitemap.xml; do echo "$p -> $(curl -s -o /dev/null -w '%{http_code}' --max-time 40 https://offexmail.online$p)"; done
+          echo "=== assertions ==="
+          set -e
+          test "$(curl -s -o /dev/null -w '%{http_code}' --max-time 40 https://offexmail.online/app-ui)" = "200"
+          test "$(grep -c 'scr-remove' /tmp/appui.html)" -ge 1
+          test "$(grep -c 'scr-more' /tmp/appui.html)" -ge 1
+          test "$(grep -c 'gradio_client.js' /tmp/appui.html)" -ge 1
+          test "$(grep -c 'audio-engine.js' /tmp/appui.html)" -ge 1
+          test "$(curl -s -o /dev/null -w '%{http_code}' --max-time 90 https://offexmail.online/hf/gradio_api/info)" = "200"
+          test "$(curl -s -o /dev/null -w '%{http_code}' --max-time 40 https://offexmail.online/health)" = "200"
+          echo "ALL LIVE CHECKS PASSED"
