@@ -133,4 +133,8 @@ async function main() {
 
   hr("DONE");
 }
-main().catch((e) => { console.error("FATAL", e); process.exit(1); });
+
+const WATCHDOG = setTimeout(() => { console.error("WATCHDOG: forcing exit after 12 min"); process.exit(3); }, 720000);
+main()
+  .then(() => { clearTimeout(WATCHDOG); console.log("EXIT clean"); process.exit(0); })
+  .catch((e) => { console.error("FATAL", e); process.exit(1); });
