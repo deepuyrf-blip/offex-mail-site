@@ -1,0 +1,47 @@
+name: Temp isolate verify
+on:
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify app-ui isolate fix and live endpoint signature
+        run: |
+          echo "===== APP-UI PAGE ====="
+          CODE=$(curl -s -o appui.html -w '%{http_code}' --max-time 45 https://offexmail.online/app-ui)
+          echo "app-ui HTTP: $CODE"
+          echo "app-ui bytes: $(wc -c < appui.html)"
+          echo "isolation fix marker ISOLATE_PARSE_FIX_2026: $(grep -c 'ISOLATE_PARSE_FIX_2026' appui.html)"
+          echo "sepModelParam helper present: $(grep -c 'function sepModelParam' appui.html)"
+          echo "Fast maps to Faster: $(grep -c 'Fast' appui.html | head -1) / mapped pair present: $(grep -c 'Faster' appui.html)"
+          echo "vocals player wired audioVocals.src: $(grep -c 'audioVocals")\\.src' appui.html)"
+          echo "bgm player wired audioBgm.src: $(grep -c 'audioBgm")\\.src' appui.html)"
+          echo "two-output parse fileUrl(arr[0]): $(grep -c 'fileUrl(arr\[0\])' appui.html)"
+          echo "isolation screen scr-isolate present: $(grep -c 'scr-isolate' appui.html)"
+          echo "root page HTTP: $(curl -s -o /dev/null -w '%{http_code}' --max-time 45 https://offexmail.online/)"
+          echo ""
+          echo "===== LIVE ENDPOINT SIGNATURE ====="
+          curl -s --max-time 45 "https://offexmail.online/hf/gradio_api/info" -o info.json -w "info HTTP %{http_code}\n"
+          echo "info bytes: $(wc -c < info.json)"
+          python3 - <<'PY'
+          import json
+          d = json.load(open("info.json"))
+          named = d.get("named_endpoints", {})
+          ep = named.get("/isolate_voice_bgm")
+          print("endpoint present:", bool(ep))
+          if ep:
+              print("PARAMETERS:")
+              for p in ep.get("parameters", []):
+                  t = p.get("type", {})
+                  choices = t.get("enum") if isinstance(t, dict) else None
+                  print("  -", p.get("parameter_name"),
+                        "| label:", p.get("label"),
+                        "| component:", p.get("component"),
+                        "| default:", p.get("parameter_default"),
+                        "| choices:", choices)
+              print("OUTPUTS (order matters):")
+              for i, r in enumerate(ep.get("returns", [])):
+                  print("  [%d] %s | type=%s" % (i, r.get("label"), r.get("type", {}).get("type") if isinstance(r.get("type"), dict) else r.get("type")))
+          print("all named endpoints:", list(named.keys()))
+          PY
