@@ -45,31 +45,36 @@ jobs:
           fi
           ls -la /tmp/OffexAudio.apk
           "$BT/apksigner" verify --print-certs /tmp/OffexAudio.apk || true
-      - name: Create or update GitHub Release audio-v1.0
+      - name: Create or update GitHub Release audio-v1.1
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           cat > /tmp/notes.txt <<'NOTES'
-          Offex Audio v1.0 - Android app for the Offex Audio website (offexmail.online).
+          Offex Audio v1.1 - Android app for the Offex Audio website (offexmail.online).
 
-          * Three tools as separate tabs: Remove Silence, Enhance Audio, Voice / BGM Isolation,
-            plus History and More tabs.
-          * WebView UI mirroring the site's futuristic dark design, bridged to native Java.
-          * Live / Not-connected health animation driven by a real backend health check.
-          * Pick an audio/video file with the system picker; results save to the Downloads folder.
-          * Instant notifications (FCM + local job-complete alert) with a notification-permission gate.
+          * FIXED: the tools now actually work. The app loads the REAL audio site in the
+            WebView, so uploads show the real %, processing runs on the real Gradio/Hugging
+            Face flow, and results are genuine. The old local file:// shell and the native
+            request-interception that faked an instant "job finished" are removed.
+          * Native shell kept: bottom tabs (Remove Silence / Enhance Audio / Voice-BGM /
+            History / More), native notifications, Downloads-folder saving, History store,
+            ads, and the multi-language switcher.
+          * Tabs drive the loaded site (JS scrollIntoView) so you use the REAL tool UI.
+          * File chooser (ACTION_OPEN_DOCUMENT, audio/* + video/*) works with the real page.
+          * Downloads: page-triggered results and a native "Save result" button both save
+            to the device's Downloads folder.
           * Multi-language: English, Hindi, Spanish, Portuguese, Arabic (RTL), Russian, Indonesian.
           * AdMob placements wired with Google's official TEST unit ids (panel-overridable).
           * Local History of finished jobs with re-download.
 
-          Backend: the app talks to the Hugging Face Space through the same /hf proxy the
-          website uses (offexmail.online/hf), with the /health endpoint driving the Live badge.
+          Backend: the loaded site talks to the Hugging Face Space through its own /hf proxy
+          (offexmail.online/hf); the site's Live badge reflects the real backend state.
           NOTES
-          if ! gh release view audio-v1.0 --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
-            gh release create audio-v1.0 --repo "$GITHUB_REPOSITORY" --title "Offex Audio v1.0" --notes-file /tmp/notes.txt || true
+          if ! gh release view audio-v1.1 --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release create audio-v1.1 --repo "$GITHUB_REPOSITORY" --title "Offex Audio v1.1" --notes-file /tmp/notes.txt || true
           fi
-          gh release edit audio-v1.0 --repo "$GITHUB_REPOSITORY" --title "Offex Audio v1.0" --notes-file /tmp/notes.txt --draft=false
-          gh release upload audio-v1.0 /tmp/OffexAudio.apk --clobber --repo "$GITHUB_REPOSITORY"
-          echo "=== release audio-v1.0 ==="
-          gh release view audio-v1.0 --repo "$GITHUB_REPOSITORY" --json tagName,name,isDraft,assets
+          gh release edit audio-v1.1 --repo "$GITHUB_REPOSITORY" --title "Offex Audio v1.1" --notes-file /tmp/notes.txt --draft=false
+          gh release upload audio-v1.1 /tmp/OffexAudio.apk --clobber --repo "$GITHUB_REPOSITORY"
+          echo "=== release audio-v1.1 ==="
+          gh release view audio-v1.1 --repo "$GITHUB_REPOSITORY" --json tagName,name,isDraft,assets
