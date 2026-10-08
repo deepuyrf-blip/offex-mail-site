@@ -1,56 +1,46 @@
 # Offex Audio — Android app (`online.offexaudio.app`)
 
-A WebView-based Android app for the Offex Audio website (offexmail.online). Built by a
-dedicated generator set so the mail app's build (`android.yml`, `gn_a…gn_af`) is
-completely untouched.
+A WebView-based Android app for the Offex Audio service (offexmail.online), with its own
+purpose-built UI. Built by a dedicated generator set so the mail app's
+build (`android.yml`, `gn_a…gn_af`) is completely untouched.
 
 - **Workflow:** `.github/workflows/android-audio.yml`
 - **Generators:** `gna_1.py` … `gna_6.py` (repo root) → emit `android-audio/`
-- **Package / version:** `online.offexaudio.app` / versionName `1.1` (versionCode 2)
+- **UI shell:** `audioapp/assets/offex_audio_ui.html` (self-contained; CSS/SVG/JS inline).
+  This is the app's **own** design — the dark futuristic UI with three tool tabs
+  (Remove Silence / Enhance Audio / Voice-BGM) plus History and More. It is **not**
+  the website.
+- **Vendored:** `audioapp/assets/gradio_client.js` (a build of `@gradio/client`),
+  `audioapp/assets/audio-engine.js` (the offline in-browser fallback engine)
+- **Package / version:** `online.offexaudio.app` / versionName `1.2` (versionCode 3)
 
-## How the app works (v1.1)
+## Backend (how the tools really work)
 
-The WebView loads the **real audio website** — `https://offexmail.online` — so the tools
-run through the **genuine Gradio / Hugging Face flow** the website uses: real upload
-progress, real server-side processing, real results, the real default silence value and
-the site's own Live / Not-connected badge. The app does **not** fake any of this.
+The bundled UI is served from a **real https origin** using
+`androidx.webkit.WebViewAssetLoader`:
 
-Around the WebView sits a **native shell**:
+    https://appassets.androidplatform.net/assets/offex_audio_ui.html
 
-- **Bottom tab bar** — Remove Silence / Enhance Audio / Voice-BGM scroll the loaded page to
-  the matching tool section (JS `scrollIntoView`); History and More open native panels.
-- **File chooser** — `WebChromeClient.onShowFileChooser` → `ACTION_OPEN_DOCUMENT`
-  (`audio/*`, `video/*`) with a persisted read grant for the picked URI.
-- **Downloads** — (a) the page's finished blob is captured in JS and written to the public
-  **Downloads** folder via MediaStore; (b) any real `http(s)` link the page triggers is
-  saved with `DownloadManager` (`DIRECTORY_DOWNLOADS`, correct mime); (c) a native
-  **Save result** button saves the latest result URL.
-- **Notifications** — FCM (`FcmService`) plus local job alerts through `Notifier`, behind
-  the mandatory POST_NOTIFICATIONS gate.
-- **History** — local store of finished jobs with re-download.
-- **Ads** — AdMob banner / interstitial / rewarded / app-open / native.
-- **Languages** — English, Hindi, Spanish, Portuguese, Arabic (RTL), Russian, Indonesian.
-
-A tiny bundled `assets/offline.html` is shown only if the live site cannot be reached; it
-carries no job logic and simply reloads the site.
-
-### What was removed in v1.1
-
-The old build loaded a bundled `file://` HTML shell and served every backend request
-natively through `MainActivity.BackendProxy` (`shouldInterceptRequest`). That broke the
-Gradio client's real fetch / WebSocket / upload flow, so no genuine job ever ran and the UI
-reported an instant fake "job finished". The shell, the interception path and the fake job
-logic are all gone.
-
-## Backend
-
-The loaded site reaches the audio backend through its own **`/hf/*` proxy** — the app does
-not talk to the backend directly and embeds **no HF token**:
+A real origin (not `file://`) is what lets the page make ordinary
+`fetch`/`XHR`/`WebSocket` calls to the backend. The page then runs the **real
+Gradio client flow** against the same `/hf` proxy the website uses:
 
 | Purpose | URL |
 | --- | --- |
-| Gradio proxy (jobs, uploads, files) | `https://offexmail.online/hf` |
-| Health / Live badge (rendered by the site) | `https://offexmail.online/health` |
+| Health check (Live badge) | `https://offexmail.online/health` |
+| Gradio proxy (connect, upload, submit, files) | `https://offexmail.online/hf` |
+| Upload endpoint | `https://offexmail.online/hf/gradio_api/upload` |
+| Result file | `https://offexmail.online/hf/gradio_api/file=<path>` |
+
+Flow: `Client.connect(proxy)` → POST the file to `/gradio_api/upload` (with **real**
+`xhr.upload` progress) → `client.submit(endpoint, inputs)` → stream `status`
+progress → resolve the result file URL. Endpoints used: `/process_audio`,
+`/enhance_audio`, `/isolate_voice_bgm`. Remove Silence default threshold is **0.02**.
+
+The Cloudflare proxy injects the HF token server-side, so there is **no HF token
+inside the app** and no CORS problem. When the backend is offline, Remove Silence
+and Enhance Audio fall back to the bundled in-browser `audio-engine.js`;
+Voice/BGM isolation requires the server.
 
 ## Remote config the panel should serve
 
@@ -83,7 +73,7 @@ All keys are optional; anything missing falls back to built-in defaults.
     "show_history": true,
     "show_features": true
   },
-  "update": { "latest": "1.1", "url": "https://.../OffexAudio.apk", "force": false },
+  "update": { "latest": "1.2", "url": "https://.../OffexAudio.apk", "force": false },
   "banner": { "on": false, "text": "", "url": "" },
   "announcement": { "on": false, "text": "" },
   "endpoints": {

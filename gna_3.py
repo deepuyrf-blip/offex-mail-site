@@ -1,32 +1,29 @@
 # ============================================================================
 #  gna_3.py  -  Offex Audio, generator 3 of 6  (MainActivity)
 # ============================================================================
-#  v1.1 REWRITE.
+#  The whole screen is the app's OWN bundled HTML UI (the v1.0 custom design:
+#  three tool tabs + History + More, file zone, options, progress meter and
+#  result player) hosted in a WebView, bridged to native Java through
+#  @JavascriptInterface "OffexNative". Java pushes state back with
+#  window.OffexAudioUI.render(json).
 #
-#  What changed and why:
-#    * The app used to load a bundled file:// HTML shell and fake the whole
-#      pipeline by intercepting backend requests in shouldInterceptRequest().
-#      That broke the real Gradio/WebSocket/upload flow, so no genuine job ever
-#      ran ("no job handle" / instant fake "COMPLETED 100%").
-#    * The WebView now loads the REAL audio website (https://offexmail.online),
-#      which already has the working Gradio/HF flow (through its /hf proxy),
-#      the real upload %, the real processing, the correct default silence
-#      value and the Live badge. The tools therefore behave EXACTLY like the
-#      website.
-#    * The native request-interception path (BackendProxy) and all fake-job
-#      logic are REMOVED. There is no instant fake "job finished".
+#  IMPORTANT (learned from the mail app): the Android Java bridge resolves a
+#  @JavascriptInterface method by its ARGUMENT COUNT, so the JS side must call
+#  every method with EXACTLY its declared parameter count. The page's call()
+#  helper forwards the arguments it is given, unchanged.
 #
-#  The native shell is kept and drives the loaded site:
-#    * Bottom tab bar: Remove Silence / Enhance / Voice-BGM scroll the real page
-#      (JS scrollIntoView); History and More open native panels.
-#    * File chooser: WebChromeClient.onShowFileChooser -> ACTION_OPEN_DOCUMENT
-#      (audio/*, video/*) with a persisted read grant for the picked URI.
-#    * Downloads: (a) the page's finished blob is captured in JS and written to
-#      the public Downloads folder via MediaStore; (b) a real http(s) link the
-#      page triggers goes through DownloadManager; (c) a native "Save result"
-#      button saves the latest result URL with DownloadManager.
-#    * Notifications (permission gate + FCM/local), History store, ads and the
-#      multi-language switcher are all kept.
+#  v1.2 BACKEND FIX (this is the key change over v1.0):
+#    v1.0 loaded the UI from file:// and tried to reach the backend by native
+#    request interception (shouldInterceptRequest). That cannot carry a POST
+#    body and cannot upgrade a WebSocket, so uploads, the real job submit and
+#    the progress stream all silently failed.
+#    Now the UI is served from a REAL https origin with WebViewAssetLoader
+#    (https://appassets.androidplatform.net/assets/offex_audio_ui.html), so the
+#    page's normal fetch/XHR/WebSocket calls to the site's /hf proxy
+#    (https://offexmail.online/hf) and /health just work - no CORS problem and
+#    no HF token inside the app (the Cloudflare proxy adds the token from its
+#    own env vars). The page runs the real @gradio/client flow (connect ->
+#    upload -> submit -> stream progress -> fetch result URL).
 # ============================================================================
 import os
 
@@ -38,97 +35,70 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
-import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.webkit.ConsoleMessage;
 import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
-import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.webkit.WebViewAssetLoader;
+import androidx.webkit.WebViewClientCompat;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-/**
- * Offex Audio v1.1.
- *
- * The whole screen is the REAL audio website loaded in a WebView, wrapped in a
- * native shell (bottom tabs, notifications, Downloads, history, ads, language
- * switcher). The tools run through the genuine Gradio / Hugging Face flow, so
- * upload progress, server processing and results are exactly what the website
- * does - no native request interception, no fake "job finished".
- */
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "OffexAudio";
 
-    /** The live audio website (real Gradio/HF flow through its /hf proxy). */
-    private static final String SITE_URL = "https://offexmail.online/";
-    private static final String SITE_HOST = "offexmail.online";
-    private static final String OFFLINE_URL = "file:///android_asset/offline.html";
+    /**
+     * The bundled UI is served from a REAL https origin (WebViewAssetLoader),
+     * not file://. A real origin is what lets the page perform normal
+     * fetch/XHR/WebSocket calls to the backend without file:// restrictions.
+     */
+    private static final String ASSET_ORIGIN = "https://appassets.androidplatform.net";
+    private static final String UI_URL = ASSET_ORIGIN + "/assets/offex_audio_ui.html";
+
+    /** Hosts the page is allowed to talk to from inside the WebView. */
+    private static final String BACKEND_HOST = "offexmail.online";
+    private static final String ASSET_HOST = "appassets.androidplatform.net";
 
     private static final int REQ_NOTIF = 8801;
     private static final int REQ_FILE = 8802;
 
     private WebView webUi;
     private View adBanner;
-    private TextView saveResult;
-    private ViewGroup panelHost;
-    private LinearLayout panelContent;
-
+    private volatile String stateJson = "{}";
     private ValueCallback<Uri[]> filePathCallback;
+
     private final Handler ui = new Handler(Looper.getMainLooper());
-
-    private volatile String lastResultUrl = null;
-    private volatile String lastResultName = null;
-    private volatile String lastResultMime = "audio/mpeg";
-    private volatile boolean offlineShown = false;
-
+    private volatile boolean live = false;
+    private volatile boolean processor = false;
+    private volatile String healthNote = "Checking\u2026";
+    private volatile boolean healthRunning = false;
     private static MainActivity live0;
-
-    // Injected after each page load. Installs a small bridge into the REAL site:
-    //  * captures the finished blob download and hands it to the native
-    //    Downloader (so results land in the device's Downloads folder);
-    //  * watches the site's result download links and reports a completed job
-    //    to native (history + notification).
-    private static final String BRIDGE_JS =
-            "(function(){try{" +
-            "if(window.__offexNativeBridge)return;window.__offexNativeBridge=true;" +
-            "function b64(blob,cb){try{var fr=new FileReader();fr.onload=function(){var s=String(fr.result||'');var i=s.indexOf(',');cb(i>=0?s.slice(i+1):'');};fr.onerror=function(){cb(null);};fr.readAsDataURL(blob);}catch(e){cb(null);}}" +
-            "var orig=window.triggerBlobDownload;" +
-            "window.triggerBlobDownload=function(blob,filename){try{if(!blob){if(orig)return orig(blob,filename);return;}b64(blob,function(data){if(!data){if(orig)try{orig(blob,filename);}catch(e){}return;}try{OffexNative.downloadData(data,String(filename||'offex_audio_output'),(blob&&blob.type)||'audio/mpeg');}catch(e){if(orig)try{orig(blob,filename);}catch(e2){}}});}catch(e){if(orig)try{orig(blob,filename);}catch(e2){}}};" +
-            "var map=[['downloadLink','Remove Silence'],['enhancedDownload','Enhance Audio'],['vocalsDownload','Voice / BGM'],['bgmDownload','Voice / BGM']];" +
-            "var seen={};var last={};" +
-            "function scan(){for(var i=0;i<map.length;i++){var id=map[i][0],tool=map[i][1],el=document.getElementById(id);if(!el)continue;var u=el.dataset?el.dataset.fileUrl:null;if(u&&!seen[id]){seen[id]=u;var fn=(el.dataset&&el.dataset.filename)||'';var now=Date.now();if(!last[tool]||(now-last[tool])>8000){last[tool]=now;try{OffexNative.jobDone(tool,fn,u,fn);}catch(e){}}}else if(!u&&seen[id]){delete seen[id];}}}" +
-            "setInterval(scan,1500);scan();" +
-            "}catch(e){}})();";
 
     @Override protected void onCreate(Bundle b) {
         super.onCreate(b);
@@ -137,25 +107,20 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Notifier.ensureChannel(this);
         Config.loadAsync(this);
-
-        saveResult = findViewById(R.id.saveResult);
-        panelHost = findViewById(R.id.panelHost);
-        panelContent = findViewById(R.id.panelContent);
-        if (saveResult != null) saveResult.setOnClickListener(v -> saveCurrentResult());
-
-        setupTabs();
         setupWebUi();
-
         adBanner = findViewById(R.id.adBanner);
         if (adBanner != null && Config.flag("show_banner_ad", true)) {
             adBanner.setVisibility(View.VISIBLE);
-            Ads.loadBanner(this, (ViewGroup) adBanner);
+            Ads.loadBanner(this, (android.view.ViewGroup) adBanner);
         }
         Ads.loadInterstitial(this);
         Ads.loadRewarded(this);
+        startHealthLoop();
         maybeShowNotifGate();
         Ads.showAppOpenIfAvailable(this);
     }
+
+    @Override protected void onResume() { super.onResume(); pushState(); }
 
     // ------------------------------------------------------------------ WebView
     private void setupWebUi() {
@@ -169,20 +134,16 @@ public class MainActivity extends AppCompatActivity {
             ws.setDatabaseEnabled(true);
             ws.setAllowFileAccess(true);
             ws.setAllowContentAccess(true);
-            ws.setJavaScriptCanOpenWindowsAutomatically(true);
-            ws.setSupportMultipleWindows(false);
-            ws.setMediaPlaybackRequiresUserGesture(false);
-            ws.setCacheMode(WebSettings.LOAD_DEFAULT);
-            ws.setLoadWithOverviewMode(true);
-            ws.setUseWideViewPort(true);
             ws.setSupportZoom(false);
             ws.setBuiltInZoomControls(false);
             ws.setDisplayZoomControls(false);
-            // A normal mobile user-agent (the site is responsive and expects it).
-            ws.setUserAgentString("Mozilla/5.0 (Linux; Android 13; Pixel 6) AppleWebKit/537.36 "
-                    + "(KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36");
+            ws.setMediaPlaybackRequiresUserGesture(false);
+            ws.setCacheMode(WebSettings.LOAD_DEFAULT);
+            // A normal mobile UA so the backend and its proxy see a real device.
+            ws.setUserAgentString(
+                    "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 " +
+                    "(KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36");
             if (Build.VERSION.SDK_INT >= 21) {
-                // The site is HTTPS; allow compatibility so no resource is blocked.
                 ws.setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
             }
             webUi.setBackgroundColor(0xFF05060D);
@@ -192,34 +153,36 @@ public class MainActivity extends AppCompatActivity {
 
             CookieManager cm = CookieManager.getInstance();
             cm.setAcceptCookie(true);
-            if (Build.VERSION.SDK_INT >= 21) cm.setAcceptThirdPartyCookies(webUi, true);
+            cm.setAcceptThirdPartyCookies(webUi, true);
 
-            webUi.setWebViewClient(new WebViewClient() {
+            // Serve the bundled UI from a real https origin.
+            final WebViewAssetLoader assetLoader = new WebViewAssetLoader.Builder()
+                    .setDomain(ASSET_HOST)
+                    .addPathHandler("/assets/", new WebViewAssetLoader.AssetsPathHandler(this))
+                    .build();
+
+            webUi.setWebViewClient(new WebViewClientCompat() {
+                @Override public WebResourceResponse shouldInterceptRequest(WebView v, WebResourceRequest r) {
+                    // Only local bundled assets are served by the loader; every
+                    // backend call goes straight to the network as a normal
+                    // browser request (POST bodies + WebSocket upgrades intact).
+                    return assetLoader.shouldInterceptRequest(r.getUrl());
+                }
                 @Override public boolean shouldOverrideUrlLoading(WebView v, WebResourceRequest r) {
-                    return handleNav(r.getUrl().toString());
+                    String u = r.getUrl() == null ? "" : r.getUrl().toString();
+                    if (isInternal(u)) return false;   // keep it inside the WebView
+                    return openExternal(u);
                 }
                 @Override public boolean shouldOverrideUrlLoading(WebView v, String url) {
-                    return handleNav(url);
+                    if (isInternal(url)) return false;
+                    return openExternal(url);
                 }
-                @Override public void onPageFinished(WebView v, String url) {
-                    try {
-                        if (url != null && url.contains(SITE_HOST)) offlineShown = false;
-                        injectBridge();
-                    } catch (Throwable t) { }
-                }
-                @Override public void onReceivedError(WebView v, WebResourceRequest r, WebResourceError e) {
-                    try {
-                        if (r != null && r.isForMainFrame() && !offlineShown) {
-                            offlineShown = true;
-                            v.loadUrl(OFFLINE_URL);
-                        }
-                    } catch (Throwable t) { }
-                }
+                @Override public void onPageFinished(WebView v, String url) { pushState(); }
             });
 
             webUi.setWebChromeClient(new WebChromeClient() {
                 @Override public boolean onConsoleMessage(ConsoleMessage m) {
-                    try { Log.i(TAG, "console: " + m.message() + " @" + m.lineNumber()); } catch (Throwable t) { }
+                    try { Log.i(TAG, m.message() + " @" + m.lineNumber()); } catch (Throwable t) { }
                     return true;
                 }
                 @Override public boolean onShowFileChooser(WebView v, ValueCallback<Uri[]> cb,
@@ -231,8 +194,6 @@ public class MainActivity extends AppCompatActivity {
                         i.addCategory(Intent.CATEGORY_OPENABLE);
                         i.setType("*/*");
                         i.putExtra(Intent.EXTRA_MIME_TYPES, new String[]{"audio/*", "video/*"});
-                        i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                        i.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
                         startActivityForResult(Intent.createChooser(i, getString(R.string.choose_file)), REQ_FILE);
                         return true;
                     } catch (Throwable t) {
@@ -243,50 +204,22 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
-            // (b) any real http(s) link the page triggers is saved natively.
-            webUi.setDownloadListener((url, ua, contentDisposition, mime, len) -> {
-                try {
-                    if (url == null) return;
-                    if (url.startsWith("blob:") || url.startsWith("data:")) return; // handled in JS
-                    Downloader.fromUrl(MainActivity.this, url, guessName(contentDisposition, url), mime);
-                    toast(getString(R.string.download_started));
-                } catch (Throwable t) { toast(getString(R.string.download_failed)); }
-            });
-
             webUi.addJavascriptInterface(new OffexBridge(), "OffexNative");
-            webUi.loadUrl(SITE_URL);
+            webUi.loadUrl(UI_URL);
         } catch (Throwable t) { Log.e(TAG, "setupWebUi: " + t); }
     }
 
-    private void injectBridge() {
-        try { if (webUi != null) webUi.evaluateJavascript(BRIDGE_JS, null); }
-        catch (Throwable t) { }
-    }
-
-    /** Keep offexmail.online in-app; open everything else (mailto/tel/other hosts) externally. */
-    private boolean handleNav(String url) {
+    /** The app origin and the backend host stay inside the WebView. */
+    private boolean isInternal(String url) {
         try {
             if (url == null) return false;
             String u = url.trim();
-            if (u.startsWith("about:") || u.startsWith("blob:") || u.startsWith("data:")
-                    || u.startsWith("javascript:") || u.startsWith("file:")) return false;
+            if (u.startsWith("file:") || u.startsWith("about:") || u.startsWith("data:")) return true;
             Uri uri = Uri.parse(u);
-            String scheme = uri.getScheme() == null ? "" : uri.getScheme().toLowerCase(Locale.US);
-            if (scheme.equals("mailto") || scheme.equals("tel") || scheme.equals("sms")) {
-                Intent i = new Intent(Intent.ACTION_VIEW, uri);
-                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(i);
-                return true;
-            }
-            String host = uri.getHost() == null ? "" : uri.getHost();
-            if (host.equals(SITE_HOST) || host.endsWith("." + SITE_HOST)) return false;
-            if (scheme.equals("http") || scheme.equals("https")) {
-                Intent i = new Intent(Intent.ACTION_VIEW, uri);
-                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(i);
-                return true;
-            }
-            return false;
+            String h = uri.getHost();
+            if (h == null) return false;
+            return h.equals(ASSET_HOST) || h.equals(BACKEND_HOST) || h.endsWith("." + BACKEND_HOST)
+                    || h.endsWith(".hf.space");
         } catch (Throwable t) { return false; }
     }
 
@@ -294,11 +227,13 @@ public class MainActivity extends AppCompatActivity {
         if (req == REQ_FILE) {
             Uri[] out = null;
             if (res == RESULT_OK && data != null && data.getData() != null) {
-                Uri uri = data.getData();
+                Uri u = data.getData();
+                // Persist a read grant for the picked document so the WebView can
+                // read it for the upload even after the picker returns.
                 try {
-                    getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                } catch (Throwable t) { /* not persistable - the transient grant still applies */ }
-                out = new Uri[]{ uri };
+                    getContentResolver().takePersistableUriPermission(u, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                } catch (Throwable t) { }
+                out = new Uri[]{ u };
             }
             if (filePathCallback != null) { filePathCallback.onReceiveValue(out); filePathCallback = null; }
             return;
@@ -306,238 +241,165 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(req, res, data);
     }
 
-    // --------------------------------------------------------------- tab bar
-    private void setupTabs() {
-        setTab(R.id.tabRemove, "remove");
-        setTab(R.id.tabEnhance, "enhance");
-        setTab(R.id.tabIsolate, "isolate");
-        setTab(R.id.tabHistory, "history");
-        setTab(R.id.tabMore, "more");
-        highlightTab("remove");
-    }
-
-    private void setTab(int id, final String tab) {
+    private boolean openExternal(String url) {
         try {
-            View v = findViewById(id);
-            if (v != null) v.setOnClickListener(x -> onTab(tab));
-        } catch (Throwable t) { }
-    }
-
-    private void onTab(String tab) {
-        closePanel();
-        if ("remove".equals(tab)) { highlightTab("remove"); scrollTo("removeTool"); }
-        else if ("enhance".equals(tab)) { highlightTab("enhance"); scrollTo("enhanceTool"); }
-        else if ("isolate".equals(tab)) { highlightTab("isolate"); scrollTo("isolateTool"); }
-        else if ("history".equals(tab)) { highlightTab("history"); showHistoryPanel(); }
-        else if ("more".equals(tab)) { highlightTab("more"); showMorePanel(); }
-    }
-
-    /** Drive the loaded site to a tool section (real site UI, real progress). */
-    private void scrollTo(String elementId) {
-        try {
-            if (webUi == null) return;
-            String js = "(function(){try{var el=document.getElementById('" + elementId + "');"
-                    + "if(el){el.scrollIntoView({behavior:'smooth',block:'start'});}"
-                    + "else{window.scrollTo(0,0);}return !!el;}catch(e){return false;}})();";
-            webUi.evaluateJavascript(js, null);
-        } catch (Throwable t) { }
-    }
-
-    private void highlightTab(String active) {
-        tintTab(R.id.tabRemove, "remove".equals(active));
-        tintTab(R.id.tabEnhance, "enhance".equals(active));
-        tintTab(R.id.tabIsolate, "isolate".equals(active));
-        tintTab(R.id.tabHistory, "history".equals(active));
-        tintTab(R.id.tabMore, "more".equals(active));
-    }
-
-    private void tintTab(int id, boolean on) {
-        try {
-            ViewGroup g = findViewById(id);
-            if (g == null) return;
-            int color = on ? 0xFF22D3EE : 0xFF9AA3C0;
-            for (int i = 0; i < g.getChildCount(); i++) {
-                View c = g.getChildAt(i);
-                if (c instanceof ImageView) ((ImageView) c).setColorFilter(color);
-                else if (c instanceof TextView) ((TextView) c).setTextColor(color);
+            if (url == null) return false;
+            String u = url.trim();
+            if (u.startsWith("file:") || u.startsWith("about:") || u.startsWith("javascript:") || u.startsWith("data:"))
+                return false;
+            if (u.startsWith("http://") || u.startsWith("https://") || u.startsWith("mailto:") || u.startsWith("tel:")) {
+                Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(u));
+                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(i);
+                return true;
             }
         } catch (Throwable t) { }
+        return false;
     }
 
-    // --------------------------------------------------------------- panels
-    private void openPanel() { try { if (panelHost != null) panelHost.setVisibility(View.VISIBLE); } catch (Throwable t) { } }
-
-    private void closePanel() {
-        try {
-            if (panelHost != null) panelHost.setVisibility(View.GONE);
-            if (panelContent != null) panelContent.removeAllViews();
-        } catch (Throwable t) { }
-    }
-
-    private TextView panelTitle(String s) {
-        TextView t = new TextView(this);
-        t.setText(s);
-        t.setTextColor(0xFFEEF1FB);
-        t.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
-        t.setTypeface(Typeface.DEFAULT_BOLD);
-        t.setPadding(0, 0, 0, 18);
-        return t;
-    }
-
-    private TextView panelBody(String s) {
-        TextView t = new TextView(this);
-        t.setText(s);
-        t.setTextColor(0xFF9AA3C0);
-        t.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
-        t.setPadding(0, 0, 0, 14);
-        return t;
-    }
-
-    private TextView panelButton(String s, final Runnable r) {
-        TextView t = new TextView(this);
-        t.setText(s);
-        t.setTextColor(0xFFEEF1FB);
-        t.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-        t.setPadding(30, 30, 30, 30);
-        t.setGravity(Gravity.CENTER_VERTICAL);
-        t.setBackgroundColor(0xFF141830);
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        lp.setMargins(0, 0, 0, 10);
-        t.setLayoutParams(lp);
-        t.setClickable(true);
-        t.setOnClickListener(v -> { if (r != null) r.run(); });
-        return t;
-    }
-
-    private void showHistoryPanel() {
-        try {
-            if (panelContent == null) return;
-            panelContent.removeAllViews();
-            panelContent.addView(panelTitle(getString(R.string.history_title)));
-            JSONArray h = HistoryStore.list(this);
-            if (h.length() == 0) {
-                panelContent.addView(panelBody(getString(R.string.history_empty)));
-            } else {
-                for (int i = 0; i < h.length(); i++) {
-                    JSONObject o = h.getJSONObject(i);
-                    final String tool = o.optString("tool");
-                    final String file = o.optString("file");
-                    final String when = o.optString("when");
-                    final String url = o.optString("url");
-                    String line = (tool.isEmpty() ? getString(R.string.app_name) : tool)
-                            + "\n" + file + (when.isEmpty() ? "" : "  \u00b7  " + when);
-                    panelContent.addView(panelButton(line, () -> {
-                        if (url != null && (url.startsWith("http://") || url.startsWith("https://"))) {
-                            Downloader.fromUrl(MainActivity.this, url, file, "audio/mpeg");
-                            toast(getString(R.string.download_started));
-                        } else {
-                            toast(getString(R.string.download_failed));
+    // ------------------------------------------------------------------ health
+    private void startHealthLoop() {
+        final Runnable[] tick = new Runnable[1];
+        tick[0] = () -> {
+            if (!healthRunning) {
+                healthRunning = true;
+                new Thread(() -> {
+                    boolean ok = false;
+                    String note = getString(R.string.not_connected);
+                    HttpURLConnection c = null;
+                    try {
+                        URL url = new URL(Config.healthUrl() + "?ts=" + System.currentTimeMillis());
+                        c = (HttpURLConnection) url.openConnection();
+                        c.setConnectTimeout(5000);
+                        c.setReadTimeout(5000);
+                        c.setRequestProperty("Accept", "application/json");
+                        if (c.getResponseCode() / 100 == 2) {
+                            StringBuilder sb = new StringBuilder();
+                            try (InputStream is = c.getInputStream()) {
+                                byte[] buf = new byte[4096]; int n;
+                                while ((n = is.read(buf)) > 0) sb.append(new String(buf, 0, n, "UTF-8"));
+                            }
+                            JSONObject o = new JSONObject(sb.toString());
+                            ok = o.optBoolean("backend", o.optBoolean("processor", false));
+                            note = ok ? getString(R.string.online) : getString(R.string.not_connected);
                         }
-                    }));
-                }
+                    } catch (Throwable t) { ok = false; }
+                    finally { if (c != null) c.disconnect(); }
+                    final boolean fok = ok; final String fnote = note;
+                    ui.post(() -> {
+                        live = fok; processor = fok; healthNote = fnote;
+                        healthRunning = false;
+                        pushState();
+                    });
+                }).start();
             }
-            panelContent.addView(panelButton(getString(R.string.history_clear), () -> {
-                HistoryStore.clear(MainActivity.this);
-                showHistoryPanel();
-            }));
-            panelContent.addView(panelButton(getString(R.string.close), this::closePanel));
-            openPanel();
-        } catch (Throwable t) { Log.w(TAG, "history panel: " + t); }
+            ui.postDelayed(tick[0], 25000);
+        };
+        ui.post(tick[0]);
     }
 
-    private void showMorePanel() {
-        try {
-            if (panelContent == null) return;
-            panelContent.removeAllViews();
-            panelContent.addView(panelTitle(getString(R.string.more_title)));
+    private void forceHealthPing() { healthRunning = false; }
 
-            panelContent.addView(panelBody(getString(R.string.more_language)));
-            final String cur = LocaleHelper.current(this);
+    // ------------------------------------------------------------------ state
+    private JSONObject buildStrings() {
+        JSONObject t = new JSONObject();
+        try {
+            String[] keys = {
+                    "app_name", "tagline", "live", "not_connected", "checking", "processor", "online",
+                    "tab_remove", "tab_enhance", "tab_isolate", "tab_history", "tab_more",
+                    "tool_remove_title", "tool_remove_sub", "tool_enhance_title", "tool_enhance_sub",
+                    "tool_isolate_title", "tool_isolate_sub",
+                    "drop_hint", "choose_file", "change_file", "no_file",
+                    "keep_silence", "enhance_mode", "mode_light", "mode_balanced", "mode_strong",
+                    "separation_model", "process", "processing", "download", "saving",
+                    "saved_to_downloads", "result_ready", "vocals", "bgm", "open_result",
+                    "history_title", "history_empty", "history_clear", "history_redownload",
+                    "more_title", "more_language", "more_notifications", "more_notifications_on",
+                    "more_notifications_off", "more_sound", "more_about", "more_version", "more_backend",
+                    "more_backend_value", "more_privacy", "download_started", "download_failed"
+            };
+            for (String k : keys) {
+                int id = getResources().getIdentifier(k, "string", getPackageName());
+                if (id != 0) t.put(k, getString(id));
+            }
+        } catch (Throwable t2) { }
+        return t;
+    }
+
+    private String buildState() {
+        JSONObject s = new JSONObject();
+        try {
+            s.put("live", live);
+            s.put("processor", processor);
+            s.put("healthNote", healthNote);
+            s.put("lang", LocaleHelper.current(this));
+            s.put("rtl", LocaleHelper.isRtl(this));
+            s.put("version", "1.2");
+            s.put("proxy", Config.proxyUrl());
+            s.put("health", Config.healthUrl());
+            s.put("strings", buildStrings());
+
+            JSONObject fl = new JSONObject();
+            fl.put("show_history", Config.flag("show_history", true));
+            fl.put("show_features", Config.flag("show_features", true));
+            fl.put("show_banner_ad", Config.flag("show_banner_ad", true));
+            s.put("flags", fl);
+
+            s.put("appearance", Config.appearance());
+
+            JSONObject ads = new JSONObject();
+            ads.put("banner", Ads.bannerId());
+            ads.put("interstitial", Ads.interstitialId());
+            ads.put("rewarded", Ads.rewardedId());
+            ads.put("app_open", Ads.appOpenId());
+            ads.put("native", Ads.nativeId());
+            s.put("ads", ads);
+
+            JSONArray h = HistoryStore.list(this);
+            JSONArray hl = new JSONArray();
+            for (int i = 0; i < h.length(); i++) {
+                JSONObject o = h.getJSONObject(i);
+                JSONObject r = new JSONObject();
+                r.put("tool", o.optString("tool"));
+                r.put("file", o.optString("file"));
+                r.put("when", o.optString("when"));
+                r.put("url", o.optString("url"));
+                hl.put(r);
+            }
+            s.put("history", hl);
+
+            s.put("notify", Prefs.notifyOn(this));
+            s.put("sound", Prefs.sound(this));
+            JSONArray langs = new JSONArray();
             for (String[] l : LocaleHelper.LANGS) {
-                final String code = l[0];
-                String prefix = code.equals(cur) ? "\u2713  " : "     ";
-                panelContent.addView(panelButton(prefix + l[1], () -> applyLang(code)));
+                JSONObject o = new JSONObject();
+                o.put("code", l[0]); o.put("label", l[1]);
+                langs.put(o);
             }
-
-            boolean on = Prefs.notifyOn(this);
-            panelContent.addView(panelBody(getString(R.string.more_notifications) + ": "
-                    + getString(on ? R.string.more_notifications_on : R.string.more_notifications_off)));
-            panelContent.addView(panelButton(
-                    (on ? getString(R.string.more_notifications_off) : getString(R.string.more_notifications_on))
-                            + " \u00b7 " + getString(R.string.more_notifications),
-                    () -> { toggleNotify(); showMorePanel(); }));
-
-            int snd = Math.max(0, Math.min(Notifier.SND_NAMES.length - 1, Prefs.sound(this)));
-            panelContent.addView(panelBody(getString(R.string.more_sound) + ": " + Notifier.SND_NAMES[snd]));
-            for (int i = 0; i < Notifier.SND_NAMES.length; i++) {
-                final int idx = i;
-                String prefix = (Prefs.sound(this) == i) ? "\u2713  " : "     ";
-                panelContent.addView(panelButton(prefix + Notifier.SND_NAMES[i], () -> {
-                    Prefs.setSound(MainActivity.this, idx);
-                    Notifier.job(MainActivity.this, getString(R.string.job_done_title), getString(R.string.job_done_body));
-                    showMorePanel();
-                }));
-            }
-
-            panelContent.addView(panelBody(getString(R.string.more_version) + ": 1.1\n"
-                    + getString(R.string.more_backend) + ": " + getString(R.string.more_backend_value)));
-            panelContent.addView(panelButton(getString(R.string.more_privacy), () -> {
-                closePanel();
-                if (webUi != null) webUi.loadUrl(SITE_URL + "privacy.html");
-            }));
-            panelContent.addView(panelButton(getString(R.string.close), this::closePanel));
-            openPanel();
-        } catch (Throwable t) { Log.w(TAG, "more panel: " + t); }
+            s.put("langs", langs);
+        } catch (Throwable t) { }
+        return s.toString();
     }
 
-    private void applyLang(String code) {
-        try { Prefs.setLang(this, code); closePanel(); recreate(); } catch (Throwable t) { }
-    }
-
-    private void toggleNotify() {
+    private void pushState() {
         try {
-            boolean on = !Prefs.notifyOn(this);
-            Prefs.setNotifyOn(this, on);
-            if (on && Build.VERSION.SDK_INT >= 33
-                    && ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
-                    != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, REQ_NOTIF);
-            }
+            ui.post(() -> {
+                try {
+                    stateJson = buildState();
+                    if (webUi != null)
+                        webUi.evaluateJavascript("window.OffexAudioUI&&window.OffexAudioUI.render(" + stateJson + ");", null);
+                } catch (Throwable t) { }
+            });
         } catch (Throwable t) { }
     }
 
-    // --------------------------------------------------------------- downloads
-    /** (c) native "Save result" affordance for the latest real (http/https) result. */
-    private void saveCurrentResult() {
-        try {
-            if (lastResultUrl == null
-                    || !(lastResultUrl.startsWith("http://") || lastResultUrl.startsWith("https://"))) {
-                toast(getString(R.string.download_failed));
-                return;
-            }
-            Downloader.fromUrl(this, lastResultUrl, lastResultName, lastResultMime);
-            toast(getString(R.string.download_started));
-        } catch (Throwable t) { toast(getString(R.string.download_failed)); }
+    static void onPush() {
+        MainActivity a = live0;
+        if (a == null) return;
+        a.pushState();
     }
 
-    private static String guessName(String contentDisposition, String url) {
-        try {
-            if (contentDisposition != null) {
-                java.util.regex.Matcher m = java.util.regex.Pattern
-                        .compile("filename\\*?=(?:UTF-8'')?\"?([^\";]+)\"?")
-                        .matcher(contentDisposition);
-                if (m.find()) return m.group(1);
-            }
-        } catch (Throwable t) { }
-        try {
-            String p = Uri.parse(url).getLastPathSegment();
-            if (p != null && p.length() > 0) return p;
-        } catch (Throwable t) { }
-        return "offex_audio_output";
-    }
-
-    // --------------------------------------------------------------- notify
+    // ------------------------------------------------------------------ notify
     private void maybeShowNotifGate() {
         try {
             if (Build.VERSION.SDK_INT < 33) return;
@@ -560,40 +422,35 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void toast(String s) {
-        try { Toast.makeText(this, s, Toast.LENGTH_SHORT).show(); } catch (Throwable t) { }
+        try { android.widget.Toast.makeText(this, s, android.widget.Toast.LENGTH_SHORT).show(); } catch (Throwable t) { }
     }
 
     @Override public void onBackPressed() {
+        final MainActivity self = this;
         try {
-            if (panelHost != null && panelHost.getVisibility() == View.VISIBLE) { closePanel(); return; }
-            if (webUi != null && webUi.canGoBack()) { webUi.goBack(); return; }
+            if (webUi != null) {
+                webUi.evaluateJavascript("(function(){try{return window.OffexAudioUI&&window.OffexAudioUI.onBack&&window.OffexAudioUI.onBack();}catch(e){return false;}})();",
+                        value -> { if (!"true".equals(value)) self.finish(); });
+                return;
+            }
         } catch (Throwable t) { }
         super.onBackPressed();
     }
 
-    static void onPush() {
-        // FCM already delivered its alert through Notifier; nothing else to do.
-        MainActivity a = live0;
-        if (a == null) return;
-    }
-
     // ================================================================== bridge
-    // Each method is called from the page with EXACTLY its declared parameter
-    // count (the Android bridge resolves @JavascriptInterface by arity).
+    // Every method below is called from the page with EXACTLY its parameter
+    // count (the Android bridge resolves by arity).
     public class OffexBridge {
 
-        /** (a) the page's finished blob -> written straight into Downloads. */
-        @JavascriptInterface public void downloadData(final String b64, final String filename, final String mime) {
-            new Thread(() -> {
-                final String path = Downloader.fromBase64(MainActivity.this, b64, filename, mime);
-                runOnUiThread(() -> {
-                    if (path != null) toast(getString(R.string.saved_to_downloads) + " \u00b7 " + path);
-                    else toast(getString(R.string.download_failed));
-                });
-            }).start();
+        @JavascriptInterface public String getState() { return stateJson; }
+
+        @JavascriptInterface public void ready() { pushState(); }
+
+        @JavascriptInterface public void log(final String msg) {
+            try { Log.i(TAG, msg == null ? "" : msg); } catch (Throwable t) { }
         }
 
-        /** A real http(s) URL handed over by the page. */
+        /** https result -> DownloadManager into the public Downloads folder. */
         @JavascriptInterface public void download(final String url, final String filename, final String mime) {
             runOnUiThread(() -> {
                 try {
@@ -603,32 +460,83 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
-        /** The site produced a result: record history, expose Save, post an alert. */
+        /** in-page blob result -> written straight into Downloads. */
+        @JavascriptInterface public void downloadData(final String b64, final String filename, final String mime) {
+            runOnUiThread(() -> {
+                String path = Downloader.fromBase64(MainActivity.this, b64, filename, mime);
+                if (path != null) toast(getString(R.string.saved_to_downloads) + " \u00b7 " + path);
+                else toast(getString(R.string.download_failed));
+            });
+        }
+
+        /** A job finished: record history, report it, and post a local alert. */
         @JavascriptInterface public void jobDone(final String tool, final String detail, final String url, final String filename) {
             runOnUiThread(() -> {
                 try {
                     String when = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.US).format(new Date());
-                    boolean real = url != null && (url.startsWith("http://") || url.startsWith("https://"));
-                    HistoryStore.add(MainActivity.this, tool, filename, when, real ? url : "");
+                    HistoryStore.add(MainActivity.this, tool, filename, when, url);
                     HistoryStore.reportAsync(MainActivity.this, tool, filename);
-                    if (real) {
-                        lastResultUrl = url;
-                        lastResultName = filename;
-                        if (saveResult != null) saveResult.setVisibility(View.VISIBLE);
-                    }
-                    Notifier.job(MainActivity.this, getString(R.string.job_done_title),
-                            (tool == null ? "" : tool + " \u00b7 ")
-                                    + (detail == null ? getString(R.string.job_done_body) : detail));
+                    Notifier.job(MainActivity.this, getString(R.string.job_done_title), (tool == null ? "" : tool + " \u00b7 ") + (detail == null ? getString(R.string.job_done_body) : detail));
+                    pushState();
                 } catch (Throwable t) { }
             });
         }
 
-        @JavascriptInterface public void setLang(final String code) { runOnUiThread(() -> applyLang(code)); }
+        @JavascriptInterface public void setLang(final String code) {
+            runOnUiThread(() -> {
+                try {
+                    Prefs.setLang(MainActivity.this, code);
+                    recreate();
+                } catch (Throwable t) { }
+            });
+        }
 
-        @JavascriptInterface public void openLink(final String url) { runOnUiThread(() -> handleNav(url)); }
+        @JavascriptInterface public void setNotify(final String on) {
+            runOnUiThread(() -> {
+                try {
+                    Prefs.setNotifyOn(MainActivity.this, "1".equals(on) || "true".equalsIgnoreCase(on));
+                    if (Prefs.notifyOn(MainActivity.this) && Build.VERSION.SDK_INT >= 33
+                            && ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, REQ_NOTIF);
+                    }
+                    pushState();
+                } catch (Throwable t) { }
+            });
+        }
 
-        @JavascriptInterface public void log(final String msg) {
-            try { Log.i(TAG, msg == null ? "" : msg); } catch (Throwable t) { }
+        @JavascriptInterface public void setSound(final String idx) {
+            runOnUiThread(() -> {
+                try { Prefs.setSound(MainActivity.this, Integer.parseInt(idx)); pushState(); } catch (Throwable t) { }
+            });
+        }
+
+        @JavascriptInterface public void openLink(final String url) {
+            runOnUiThread(() -> openExternal(url));
+        }
+
+        @JavascriptInterface public void openMore() {
+            runOnUiThread(() -> {
+                try {
+                    new AlertDialog.Builder(MainActivity.this)
+                            .setTitle(R.string.more_title)
+                            .setMessage(getString(R.string.more_version) + ": 1.2\n"
+                                    + getString(R.string.more_backend) + ": " + getString(R.string.more_backend_value))
+                            .setPositiveButton(R.string.close, (d, w) -> { })
+                            .show();
+                } catch (Throwable t) { }
+            });
+        }
+
+        @JavascriptInterface public void healthPing() { forceHealthPing(); }
+
+        @JavascriptInterface public void clearHistory() {
+            runOnUiThread(() -> { try { HistoryStore.clear(MainActivity.this); pushState(); } catch (Throwable t) { } });
+        }
+
+        @JavascriptInterface public void showInterstitial() { runOnUiThread(() -> Ads.showInterstitial(MainActivity.this)); }
+
+        @JavascriptInterface public void showRewarded() {
+            runOnUiThread(() -> Ads.showRewarded(MainActivity.this, () -> pushState()));
         }
     }
 }
@@ -638,4 +546,4 @@ p = os.path.join(J, "MainActivity.java")
 os.makedirs(os.path.dirname(p), exist_ok=True)
 with open(p, "w", encoding="utf-8") as f:
     f.write(MAIN)
-print("GNA3: wrote MainActivity.java (loads real site, no request interception)")
+print("GNA3: wrote MainActivity.java")

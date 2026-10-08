@@ -21,6 +21,18 @@ jobs:
           done
           echo "== project tree =="
           find android-audio -type f | sort
+          echo "== confirm the bundled custom UI + gradio client are present =="
+          test -f android-audio/app/src/main/assets/offex_audio_ui.html || { echo "::error::bundled UI asset missing"; exit 1; }
+          test -f android-audio/app/src/main/assets/gradio_client.js || { echo "::error::gradio client asset missing"; exit 1; }
+          echo "== confirm the website-loading approach is gone =="
+          if grep -Rqs "file:///android_asset" android-audio/app/src/main/java; then
+            echo "::error::file:// asset loading still present"; exit 1
+          fi
+          if grep -Rqs "BackendProxy" android-audio/app/src/main/java; then
+            echo "::error::native request interception still present"; exit 1
+          fi
+          grep -qs "WebViewAssetLoader" android-audio/app/src/main/java/online/offexaudio/app/MainActivity.java || { echo "::error::WebViewAssetLoader not wired"; exit 1; }
+          grep -qs "appassets.androidplatform.net" android-audio/app/src/main/java/online/offexaudio/app/MainActivity.java || { echo "::error::asset https origin not set"; exit 1; }
           cd android-audio
           gradle wrapper --gradle-version 8.7
           ./gradlew assembleDebug --no-daemon
@@ -45,36 +57,43 @@ jobs:
           fi
           ls -la /tmp/OffexAudio.apk
           "$BT/apksigner" verify --print-certs /tmp/OffexAudio.apk || true
-      - name: Create or update GitHub Release audio-v1.1
+      - name: Create or update GitHub Release audio-v1.2
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           cat > /tmp/notes.txt <<'NOTES'
-          Offex Audio v1.1 - Android app for the Offex Audio website (offexmail.online).
+          Offex Audio v1.2 - Android app for the Offex Audio website (offexmail.online).
 
-          * FIXED: the tools now actually work. The app loads the REAL audio site in the
-            WebView, so uploads show the real %, processing runs on the real Gradio/Hugging
-            Face flow, and results are genuine. The old local file:// shell and the native
-            request-interception that faked an instant "job finished" are removed.
-          * Native shell kept: bottom tabs (Remove Silence / Enhance Audio / Voice-BGM /
-            History / More), native notifications, Downloads-folder saving, History store,
-            ads, and the multi-language switcher.
-          * Tabs drive the loaded site (JS scrollIntoView) so you use the REAL tool UI.
-          * File chooser (ACTION_OPEN_DOCUMENT, audio/* + video/*) works with the real page.
-          * Downloads: page-triggered results and a native "Save result" button both save
-            to the device's Downloads folder.
-          * Multi-language: English, Hindi, Spanish, Portuguese, Arabic (RTL), Russian, Indonesian.
-          * AdMob placements wired with Google's official TEST unit ids (panel-overridable).
-          * Local History of finished jobs with re-download.
-
-          Backend: the loaded site talks to the Hugging Face Space through its own /hf proxy
-          (offexmail.online/hf); the site's Live badge reflects the real backend state.
+          * RESTORED: the v1.0 custom, purpose-built UI (dark futuristic design; the
+            app's OWN bundled HTML, NOT the website). Three tool tabs
+            (Remove Silence / Enhance Audio / Voice-BGM) plus History and More, each
+            with a file zone, options, a live progress meter and a result player.
+          * FIXED the backend properly: the UI is now served from a REAL https origin
+            (androidx.webkit WebViewAssetLoader -> https://appassets.androidplatform.net)
+            instead of file://, so the page's normal fetch/XHR/WebSocket calls work.
+            The v1.0 file:// + native request-interception (shouldInterceptRequest),
+            which could not carry a POST body or a WebSocket and so faked an instant
+            "job finished", is gone.
+          * The page runs the REAL @gradio/client flow against the site's /hf proxy
+            (https://offexmail.online/hf): connect -> upload the file (REAL upload %)
+            -> submit the job -> stream the REAL processing progress -> fetch the
+            result URL. No fake instant completion. The Live badge reads
+            https://offexmail.online/health.
+          * No HF token in the app - the Cloudflare proxy injects it server-side.
+          * Remove Silence default threshold is 0.02 (as on the site).
+          * Native features kept: bottom tab bar, file chooser (ACTION_OPEN_DOCUMENT,
+            audio/* + video/*, persisted read grant), Downloads-folder saving,
+            notification-permission gate + FCM/local notifications, History store,
+            multi-language switcher (English default + Hindi + es/pt/ar/ru/in), and
+            AdMob placements wired with Google's official TEST unit ids
+            (panel-overridable).
+          * Version bumped 1.1 -> 1.2 (versionCode 3).
           NOTES
-          if ! gh release view audio-v1.1 --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
-            gh release create audio-v1.1 --repo "$GITHUB_REPOSITORY" --title "Offex Audio v1.1" --notes-file /tmp/notes.txt || true
+          if ! gh release view audio-v1.2 --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release create audio-v1.2 --repo "$GITHUB_REPOSITORY" --title "Offex Audio v1.2" --notes-file /tmp/notes.txt || true
           fi
-          gh release edit audio-v1.1 --repo "$GITHUB_REPOSITORY" --title "Offex Audio v1.1" --notes-file /tmp/notes.txt --draft=false
-          gh release upload audio-v1.1 /tmp/OffexAudio.apk --clobber --repo "$GITHUB_REPOSITORY"
-          echo "=== release audio-v1.1 ==="
-          gh release view audio-v1.1 --repo "$GITHUB_REPOSITORY" --json tagName,name,isDraft,assets
+          gh release edit audio-v1.2 --repo "$GITHUB_REPOSITORY" --title "Offex Audio v1.2" --notes-file /tmp/notes.txt --draft=false
+          gh release upload audio-v1.2 /tmp/OffexAudio.apk --clobber --repo "$GITHUB_REPOSITORY"
+          echo "=== release audio-v1.2 ==="
+          gh release view audio-v1.2 --repo "$GITHUB_REPOSITORY" --json tagName,name,isDraft,assets
