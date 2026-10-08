@@ -7,13 +7,18 @@ jobs:
     steps:
       - run: |
           UA="Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Mobile Safari/537.36"
+          echo "=== MAIL SITE ==="
+          for u in "https://mytemp-mail.online/" "https://mytemp-mail.online/services" "https://tempmail.offexmail.online/"; do
+            echo "$u -> $(curl -s -o /dev/null -w '%{http_code} %{redirect_url}' --max-time 25 -L -A "$UA" "$u")"
+          done
+          echo "=== API (mail) ==="
           A=https://api.mytemp-mail.online
-          for u in "/admin?code=Hyco" "/audio-admin?code=Hyco" "/api/app-config" "/api/audio-app-config" "/api/status"; do
+          for u in "/api/status" "/api/inbox" "/api/app-config"; do
             echo "$u -> $(curl -s -o /dev/null -w '%{http_code}' --max-time 25 -A "$UA" -H "Origin: https://mytemp-mail.online" -H "Referer: https://mytemp-mail.online/" "$A$u")"
           done
-          echo "--- body of audio-admin ---"
-          curl -s --max-time 25 -A "$UA" "$A/audio-admin?code=Hyco" | head -c 300
-          echo
-          echo "--- body of admin ---"
-          curl -s --max-time 25 -A "$UA" "$A/admin?code=Hyco" | head -c 200
-          echo
+          echo "=== API no-referer ==="
+          for u in "/api/status" "/api/app-config"; do
+            echo "$u -> $(curl -s -o /dev/null -w '%{http_code}' --max-time 25 -A "$UA" "$A$u")"
+          done
+          echo "=== AUDIO SITE ==="
+          echo "offexmail.online -> $(curl -s -o /dev/null -w '%{http_code}' --max-time 25 -L -A "$UA" https://offexmail.online/)"
