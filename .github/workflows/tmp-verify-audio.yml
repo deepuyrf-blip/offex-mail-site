@@ -9,6 +9,11 @@ jobs:
           set -euo pipefail
           BASE=https://offexmail.online
           API=https://api.mytemp-mail.online
+          # The api.mytemp-mail.online proxy Worker only forwards /api/* when the
+          # request carries an Origin/Referer from one of its allowed sites (the
+          # real app/browser always sends one). Send it so we exercise the same
+          # path a real client does.
+          ORIGIN="https://offexmail.online"
 
           echo "==================== BUG 1: app-ui file-selected fix ===================="
           CODE=$(curl -s -o /tmp/appui.html -w '%{http_code}' --max-time 30 "$BASE/app-ui")
@@ -25,26 +30,26 @@ jobs:
           echo "==================== BUG 2: backend reachability ===================="
           C=""
           for i in $(seq 1 12); do
-            C=$(curl -s -o /tmp/cfg.json -w '%{http_code}' --max-time 30 "$API/api/audio-app-config" || true)
+            C=$(curl -s -o /tmp/cfg.json -w '%{http_code}' --max-time 30 -H "Origin: $ORIGIN" "$API/api/audio-app-config" || true)
             echo "audio-app-config attempt $i -> $C"
             [ "$C" = "200" ] && break
             sleep 10
           done
-          test "$C" = "200" || { echo "::error::audio-app-config not 200"; exit 1; }
+          test "$C" = "200" || { echo "::error::audio-app-config not 200"; head -c 300 /tmp/cfg.json; exit 1; }
           P=$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$API/audio-admin?code=Hyco")
           echo "audio-admin panel HTTP   : $P"
           test "$P" = "200" || { echo "::error::audio-admin not 200"; exit 1; }
 
           echo "==================== BUG 2: token registration + targeting ===================="
           echo "-- register a TEST audio device token (package online.offexaudio.app)"
-          curl -s -X POST "$API/api/device" -H 'Content-Type: application/json' \
+          curl -s -X POST "$API/api/device" -H 'Content-Type: application/json' -H "Origin: $ORIGIN" \
             -d '{"token":"TESTAUDIOTOKEN0000000000000000000000000000000000000000000000000001","package":"online.offexaudio.app","platform":"android"}'; echo
           echo "-- register a TEST mail device token (package online.mytempmail.app)"
-          curl -s -X POST "$API/api/device" -H 'Content-Type: application/json' \
+          curl -s -X POST "$API/api/device" -H 'Content-Type: application/json' -H "Origin: $ORIGIN" \
             -d '{"token":"TESTMAILTOKEN0000000000000000000000000000000000000000000000000002","package":"online.mytempmail.app","platform":"android"}'; echo
 
           echo "-- audio broadcast target list (/api/admin/audio-tokens) --"
-          curl -s "$API/api/admin/audio-tokens" -H 'x-admin-code: Hyco' -o /tmp/tok.json
+          curl -s "$API/api/admin/audio-tokens" -H "Origin: $ORIGIN" -H 'x-admin-code: Hyco' -o /tmp/tok.json
           cat /tmp/tok.json; echo
 
           echo "-- assert the audio broadcast targets the audio package ONLY --"
@@ -61,9 +66,9 @@ jobs:
           PY
 
           echo "-- exercise the real broadcast path (send_broadcast_push with package) --"
-          curl -s -X POST "$API/api/admin/audio-app-config" -H 'Content-Type: application/json' -H 'x-admin-code: Hyco' \
+          curl -s -X POST "$API/api/admin/audio-app-config" -H 'Content-Type: application/json' -H "Origin: $ORIGIN" -H 'x-admin-code: Hyco' \
             -d '{"push":{"title":"Offex Audio test","body":"Verification broadcast (test)","ts":'"$(date +%s)"'}}' -o /tmp/push.json
-          cat /tmp/push.json | head -c 400; echo
+          head -c 400 /tmp/push.json; echo
           python3 -c "import json;j=json.load(open('/tmp/push.json'));assert j.get('ok') is True;print('OK: audio panel broadcast accepted')"
 
           echo "==================== ALL CHECKS PASSED ===================="
