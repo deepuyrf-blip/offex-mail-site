@@ -1,0 +1,48 @@
+name: tmp-inspect-worker
+on: workflow_dispatch
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    env:
+      T: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      ACC: d33504e28650ba4603dc9cafc46d0ec9
+      ZAPI: 900aba0bd69a63d84d137029b15da481
+      ZOFF: 5c5fca6f2e8bf44362a8ca850dbb3b76
+    steps:
+      - name: workers list
+        run: |
+          curl -s -H "Authorization: Bearer $T" "https://api.cloudflare.com/client/v4/accounts/$ACC/workers/scripts" -o wl.json
+          python3 -c "import json;d=json.load(open('wl.json'));print('ok',d.get('success'));[print('W|'+str(w.get('id'))+'|'+str(w.get('modified_on'))) for w in (d.get('result') or [])]"
+      - name: deployed worker content
+        run: |
+          echo "===== offex-api-proxy CONTENT ====="
+          curl -s -H "Authorization: Bearer $T" "https://api.cloudflare.com/client/v4/accounts/$ACC/workers/scripts/offex-api-proxy/content"
+          echo
+          echo "===== offex-api-proxy META ====="
+          curl -s -H "Authorization: Bearer $T" "https://api.cloudflare.com/client/v4/accounts/$ACC/workers/scripts/offex-api-proxy" | head -c 3000
+      - name: routes
+        run: |
+          for z in $ZAPI $ZOFF; do
+            echo "== routes for $z =="
+            curl -s -H "Authorization: Bearer $T" "https://api.cloudflare.com/client/v4/zones/$z/workers/routes" | head -c 4000
+            echo
+          done
+      - name: rulesets
+        run: |
+          for z in $ZAPI $ZOFF; do
+            echo "== rulesets for $z =="
+            curl -s -H "Authorization: Bearer $T" "https://api.cloudflare.com/client/v4/zones/$z/rulesets" | head -c 6000
+            echo
+          done
+      - name: firewall and bot
+        run: |
+          echo "== legacy firewall rules (api zone) =="
+          curl -s -H "Authorization: Bearer $T" "https://api.cloudflare.com/client/v4/zones/$ZAPI/firewall/rules" | head -c 3000
+          echo
+          echo "== bot management (api zone) =="
+          curl -s -H "Authorization: Bearer $T" "https://api.cloudflare.com/client/v4/zones/$ZAPI/bot_management" | head -c 2000
+          echo
+          echo "== security level (api zone) =="
+          curl -s -H "Authorization: Bearer $T" "https://api.cloudflare.com/client/v4/zones/$ZAPI/settings/security_level" | head -c 1000
