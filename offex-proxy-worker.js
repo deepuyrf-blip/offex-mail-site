@@ -1,7 +1,13 @@
 // Offex API proxy Worker
 // api.mytemp-mail.online  ->  https://factblink514-compiled.hf.space
-// Only /api/*, /history and the admin panels (/admin, /audio-admin) are proxied.
-// /api/* must come from our own site.
+//
+// Routing / access rules:
+//   * Panel HTML routes  /admin, /audio-admin  -> served DIRECTLY to a normal
+//     top-level browser navigation. A typed or bookmarked URL sends no Origin
+//     and no Referer, so these routes are never gated by the same-site check.
+//   * History page       /history              -> served directly (same reason).
+//   * API endpoints      /api/*                -> gated: only a same-site
+//     browser request is allowed (stops cross-site abuse).
 // POST /api/inbox requires a valid Cloudflare Turnstile token.
 // The Hugging Face token is injected server-side (the browser never sees it).
 
@@ -14,7 +20,32 @@ const ALLOWED = [
   "https://tempmail.offexmail.online",
 ];
 
+// HTML pages that are meant to be opened directly in a browser. They are always
+// proxied, regardless of Origin/Referer, and stay protected by their ?code= param.
+const PANEL_PATHS = ["/admin", "/audio-admin"];
+
 const ORIGIN = "https://factblink514-compiled.hf.space";
+
+
+function isPanel(path) {
+  return PANEL_PATHS.some((p) => path === p || path.startsWith(p + "/"));
+}
+
+function isHistory(path) {
+  return path === "/history" || path.startsWith("/history/");
+}
+
+// A request counts as same-site when the browser says it came from one of our own
+// pages. Origin/Referer cover cross-origin API calls; Sec-Fetch-Site is set by the
+// browser (page JavaScript cannot forge it) and also covers same-origin calls from
+// the admin panels when the browser omits the Referer header.
+function sameSite(request) {
+  const origin = request.headers.get("Origin") || "";
+  const referer = request.headers.get("Referer") || "";
+  if (ALLOWED.some((a) => origin.startsWith(a) || referer.startsWith(a))) return true;
+  const sfs = (request.headers.get("Sec-Fetch-Site") || "").toLowerCase();
+  return sfs === "same-origin" || sfs === "same-site";
+}
 
 
 async function turnstileOk(request, env) {
@@ -45,23 +76,20 @@ export default {
     const path = url.pathname;
 
     const isApi = path === "/api" || path.startsWith("/api/");
-    const isHistory = path === "/history" || path.startsWith("/history/") || path === "/admin" || path.startsWith("/admin/")
-      || path === "/audio-admin" || path.startsWith("/audio-admin/");
+    const isPanelRoute = isPanel(path);
+    const isHistoryRoute = isHistory(path);
 
-    if (!isApi && !isHistory) {
+    if (!isApi && !isPanelRoute && !isHistoryRoute) {
       return new Response("Not found", { status: 404, headers: { "x-offex-proxy": "1" } });
     }
 
-    if (isApi) {
-      const origin = request.headers.get("Origin") || "";
-      const referer = request.headers.get("Referer") || "";
-      const ok = ALLOWED.some((a) => origin.startsWith(a) || referer.startsWith(a));
-      if (!ok) {
-        return new Response(JSON.stringify({ error: "forbidden" }), {
-          status: 403,
-          headers: { "content-type": "application/json", "x-offex-proxy": "1" },
-        });
-      }
+    // Only /api/* is gated. Panel HTML routes and /history are always served, so a
+    // direct top-level browser navigation (no Origin/Referer) gets the real page.
+    if (isApi && !isPanelRoute && !sameSite(request)) {
+      return new Response(JSON.stringify({ error: "forbidden" }), {
+        status: 403,
+        headers: { "content-type": "application/json", "x-offex-proxy": "1" },
+      });
     }
 
     // captcha check on inbox creation
