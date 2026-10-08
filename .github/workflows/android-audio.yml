@@ -1,0 +1,75 @@
+name: Build Offex Audio APK
+on: workflow_dispatch
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Generate project, build and sign the APK
+        run: |
+          set -euo pipefail
+          pip install --quiet pillow
+          for f in gna_1 gna_2 gna_3 gna_4 gna_5 gna_6; do
+            echo "== generating $f =="
+            python3 "$f.py"
+          done
+          echo "== project tree =="
+          find android-audio -type f | sort
+          cd android-audio
+          gradle wrapper --gradle-version 8.7
+          ./gradlew assembleDebug --no-daemon
+          APK=app/build/outputs/apk/debug/app-debug.apk
+          echo "=== apk files produced by gradle ==="
+          find app/build/outputs -name '*.apk' -print || true
+          if [ ! -f "$APK" ]; then
+            echo "::error::gradle finished but no APK was produced at android-audio/$APK"
+            exit 1
+          fi
+          BT=$(ls -d "${ANDROID_HOME:-}"/build-tools/* 2>/dev/null | sort -V | tail -1 || true)
+          if [ -z "${BT:-}" ]; then
+            echo "::error::no Android build-tools found under ANDROID_HOME=${ANDROID_HOME:-<unset>}"
+            exit 1
+          fi
+          echo "using build-tools: $BT"
+          "$BT/apksigner" sign --ks ../offex.keystore --ks-pass pass:offexpass123 --key-pass pass:offexpass123 --out /tmp/OffexAudio.apk "$APK"
+          cd ..
+          if [ ! -f /tmp/OffexAudio.apk ]; then
+            echo "::error::signing did not produce the expected APK at /tmp/OffexAudio.apk"
+            exit 1
+          fi
+          ls -la /tmp/OffexAudio.apk
+          "$BT/apksigner" verify --print-certs /tmp/OffexAudio.apk || true
+      - name: Create or update GitHub Release audio-v1.0
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cat > /tmp/notes.txt <<'NOTES'
+          Offex Audio v1.0 - Android app for the Offex Audio website (offexmail.online).
+
+          * Three tools as separate tabs: Remove Silence, Enhance Audio, Voice / BGM Isolation,
+            plus History and More tabs.
+          * WebView UI mirroring the site's futuristic dark design, bridged to native Java.
+          * Live / Not-connected health animation driven by a real backend health check.
+          * Pick an audio/video file with the system picker; results save to the Downloads folder.
+          * Instant notifications (FCM + local job-complete alert) with a notification-permission gate.
+          * Multi-language: English, Hindi, Spanish, Portuguese, Arabic (RTL), Russian, Indonesian.
+          * AdMob placements wired with Google's official TEST unit ids (panel-overridable).
+          * Local History of finished jobs with re-download.
+
+          Backend: the app talks to the Hugging Face Space through the same /hf proxy the
+          website uses (offexmail.online/hf), with the /health endpoint driving the Live badge.
+          NOTES
+          if ! gh release view audio-v1.0 --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release create audio-v1.0 --repo "$GITHUB_REPOSITORY" --title "Offex Audio v1.0" --notes-file /tmp/notes.txt || true
+          fi
+          gh release edit audio-v1.0 --repo "$GITHUB_REPOSITORY" --title "Offex Audio v1.0" --notes-file /tmp/notes.txt --draft=false
+          gh release upload audio-v1.0 /tmp/OffexAudio.apk --clobber --repo "$GITHUB_REPOSITORY"
+          echo "=== release audio-v1.0 ==="
+          gh release view audio-v1.0 --repo "$GITHUB_REPOSITORY" --json tagName,name,isDraft,assets
