@@ -6,10 +6,17 @@
 #    * gradle settings / root build / gradle.properties / app build.gradle
 #    * AndroidManifest.xml
 #    * res/values (colors, themes, strings-en, dimens)
-#    * res/drawable + res/mipmap launcher icons
-#    * res/layout/activity_main.xml (WebView host + native ad container)
+#    * res/drawable + res/mipmap launcher icons + native tab-bar icons
+#    * res/layout/activity_main.xml (real-site WebView + native tab bar +
+#      native ad container + native result/history/more panels)
 #
-#  Package: online.offexaudio.app      Version: 1.0 (versionCode 1)
+#  Package: online.offexaudio.app      Version: 1.1 (versionCode 2)
+#
+#  v1.1 change: the app no longer ships a fake local HTML shell. The WebView
+#  now loads the REAL audio website (https://offexmail.online) so the tools
+#  run through the genuine Gradio / Hugging Face flow (real upload progress,
+#  real processing). The native shell (bottom tabs, notifications, Downloads,
+#  history, ads, languages) is kept and drives the loaded site.
 # ============================================================================
 import os
 from PIL import Image
@@ -54,8 +61,8 @@ android {
         applicationId "online.offexaudio.app"
         minSdk 24
         targetSdk 34
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "1.1"
         vectorDrawables { useSupportLibrary true }
     }
     buildTypes { release { minifyEnabled false; signingConfig signingConfigs.debug } }
@@ -170,16 +177,28 @@ F["android-audio/app/src/main/res/values/themes.xml"] = """<?xml version="1.0" e
         <item name="android:navigationBarColor" tools:targetApi="l">@color/oa_ink</item>
         <item name="android:windowBackground">@color/oa_ink</item>
     </style>
+
+    <!-- One bottom-nav tab: icon over label, evenly weighted. -->
+    <style name="OaTab">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:gravity">center</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:background">?android:attr/selectableItemBackground</item>
+    </style>
 </resources>
 """
 
 F["android-audio/app/src/main/res/values/strings.xml"] = """<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Offex Audio</string>
-    <string name="tagline">Audio Studio \u2022 Remove Silence \u2022 Enhance \u2022 Isolate</string>
+    <string name="tagline">Audio Studio \\u2022 Remove Silence \\u2022 Enhance \\u2022 Isolate</string>
     <string name="live">Live</string>
     <string name="not_connected">Not connected</string>
-    <string name="checking">Checking\u2026</string>
+    <string name="checking">Checking\\u2026</string>
     <string name="processor">Processor</string>
     <string name="online">Online</string>
 
@@ -209,9 +228,10 @@ F["android-audio/app/src/main/res/values/strings.xml"] = """<?xml version="1.0" 
     <string name="separation_model">Separation quality</string>
 
     <string name="process">Process</string>
-    <string name="processing">Processing\u2026</string>
+    <string name="processing">Processing\\u2026</string>
     <string name="download">Save to Downloads</string>
-    <string name="saving">Saving\u2026</string>
+    <string name="save_result">Save result</string>
+    <string name="saving">Saving\\u2026</string>
     <string name="saved_to_downloads">Saved to Downloads</string>
     <string name="result_ready">Result ready</string>
     <string name="vocals">Vocals</string>
@@ -232,7 +252,7 @@ F["android-audio/app/src/main/res/values/strings.xml"] = """<?xml version="1.0" 
     <string name="more_about">About</string>
     <string name="more_version">Version</string>
     <string name="more_backend">Backend</string>
-    <string name="more_backend_value">offexmail.online (Hugging Face Space proxy)</string>
+    <string name="more_backend_value">offexmail.online (live site \\u2014 Hugging Face Space)</string>
     <string name="more_privacy">Privacy</string>
 
     <string name="notif_channel_jobs">Job notifications</string>
@@ -245,11 +265,12 @@ F["android-audio/app/src/main/res/values/strings.xml"] = """<?xml version="1.0" 
     <string name="job_done_body">Your audio is ready to save.</string>
 
     <string name="permission_needed">Storage permission is needed to save the file.</string>
-    <string name="download_started">Download started \u2014 saving to Downloads</string>
+    <string name="download_started">Download started \\u2014 saving to Downloads</string>
     <string name="download_failed">Could not start the download.</string>
     <string name="pick_error">Could not open the file picker.</string>
     <string name="close">Close</string>
     <string name="cancel">Cancel</string>
+    <string name="back">Back</string>
 </resources>
 """
 
@@ -259,6 +280,52 @@ F["android-audio/app/src/main/res/drawable/bg_web.xml"] = """<?xml version="1.0"
 </shape>
 """
 
+# ---- native bottom-nav icons (simple, deterministic vector paths) ----------
+F["android-audio/app/src/main/res/drawable/ic_oa_remove.xml"] = """<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp"
+    android:viewportWidth="24" android:viewportHeight="24">
+    <path android:fillColor="#FFFFFF"
+        android:pathData="M3,10h2v4H3z M7,7h2v10H7z M11,4h2v16h-2z M15,8h2v8h-2z M19,11h2v2h-2z" />
+</vector>
+"""
+
+F["android-audio/app/src/main/res/drawable/ic_oa_enhance.xml"] = """<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp"
+    android:viewportWidth="24" android:viewportHeight="24">
+    <path android:fillColor="#FFFFFF"
+        android:pathData="M12,2 L14,10 L22,12 L14,14 L12,22 L10,14 L2,12 L10,10 Z" />
+</vector>
+"""
+
+F["android-audio/app/src/main/res/drawable/ic_oa_isolate.xml"] = """<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp"
+    android:viewportWidth="24" android:viewportHeight="24">
+    <path android:fillColor="#FFFFFF" android:pathData="M10,3h4v11h-4z" />
+    <path android:strokeColor="#FFFFFF" android:strokeWidth="1.8" android:fillColor="#00000000"
+        android:pathData="M7,11 a5,5 0 0 1 10,0" />
+    <path android:strokeColor="#FFFFFF" android:strokeWidth="1.8" android:fillColor="#00000000"
+        android:pathData="M12,16 v4 M9,20 h6" />
+</vector>
+"""
+
+F["android-audio/app/src/main/res/drawable/ic_oa_history.xml"] = """<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp"
+    android:viewportWidth="24" android:viewportHeight="24">
+    <path android:strokeColor="#FFFFFF" android:strokeWidth="1.8" android:fillColor="#00000000"
+        android:pathData="M12,3 a9,9 0 1 0 0.01,0" />
+    <path android:strokeColor="#FFFFFF" android:strokeWidth="1.8" android:fillColor="#00000000"
+        android:pathData="M12,7 L12,12 L16,14" />
+</vector>
+"""
+
+F["android-audio/app/src/main/res/drawable/ic_oa_more.xml"] = """<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp"
+    android:viewportWidth="24" android:viewportHeight="24">
+    <path android:fillColor="#FFFFFF"
+        android:pathData="M6,12 a1.7,1.7 0 1 0 0.01,0 Z M12,12 a1.7,1.7 0 1 0 0.01,0 Z M18,12 a1.7,1.7 0 1 0 0.01,0 Z" />
+</vector>
+"""
+
 F["android-audio/app/src/main/res/layout/activity_main.xml"] = """<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
@@ -266,15 +333,118 @@ F["android-audio/app/src/main/res/layout/activity_main.xml"] = """<?xml version=
     android:orientation="vertical"
     android:background="@color/oa_ink">
 
-    <WebView
-        android:id="@+id/webUi"
+    <!-- WebView host: loads the REAL audio site, plus the native result button
+         and the native History / More overlay panels. -->
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:background="@color/oa_ink" />
+        android:layout_weight="1">
 
-    <!-- Native banner ad, docked below the web UI so it never overlaps the
-         page's own bottom tab bar. Ads.loadBanner() adds the AdView here. -->
+        <WebView
+            android:id="@+id/webUi"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/oa_ink" />
+
+        <!-- Native "Save result" affordance, shown once the site has a result. -->
+        <TextView
+            android:id="@+id/saveResult"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="14dp"
+            android:background="@color/oa_ok"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:textColor="@color/oa_ink"
+            android:textStyle="bold"
+            android:textSize="13sp"
+            android:text="@string/save_result"
+            android:visibility="gone" />
+
+        <!-- Native overlay for the History and More tabs. -->
+        <FrameLayout
+            android:id="@+id/panelHost"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#F205060D"
+            android:visibility="gone">
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fillViewport="true">
+
+                <LinearLayout
+                    android:id="@+id/panelContent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="18dp" />
+            </ScrollView>
+        </FrameLayout>
+    </FrameLayout>
+
+    <!-- Native bottom tab bar. Tabs drive the loaded site via JS navigation
+         (Remove Silence / Enhance / Voice-BGM) or open the native panels. -->
+    <LinearLayout
+        android:id="@+id/tabBar"
+        android:layout_width="match_parent"
+        android:layout_height="62dp"
+        android:orientation="horizontal"
+        android:background="@color/oa_bg2"
+        android:baselineAligned="false">
+
+        <LinearLayout android:id="@+id/tabRemove" style="@style/OaTab">
+            <ImageView android:layout_width="22dp" android:layout_height="22dp"
+                android:src="@drawable/ic_oa_remove" android:tint="@color/oa_muted"
+                android:contentDescription="@string/tab_remove" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="@string/tab_remove" android:textSize="9sp" android:textColor="@color/oa_muted"
+                android:gravity="center" android:maxLines="2" />
+        </LinearLayout>
+
+        <LinearLayout android:id="@+id/tabEnhance" style="@style/OaTab">
+            <ImageView android:layout_width="22dp" android:layout_height="22dp"
+                android:src="@drawable/ic_oa_enhance" android:tint="@color/oa_muted"
+                android:contentDescription="@string/tab_enhance" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="@string/tab_enhance" android:textSize="9sp" android:textColor="@color/oa_muted"
+                android:gravity="center" android:maxLines="2" />
+        </LinearLayout>
+
+        <LinearLayout android:id="@+id/tabIsolate" style="@style/OaTab">
+            <ImageView android:layout_width="22dp" android:layout_height="22dp"
+                android:src="@drawable/ic_oa_isolate" android:tint="@color/oa_muted"
+                android:contentDescription="@string/tab_isolate" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="@string/tab_isolate" android:textSize="9sp" android:textColor="@color/oa_muted"
+                android:gravity="center" android:maxLines="2" />
+        </LinearLayout>
+
+        <LinearLayout android:id="@+id/tabHistory" style="@style/OaTab">
+            <ImageView android:layout_width="22dp" android:layout_height="22dp"
+                android:src="@drawable/ic_oa_history" android:tint="@color/oa_muted"
+                android:contentDescription="@string/tab_history" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="@string/tab_history" android:textSize="9sp" android:textColor="@color/oa_muted"
+                android:gravity="center" android:maxLines="2" />
+        </LinearLayout>
+
+        <LinearLayout android:id="@+id/tabMore" style="@style/OaTab">
+            <ImageView android:layout_width="22dp" android:layout_height="22dp"
+                android:src="@drawable/ic_oa_more" android:tint="@color/oa_muted"
+                android:contentDescription="@string/tab_more" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="@string/tab_more" android:textSize="9sp" android:textColor="@color/oa_muted"
+                android:gravity="center" android:maxLines="2" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Native banner ad, docked below the tab bar so it never overlaps the
+         site's own content. Ads.loadBanner() adds the AdView here. -->
     <FrameLayout
         android:id="@+id/adBanner"
         android:layout_width="match_parent"
