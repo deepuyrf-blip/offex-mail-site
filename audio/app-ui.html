@@ -279,6 +279,29 @@ select{background:#050b1c;border:1px solid var(--line2);color:var(--text);border
 
 <script src="gradio_client.js"></script>
 <script src="audio-engine.js"></script>
+<!-- Primary Gradio client loader: the exact same ES-module approach the working
+     main site (audio/index.html) uses. @gradio/client is an ES module, so it must
+     be imported as a module and exposed on window.GradioClient. The bundled
+     gradio_client.js above is now kept only as an offline fallback and is no
+     longer the primary path. -->
+<script type="module">
+(async () => {
+  try {
+    let mod;
+    try {
+      mod = await import("https://cdn.jsdelivr.net/npm/@gradio/client/dist/index.min.js");
+    } catch (e) {
+      mod = await import("https://unpkg.com/@gradio/client/dist/index.min.js");
+    }
+    window.GradioClient = { Client: mod.Client, handle_file: mod.handle_file };
+    window.__gradioEsmLoaded = true;
+    window.dispatchEvent(new Event("gradio-client-ready"));
+  } catch (e) {
+    window.GradioClientError = e;
+    window.dispatchEvent(new Event("gradio-client-error"));
+  }
+})();
+</script>
 <script>
 (function(){
   "use strict";
@@ -287,6 +310,7 @@ select{background:#050b1c;border:1px solid var(--line2);color:var(--text);border
   var result = { remove:null, enhance:null, vocals:null, bgm:null };
   var client = null, connecting = null;
   var proxy = "https://offexmail.online/hf";
+  var DIRECT_SPACE = "https://hydui-ytvideo.hf.space";
   var HEALTH = "https://offexmail.online/health";
   var EP = { remove:"/process_audio", enhance:"/enhance_audio", isolate:"/isolate_voice_bgm" };
   var live = false, healthTimer = null;
@@ -371,14 +395,36 @@ select{background:#050b1c;border:1px solid var(--line2);color:var(--text);border
   function connect(){
     if(client) return Promise.resolve(client);
     if(connecting) return connecting;
-    connecting = new Promise(function(resolve,reject){
+    connecting = (async function(){
       try {
         if(!window.GradioClient || !window.GradioClient.Client) throw new Error("client unavailable");
-        window.GradioClient.Client.connect(proxy).then(function(c){
-          client = c; connecting = null; resolve(c);
-        }).catch(function(e){ connecting = null; reject(e); });
-      } catch(e){ connecting = null; reject(e); }
-    });
+        /* Mirror the working main site: try the site's /hf proxy first (the same
+           connection target index.html uses), then the direct Space URL, with a
+           per-attempt timeout and a couple of retries so a waking Space connects. */
+        var targets = [proxy, DIRECT_SPACE].filter(function(t, i, arr){ return t && arr.indexOf(t) === i; });
+        var lastErr = null;
+        for(var attempt = 0; attempt < 3 && !client; attempt++){
+          for(var ti = 0; ti < targets.length; ti++){
+            var target = targets[ti];
+            try {
+              client = await Promise.race([
+                window.GradioClient.Client.connect(target),
+                new Promise(function(_, rej){ setTimeout(function(){ rej(new Error("Backend connection timed out.")); }, 12000); })
+              ]);
+              break;
+            } catch(e){ lastErr = e; }
+          }
+          if(!client && attempt < 2) await new Promise(function(r){ setTimeout(r, 1000 * (attempt + 1)); });
+        }
+        if(!client) throw lastErr || new Error("Could not connect to the audio processing server.");
+        return client;
+      } catch(e){
+        client = null;
+        throw e;
+      } finally {
+        connecting = null;
+      }
+    })();
     return connecting;
   }
 
@@ -433,29 +479,46 @@ select{background:#050b1c;border:1px solid var(--line2);color:var(--text);border
     });
   }
 
-  function runJob(endpoint, inputs, kind){
-    return connect().then(function(c){
-      return new Promise(function(resolve,reject){
-        var job;
-        try { job = c.submit(endpoint, inputs); } catch(e){ reject(e); return; }
+  /* Job runner that mirrors the working main site (audio/index.html) runGradioJob.
+     The @gradio/client Job is async-iterable and may or may not expose .on();
+     handle every shape (.on, async iterator, .result(), plain predict()) so a real
+     job always runs instead of failing with "no job handle". */
+  async function runJob(endpoint, inputs, kind){
+    var c = await connect();
+    function onStatus(st){
+      try {
+        if(!st) return;
+        var pd = (st.progress_data && st.progress_data[0]) || st.progress_data;
+        if(pd && pd.progress != null){
+          var p = Number(pd.progress);
+          if(isFinite(p)) meter(kind, 60 + Math.round(Math.max(0, Math.min(1, p)) * 40), String(st.stage || st.message || "PROCESSING").toUpperCase());
+        } else if(st.stage || st.message){
+          meter(kind, 62, String(st.stage || st.message).toUpperCase());
+        }
+      } catch(e){}
+    }
+    var job = c.submit(endpoint, inputs);
+    var finalData = null;
+    if(job && typeof job.on === "function"){
+      finalData = await new Promise(function(resolve, reject){
         var done = false;
-        if(job && typeof job.on === "function"){
-          job.on("data", function(d){ done = true; resolve(d); });
-          job.on("status", function(st){
-            try {
-              var pd = st && st.progress_data && st.progress_data[0];
-              if(pd && pd.progress != null){
-                var p = Number(pd.progress);
-                meter(kind, 60 + Math.round(p*40), (st.stage||"PROCESSING").toUpperCase());
-              } else if(st && st.stage){
-                meter(kind, 62, String(st.stage).toUpperCase());
-              }
-            } catch(e){}
-          });
-        } else { reject(new Error("no job handle")); }
-        setTimeout(function(){ if(!done) reject(new Error("timeout")); }, 600000);
+        job.on("data", function(d){ done = true; resolve(d); });
+        job.on("status", onStatus);
+        setTimeout(function(){ if(!done) reject(new Error("Job timed out")); }, 600000);
       });
-    });
+    } else if(job && job[Symbol.asyncIterator]){
+      for await (var msg of job){
+        if(msg && msg.type === "data"){ finalData = msg.data; }
+        else if(msg && msg.type === "status" && msg.status){ onStatus(msg.status); }
+      }
+    } else if(job && typeof job.result === "function"){
+      var r = await job.result();
+      finalData = (r && r.data) || r;
+    } else {
+      var pr = await c.predict(endpoint, inputs);
+      finalData = (pr && pr.data) || pr;
+    }
+    return finalData || [];
   }
 
   /* ------------------------------ fallback ----------------------------- */
