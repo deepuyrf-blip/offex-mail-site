@@ -118,6 +118,11 @@ public class MainActivity extends AppCompatActivity {
         Ads.loadRewarded(this);
         startHealthLoop();
         maybeShowNotifGate();
+        /* Register this device's FCM token with the backend on EVERY app start
+           (not only when FCM happens to mint a fresh token), so the audio
+           panel's broadcast reaches this install. Token refreshes are handled
+           by FcmService.onNewToken -> DeviceReg.send. */
+        DeviceReg.start(this);
         Ads.showAppOpenIfAvailable(this);
     }
 
@@ -323,7 +328,7 @@ public class MainActivity extends AppCompatActivity {
             s.put("healthNote", healthNote);
             s.put("lang", LocaleHelper.current(this));
             s.put("rtl", LocaleHelper.isRtl(this));
-            s.put("version", "1.3");
+            s.put("version", "1.4");
             s.put("proxy", Config.proxyUrl());
             s.put("health", Config.healthUrl());
             s.put("strings", buildStrings());
@@ -508,7 +513,7 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     new AlertDialog.Builder(MainActivity.this)
                             .setTitle(R.string.more_title)
-                            .setMessage(getString(R.string.more_version) + ": 1.3\n"
+                            .setMessage(getString(R.string.more_version) + ": 1.4\n"
                                     + getString(R.string.more_backend) + ": " + getString(R.string.more_backend_value))
                             .setPositiveButton(R.string.close, (d, w) -> { })
                             .show();

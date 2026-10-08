@@ -9,7 +9,7 @@
 #    * res/drawable + res/mipmap launcher icons
 #    * res/layout/activity_main.xml (WebView host + native ad container)
 #
-#  Package: online.offexaudio.app      Version: 1.3 (versionCode 4)
+#  Package: online.offexaudio.app      Version: 1.4 (versionCode 5)
 #
 #  v1.3: the app's OWN custom UI is HOSTED ON THE SITE (audio/app-ui.html ->
 #  https://offexmail.online/app-ui) and loaded from there, so the page shares
@@ -60,8 +60,8 @@ android {
         applicationId "online.offexaudio.app"
         minSdk 24
         targetSdk 34
-        versionCode 4
-        versionName "1.3"
+        versionCode 5
+        versionName "1.4"
         vectorDrawables { useSupportLibrary true }
     }
     buildTypes { release { minifyEnabled false; signingConfig signingConfigs.debug } }

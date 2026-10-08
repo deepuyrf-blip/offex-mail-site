@@ -31,6 +31,9 @@ jobs:
           if grep -Rqs "BackendProxy" android-audio/app/src/main/java; then
             echo "::error::native request interception still present"; exit 1
           fi
+          echo "== confirm the app registers its FCM token on start (audio panel broadcast) =="
+          grep -qs "DeviceReg.start(this)" android-audio/app/src/main/java/online/offexaudio/app/MainActivity.java || { echo "::error::MainActivity does not register the FCM token on start"; exit 1; }
+          grep -qs "FcmService" android-audio/app/src/main/AndroidManifest.xml || { echo "::error::FcmService not declared in the manifest"; exit 1; }
           echo "== confirm the app loads the site-hosted custom UI (same origin as /hf) =="
           grep -qs "https://offexmail.online/app-ui" android-audio/app/src/main/java/online/offexaudio/app/MainActivity.java || { echo "::error::app UI URL not set to https://offexmail.online/app-ui"; exit 1; }
           if grep -Rqs "appassets.androidplatform.net" android-audio/app/src/main/java; then
@@ -69,13 +72,13 @@ jobs:
           done
           test "$FOUND" = "1" || { echo "::error::app-ui URL not found in any dex"; exit 1; }
           "$BT/apksigner" verify --print-certs /tmp/OffexAudio.apk || true
-      - name: Create or update GitHub Release audio-v1.3
+      - name: Create or update GitHub Release audio-v1.4
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           cat > /tmp/notes.txt <<'NOTES'
-          Offex Audio v1.3 - Android app for the Offex Audio service (offexmail.online).
+          Offex Audio v1.4 - Android app for the Offex Audio service (offexmail.online).
 
           * The app's OWN custom UI (the dark futuristic design with five tabs -
             Remove Silence / Enhance Audio / Voice-BGM / History / More, each with a
@@ -99,12 +102,17 @@ jobs:
             (app ~3347511713, banner /6300978111, interstitial /1033173712,
             rewarded /5224354917, app-open /9257395921, native /2247696110),
             all panel-overridable.
-          * Version bumped 1.2 -> 1.3 (versionCode 4).
+          * NEW: the app registers its FCM token with the backend on every start
+            (MainActivity.onCreate -> DeviceReg.start) as well as on token
+            refresh (FcmService.onNewToken), posting {token, package, platform}
+            to the backend /api/device. The audio panel's broadcast now targets
+            devices whose registered package is online.offexaudio.app.
+          * Version bumped 1.3 -> 1.4 (versionCode 5).
           NOTES
-          if ! gh release view audio-v1.3 --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
-            gh release create audio-v1.3 --repo "$GITHUB_REPOSITORY" --title "Offex Audio v1.3" --notes-file /tmp/notes.txt || true
+          if ! gh release view audio-v1.4 --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release create audio-v1.4 --repo "$GITHUB_REPOSITORY" --title "Offex Audio v1.4" --notes-file /tmp/notes.txt || true
           fi
-          gh release edit audio-v1.3 --repo "$GITHUB_REPOSITORY" --title "Offex Audio v1.3" --notes-file /tmp/notes.txt --draft=false
-          gh release upload audio-v1.3 /tmp/OffexAudio.apk --clobber --repo "$GITHUB_REPOSITORY"
-          echo "=== release audio-v1.3 ==="
-          gh release view audio-v1.3 --repo "$GITHUB_REPOSITORY" --json tagName,name,isDraft,assets
+          gh release edit audio-v1.4 --repo "$GITHUB_REPOSITORY" --title "Offex Audio v1.4" --notes-file /tmp/notes.txt --draft=false
+          gh release upload audio-v1.4 /tmp/OffexAudio.apk --clobber --repo "$GITHUB_REPOSITORY"
+          echo "=== release audio-v1.4 ==="
+          gh release view audio-v1.4 --repo "$GITHUB_REPOSITORY" --json tagName,name,isDraft,assets

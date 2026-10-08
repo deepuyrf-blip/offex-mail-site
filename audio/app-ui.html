@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>Offex Audio</title>
-<!-- Offex Audio app-ui :: APPUI_VERSION=2.1 :: cache-bust build 2026-10-08b :: OA-UPBOX-NAME-PCT OA-VIZ -->
-<meta name="app-ui-version" content="2.1">
-<meta name="offex-cache-bust" content="2026-10-08b">
+<!-- Offex Audio app-ui :: APPUI_VERSION=2.2 :: cache-bust build 2026-10-08c :: OA-UPBOX-NAME-PCT OA-UPBOX-SEL OA-VIZ -->
+<meta name="app-ui-version" content="2.2">
+<meta name="offex-cache-bust" content="2026-10-08c">
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
@@ -71,6 +71,11 @@ body{
 .drop .t{margin-top:9px;font-size:12.5px;font-weight:600}
 .drop .f{margin-top:6px;font-size:11px;color:var(--muted);word-break:break-all}
 .drop.has{border-style:solid;border-color:rgba(52,211,153,.5);background:rgba(52,211,153,.07)}
+/* OA-UPBOX-SEL : the chosen file's name + size is shown here and must survive
+   a re-render (the native app pushes state on every onResume, i.e. right after
+   the picker closes), so it is styled distinctly and never reset to "no file". */
+.drop .f.sel{color:var(--text);font-weight:600}
+.drop .t.sel{color:var(--brand2)}
 /* OA-UPBOX-NAME-PCT : selected file name + live upload % live inside the drop box */
 .drop .dprog{display:none;margin-top:11px}
 .drop .dprog.show{display:block}
@@ -743,17 +748,46 @@ select{background:#050b1c;border:1px solid var(--line2);color:var(--text);border
   }
 
   /* ------------------------------- TOOLS ------------------------------- */
+  /* OA-UPBOX-SEL : paint the chosen file (name + size) into the drop box and
+     protect it from the next applyStrings() re-render (data-keep). */
+  function showSelected(kind, f){
+    var zone = $("drop"+cap(kind));
+    var nm = $("file"+cap(kind)+"Name");
+    var mb = (f && f.size) ? (f.size/1048576) : 0;
+    var sizeTxt = mb >= 10 ? mb.toFixed(1) : mb.toFixed(2);
+    if(nm){
+      nm.textContent = f.name + "  \u00b7  " + sizeTxt + " MB";
+      nm.removeAttribute("data-i18n");
+      nm.setAttribute("data-keep", "1");
+      nm.classList.add("sel");
+    }
+    if(zone){
+      zone.classList.add("has");
+      var t = zone.querySelector(".t");
+      if(t){
+        t.textContent = T("drop_change") || "Tap to change the file";
+        t.removeAttribute("data-i18n");
+        t.setAttribute("data-keep", "1");
+        t.classList.add("sel");
+      }
+    }
+  }
+
   function wireDrop(zoneId, inputId, kind){
     var zone = $(zoneId), input = $(inputId);
     if(!zone || !input) return;
-    zone.addEventListener("click", function(){ input.click(); });
+    zone.addEventListener("click", function(){
+      /* Clear the value so picking the SAME file again still fires change.
+         state[kind] keeps the previous file, so cancelling the picker keeps
+         the previously shown name/size. */
+      try { input.value = ""; } catch(e){}
+      input.click();
+    });
     input.addEventListener("change", function(){
       var f = input.files && input.files[0];
-      if(!f) return;
+      if(!f) return;                 /* cancel -> keep the previous state */
       state[kind] = f;
-      var nm = $("file"+cap(kind)+"Name");
-      if(nm) nm.textContent = f.name + "  \u00b7  " + (f.size/1048576).toFixed(1) + " MB";
-      zone.classList.add("has");
+      showSelected(kind, f);
       dropReset(kind);
       hint(kind, "");
     });
@@ -993,6 +1027,11 @@ select{background:#050b1c;border:1px solid var(--line2);color:var(--text);border
     if(!t) return;
     var els = document.querySelectorAll("[data-i18n]");
     for(var i=0;i<els.length;i++){
+      /* OA-UPBOX-SEL : never let a re-render wipe a chosen file's name/size back
+         to the "no file selected" string. The native app re-pushes state on
+         every onResume (e.g. immediately after the file picker closes), which
+         previously reset the label to the un-selected text. */
+      if(els[i].hasAttribute("data-keep")) continue;
       var k = els[i].getAttribute("data-i18n");
       if(t[k] != null) els[i].textContent = t[k];
     }
