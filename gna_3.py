@@ -52,12 +52,12 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.webkit.WebViewClientCompat;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
             cm.setAcceptCookie(true);
             cm.setAcceptThirdPartyCookies(webUi, true);
 
-            webUi.setWebViewClient(new WebViewClientCompat() {
+            webUi.setWebViewClient(new WebViewClient() {
                 @Override public boolean shouldOverrideUrlLoading(WebView v, WebResourceRequest r) {
                     String u = r.getUrl() == null ? "" : r.getUrl().toString();
                     if (isInternal(u)) return false;   // keep it inside the WebView
