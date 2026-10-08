@@ -1,0 +1,24 @@
+name: Verify Audio Copy (temp)
+on:
+  workflow_dispatch:
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check live pages for old/new phrasing
+        run: |
+          PAGES="/ /about /audio-noise-reduction-online /blog /clean-background-noise-voice-recordings /clean-interview-audio /contact /podcast-audio-editor-online /podcast-editing-workflow-for-beginners /podcast-format-settings /privacy /record-clean-voice /remove-echo-reverb /remove-silence-from-audio-guide /remove-vocals-from-song-online /terms /voice-bgm-separation-explained"
+          fail=0
+          echo "page | http | old_in_your_browser | old_runs_in_your_browser | new_our_secure_server"
+          for p in $PAGES; do
+            url="https://offexmail.online$p"
+            code=$(curl -s -o /tmp/page.html -w '%{http_code}' -L --max-time 30 "$url")
+            old=$(grep -oi 'in your browser' /tmp/page.html | wc -l | tr -d ' ')
+            old2=$(grep -oi 'runs in your browser' /tmp/page.html | wc -l | tr -d ' ')
+            new=$(grep -oi 'our secure server' /tmp/page.html | wc -l | tr -d ' ')
+            echo "$p | HTTP $code | in-your-browser:$old | runs-in-your-browser:$old2 | our-secure-server:$new"
+            if [ "$code" != "200" ]; then fail=1; fi
+            if [ "$old" != "0" ]; then fail=1; fi
+          done
+          echo "-----"
+          if [ "$fail" = "1" ]; then echo "VERIFY FAILED"; exit 1; else echo "VERIFY PASSED"; fi
