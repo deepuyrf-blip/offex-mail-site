@@ -1,0 +1,41 @@
+name: Temp verify API gate
+
+on:
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: API gate matrix
+        run: |
+          set -u
+          API="https://api.mytemp-mail.online"
+          UA='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
+          code(){ curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$@"; }
+          body(){ curl -s --max-time 30 "$@"; }
+
+          echo "===== A. NO Origin / NO Referer, browser-like (Brave Shields / no-referrer) ====="
+          for p in /api/status /api/app-config /api/audio-app-config; do
+            echo "GET  $p  -> $(code -H "User-Agent: $UA" -H 'Accept: application/json, text/plain, */*' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Site: same-site' "$API$p")"
+          done
+          echo "GET  /api/status (no Sec-Fetch-Site at all, fingerprint only) -> $(code -H "User-Agent: $UA" -H 'Accept: application/json' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Dest: empty' "$API/api/status")"
+          echo "POST /api/inbox  -> $(code -X POST -H "User-Agent: $UA" -H 'Accept: application/json' -H 'Content-Type: application/json' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Site: same-site' --data '{}' "$API/api/inbox")"
+          echo "     inbox body: $(body -X POST -H "User-Agent: $UA" -H 'Accept: application/json' -H 'Content-Type: application/json' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Site: same-site' --data '{}' "$API/api/inbox" | head -c 300)"
+
+          echo
+          echo "===== B. genuinely cross-site (must stay 403) ====="
+          echo "GET  /api/status  Origin evil.com              -> $(code -H 'Origin: https://evil.com' -H "User-Agent: $UA" -H 'Accept: application/json' "$API/api/status")"
+          echo "GET  /api/status  Sec-Fetch-Site: cross-site   -> $(code -H 'Sec-Fetch-Site: cross-site' -H "User-Agent: $UA" -H 'Accept: application/json' "$API/api/status")"
+          echo "POST /api/inbox   Origin evil.com              -> $(code -X POST -H 'Origin: https://evil.com' -H "User-Agent: $UA" -H 'Content-Type: application/json' -H 'Sec-Fetch-Site: cross-site' --data '{}' "$API/api/inbox")"
+          echo "GET  /api/status  bare (no headers)            -> $(code "$API/api/status")"
+
+          echo
+          echo "===== C. our own origins (must be 200) ====="
+          echo "GET  /api/status  Origin+Referer mytemp-mail.online -> $(code -H 'Origin: https://mytemp-mail.online' -H 'Referer: https://mytemp-mail.online/' "$API/api/status")"
+          echo "GET  /api/status  Origin offexmail.online           -> $(code -H 'Origin: https://offexmail.online' "$API/api/status")"
+
+          echo
+          echo "===== D. panel routes still open to direct navigation ====="
+          echo "GET  /admin?code=Hyco       -> $(code "$API/admin?code=Hyco")"
+          echo "GET  /audio-admin?code=Hyco -> $(code "$API/audio-admin?code=Hyco")"
