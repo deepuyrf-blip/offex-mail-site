@@ -210,35 +210,64 @@ if base is None:
 
 # Drop any existing client for our package, then add ours (cloned from the
 # project's existing api_key so the file is structurally valid).
-clients = [c for c in base.get("client", [])
-           if c.get("client_info", {}).get("android_client_info", {}).get("package_name") != "online.offexaudio.app"]
-tmpl = None
-for c in base.get("client", []):
-    if c.get("client_info", {}).get("android_client_info", {}).get("package_name") == "online.mytempmail.app":
-        tmpl = c
-        break
-if tmpl is None and base.get("client"):
-    tmpl = base["client"][0]
-key = "AIzaSyA7QwXJArY2yDfArTssuCTHm1X6pVh1SCU"
-if tmpl is not None:
-    try:
-        key = tmpl["api_key"][0]["current_key"]
-    except Exception:
-        pass
+SYNTHETIC_ID = "1:550179658866:android:0ffeac0de0000000000000"
 
-newc = {
-    "client_info": {
-        "mobilesdk_app_id": "1:550179658866:android:0ffeac0de0000000000000",
-        "android_client_info": {"package_name": "online.offexaudio.app"},
-    },
-    "oauth_client": [],
-    "api_key": [{"current_key": key}],
-    "services": {"appinvite_service": {"other_platform_oauth_client": []}},
-}
-clients.append(newc)
-base["client"] = clients
+existing = None
+for c in base.get("client", []):
+    if c.get("client_info", {}).get("android_client_info", {}).get("package_name") == "online.offexaudio.app":
+        existing = c
+        break
+
+existing_id = ""
+if existing:
+    existing_id = str(existing.get("client_info", {}).get("mobilesdk_app_id") or "").strip()
+
+if existing and existing_id and existing_id != SYNTHETIC_ID:
+    # A REAL Firebase Android app id for our package is present: the operator
+    # added the app in the Firebase console and shipped the real
+    # google-services.json. Keep every entry verbatim so FCM can actually
+    # deliver pushes to online.offexaudio.app.
+    print("GNA4: google-services.json already has a REAL entry for "
+          "online.offexaudio.app (%s) - kept as-is" % existing_id)
+else:
+    # No real entry yet: synthesise a structurally valid one so the Gradle
+    # plugin resolves a matching client and the build succeeds. NOTE: a
+    # synthetic mobilesdk_app_id will NOT deliver FCM pushes. Add the app in
+    # the Firebase console (project thug-5607f) and drop the real
+    # google-services.json into the repo (audioapp/google-services.json or the
+    # repo root) to replace this.
+    clients = [c for c in base.get("client", [])
+               if c.get("client_info", {}).get("android_client_info", {}).get("package_name") != "online.offexaudio.app"]
+    tmpl = None
+    for c in base.get("client", []):
+        if c.get("client_info", {}).get("android_client_info", {}).get("package_name") == "online.mytempmail.app":
+            tmpl = c
+            break
+    if tmpl is None and base.get("client"):
+        tmpl = base["client"][0]
+    key = "AIzaSyA7QwXJArY2yDfArTssuCTHm1X6pVh1SCU"
+    if tmpl is not None:
+        try:
+            key = tmpl["api_key"][0]["current_key"]
+        except Exception:
+            pass
+
+    newc = {
+        "client_info": {
+            "mobilesdk_app_id": SYNTHETIC_ID,
+            "android_client_info": {"package_name": "online.offexaudio.app"},
+        },
+        "oauth_client": [],
+        "api_key": [{"current_key": key}],
+        "services": {"appinvite_service": {"other_platform_oauth_client": []}},
+    }
+    clients.append(newc)
+    base["client"] = clients
+    print("GNA4: WARNING - online.offexaudio.app uses a SYNTHETIC mobilesdk_app_id; "
+          "FCM will NOT deliver until the real google-services.json is added "
+          "(Firebase console, project thug-5607f)")
 
 os.makedirs(APP, exist_ok=True)
 with open(APP + "/google-services.json", "w", encoding="utf-8") as f:
     json.dump(base, f, indent=2)
-print("GNA4: wrote android-audio/app/google-services.json (%d client entries)" % len(clients))
+print("GNA4: wrote android-audio/app/google-services.json (%d client entries)" % len(base.get("client", [])))
