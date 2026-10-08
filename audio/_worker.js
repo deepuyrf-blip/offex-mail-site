@@ -190,6 +190,16 @@ export default {
       return proxyHTTP(request, env, target);
     }
 
+    // The app's own custom UI is published as a static asset (app-ui.html) so
+    // it shares this site's origin with the /hf proxy. Serve it for the clean
+    // URL /app-ui (and /app-ui/) regardless of the asset layer's extension
+    // handling, so the WebView can load https://offexmail.online/app-ui.
+    if (url.pathname === "/app-ui" || url.pathname === "/app-ui/") {
+      const rewritten = new URL(request.url);
+      rewritten.pathname = "/app-ui.html";
+      return env.ASSETS.fetch(new Request(rewritten.toString(), request));
+    }
+
     return env.ASSETS.fetch(request);
   }
 };

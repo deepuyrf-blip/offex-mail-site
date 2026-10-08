@@ -9,13 +9,13 @@
 #    * res/drawable + res/mipmap launcher icons
 #    * res/layout/activity_main.xml (WebView host + native ad container)
 #
-#  Package: online.offexaudio.app      Version: 1.2 (versionCode 3)
+#  Package: online.offexaudio.app      Version: 1.3 (versionCode 4)
 #
-#  v1.2: the v1.0 custom bundled UI is restored, but it is now served from a
-#  REAL https origin (androidx.webkit WebViewAssetLoader ->
-#  https://appassets.androidplatform.net/assets/offex_audio_ui.html) instead of
-#  file://, so the page can reach the Hugging Face backend through the site's
-#  /hf proxy with normal fetch/XHR/WebSocket (no request interception).
+#  v1.3: the app's OWN custom UI is HOSTED ON THE SITE (audio/app-ui.html ->
+#  https://offexmail.online/app-ui) and loaded from there, so the page shares
+#  the site's origin with its /hf proxy and /health. Same-origin fetch/XHR/
+#  WebSocket calls mean no CORS problem, and no HF token is inside the app (the
+#  Cloudflare Pages worker injects the token server-side).
 # ============================================================================
 import os
 from PIL import Image
@@ -60,8 +60,8 @@ android {
         applicationId "online.offexaudio.app"
         minSdk 24
         targetSdk 34
-        versionCode 3
-        versionName "1.2"
+        versionCode 4
+        versionName "1.3"
         vectorDrawables { useSupportLibrary true }
     }
     buildTypes { release { minifyEnabled false; signingConfig signingConfigs.debug } }

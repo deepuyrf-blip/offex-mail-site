@@ -12,18 +12,20 @@
 #  every method with EXACTLY its declared parameter count. The page's call()
 #  helper forwards the arguments it is given, unchanged.
 #
-#  v1.2 BACKEND FIX (this is the key change over v1.0):
-#    v1.0 loaded the UI from file:// and tried to reach the backend by native
-#    request interception (shouldInterceptRequest). That cannot carry a POST
-#    body and cannot upgrade a WebSocket, so uploads, the real job submit and
-#    the progress stream all silently failed.
-#    Now the UI is served from a REAL https origin with WebViewAssetLoader
-#    (https://appassets.androidplatform.net/assets/offex_audio_ui.html), so the
-#    page's normal fetch/XHR/WebSocket calls to the site's /hf proxy
-#    (https://offexmail.online/hf) and /health just work - no CORS problem and
-#    no HF token inside the app (the Cloudflare proxy adds the token from its
-#    own env vars). The page runs the real @gradio/client flow (connect ->
-#    upload -> submit -> stream progress -> fetch result URL).
+#  v1.3 BACKEND FIX (this is the key change over v1.2):
+#    v1.2 served the bundled UI from a local appassets origin and
+#    had it call the site's /hf proxy cross-origin. That cross-origin call was
+#    blocked (CORS / the proxy), so no real job ran (no upload %, instant fake
+#    completion).
+#    Now the app's OWN custom UI is HOSTED ON THE SITE itself and loaded from
+#    https://offexmail.online/app-ui, so the page shares the site's origin with
+#    the /hf proxy and /health. Same-origin fetch/XHR/WebSocket calls to
+#    https://offexmail.online/hf/* and https://offexmail.online/health are not
+#    cross-origin, so there is no CORS problem and no HF token inside the app
+#    (the Cloudflare Pages worker injects the token server-side). The page runs
+#    the real @gradio/client flow (connect -> upload -> submit -> stream
+#    progress -> fetch result URL). This is still the app's own design, NOT the
+#    marketing website.
 # ============================================================================
 import os
 
@@ -48,7 +50,6 @@ import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
-import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
@@ -56,7 +57,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.webkit.WebViewAssetLoader;
 import androidx.webkit.WebViewClientCompat;
 
 import org.json.JSONArray;
@@ -74,16 +74,17 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "OffexAudio";
 
     /**
-     * The bundled UI is served from a REAL https origin (WebViewAssetLoader),
-     * not file://. A real origin is what lets the page perform normal
-     * fetch/XHR/WebSocket calls to the backend without file:// restrictions.
+     * The app's OWN custom UI is hosted on the site itself and loaded from
+     * there, so the page shares the site's origin with the /hf proxy and
+     * /health. Same origin means the page's ordinary fetch/XHR/WebSocket calls
+     * to https://offexmail.online/hf/* and https://offexmail.online/health are
+     * NOT cross-origin - no CORS problem, and no HF token in the app (the
+     * Cloudflare Pages worker injects the token server-side).
      */
-    private static final String ASSET_ORIGIN = "https://appassets.androidplatform.net";
-    private static final String UI_URL = ASSET_ORIGIN + "/assets/offex_audio_ui.html";
+    private static final String UI_URL = "https://offexmail.online/app-ui";
 
     /** Hosts the page is allowed to talk to from inside the WebView. */
     private static final String BACKEND_HOST = "offexmail.online";
-    private static final String ASSET_HOST = "appassets.androidplatform.net";
 
     private static final int REQ_NOTIF = 8801;
     private static final int REQ_FILE = 8802;
@@ -155,19 +156,7 @@ public class MainActivity extends AppCompatActivity {
             cm.setAcceptCookie(true);
             cm.setAcceptThirdPartyCookies(webUi, true);
 
-            // Serve the bundled UI from a real https origin.
-            final WebViewAssetLoader assetLoader = new WebViewAssetLoader.Builder()
-                    .setDomain(ASSET_HOST)
-                    .addPathHandler("/assets/", new WebViewAssetLoader.AssetsPathHandler(this))
-                    .build();
-
             webUi.setWebViewClient(new WebViewClientCompat() {
-                @Override public WebResourceResponse shouldInterceptRequest(WebView v, WebResourceRequest r) {
-                    // Only local bundled assets are served by the loader; every
-                    // backend call goes straight to the network as a normal
-                    // browser request (POST bodies + WebSocket upgrades intact).
-                    return assetLoader.shouldInterceptRequest(r.getUrl());
-                }
                 @Override public boolean shouldOverrideUrlLoading(WebView v, WebResourceRequest r) {
                     String u = r.getUrl() == null ? "" : r.getUrl().toString();
                     if (isInternal(u)) return false;   // keep it inside the WebView
@@ -218,7 +207,7 @@ public class MainActivity extends AppCompatActivity {
             Uri uri = Uri.parse(u);
             String h = uri.getHost();
             if (h == null) return false;
-            return h.equals(ASSET_HOST) || h.equals(BACKEND_HOST) || h.endsWith("." + BACKEND_HOST)
+            return h.equals(BACKEND_HOST) || h.endsWith("." + BACKEND_HOST)
                     || h.endsWith(".hf.space");
         } catch (Throwable t) { return false; }
     }
@@ -334,7 +323,7 @@ public class MainActivity extends AppCompatActivity {
             s.put("healthNote", healthNote);
             s.put("lang", LocaleHelper.current(this));
             s.put("rtl", LocaleHelper.isRtl(this));
-            s.put("version", "1.2");
+            s.put("version", "1.3");
             s.put("proxy", Config.proxyUrl());
             s.put("health", Config.healthUrl());
             s.put("strings", buildStrings());
@@ -519,7 +508,7 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     new AlertDialog.Builder(MainActivity.this)
                             .setTitle(R.string.more_title)
-                            .setMessage(getString(R.string.more_version) + ": 1.2\n"
+                            .setMessage(getString(R.string.more_version) + ": 1.3\n"
                                     + getString(R.string.more_backend) + ": " + getString(R.string.more_backend_value))
                             .setPositiveButton(R.string.close, (d, w) -> { })
                             .show();

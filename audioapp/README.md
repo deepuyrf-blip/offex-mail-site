@@ -12,18 +12,22 @@ build (`android.yml`, `gn_a…gn_af`) is completely untouched.
   the website.
 - **Vendored:** `audioapp/assets/gradio_client.js` (a build of `@gradio/client`),
   `audioapp/assets/audio-engine.js` (the offline in-browser fallback engine)
-- **Package / version:** `online.offexaudio.app` / versionName `1.2` (versionCode 3)
+- **Package / version:** `online.offexaudio.app` / versionName `1.3` (versionCode 4)
 
 ## Backend (how the tools really work)
 
-The bundled UI is served from a **real https origin** using
-`androidx.webkit.WebViewAssetLoader`:
+The app's own custom UI page is **hosted on the site itself** (committed as
+`audio/app-ui.html`, published by the audio Pages project) and the WebView
+loads it from:
 
-    https://appassets.androidplatform.net/assets/offex_audio_ui.html
+    https://offexmail.online/app-ui
 
-A real origin (not `file://`) is what lets the page make ordinary
-`fetch`/`XHR`/`WebSocket` calls to the backend. The page then runs the **real
-Gradio client flow** against the same `/hf` proxy the website uses:
+Loading it from the site means the page shares the site's **origin** with the
+`/hf` proxy and `/health`, so its ordinary `fetch`/`XHR`/`WebSocket` calls are
+**same-origin** - no CORS problem (the v1.2 build served the page from
+`https://appassets.androidplatform.net` and called the proxy cross-origin,
+which was blocked). The page then runs the **real Gradio client flow** against
+the same `/hf` proxy the website uses:
 
 | Purpose | URL |
 | --- | --- |
