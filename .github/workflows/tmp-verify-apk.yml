@@ -1,0 +1,20 @@
+name: tmp-verify-apk
+on:
+  workflow_dispatch:
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify APK download link on live mail site
+        run: |
+          echo "==== live index.html ===="
+          code=$(curl -sL --max-time 40 -o /tmp/idx.html -w '%{http_code}' https://mytemp-mail.online/)
+          echo "index_http=$code"
+          echo "index_target_url_count=$(grep -o 'releases/latest/download/OffexMail.apk' /tmp/idx.html | wc -l)"
+          echo "index_appdl_btn_count=$(grep -o 'appdl-btn' /tmp/idx.html | wc -l)"
+          echo "--- apk hrefs on page ---"
+          grep -o 'href="[^"]*\.apk"' /tmp/idx.html || true
+          echo "==== live app-promo.js ===="
+          code2=$(curl -sL --max-time 40 -o /tmp/promo.js -w '%{http_code}' https://mytemp-mail.online/app-promo.js)
+          echo "promo_http=$code2"
+          echo "promo_target_url_count=$(grep -o 'releases/latest/download/OffexMail.apk' /tmp/promo.js | wc -l)"
