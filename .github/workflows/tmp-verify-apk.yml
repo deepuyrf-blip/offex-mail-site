@@ -1,0 +1,28 @@
+name: tmp-verify-apk
+on:
+  workflow_dispatch:
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify site-hosted APK and download links
+        run: |
+          set +e
+          echo "=== APK HEAD ==="
+          curl -sI --max-time 60 https://mytemp-mail.online/OffexMail.apk | tr -d '\r' | grep -iE 'HTTP/|content-type|content-length|content-disposition|cache-control'
+          echo "=== APK GET ==="
+          curl -s --max-time 180 -o /tmp/live.apk -w 'http_code=%{http_code} size_download=%{size_download} content_type=%{content_type}\n' https://mytemp-mail.online/OffexMail.apk
+          ls -l /tmp/live.apk
+          echo "sha256: $(sha256sum /tmp/live.apk | awk '{print $1}')"
+          echo "=== homepage: old GitHub URL count ==="
+          curl -s --max-time 60 https://mytemp-mail.online/ | grep -c 'github.com/deepuyrf-blip/offex-mail-site/releases'
+          echo "=== homepage: /OffexMail.apk count ==="
+          curl -s --max-time 60 https://mytemp-mail.online/ | grep -c '/OffexMail.apk'
+          echo "=== app-promo.js: old GitHub URL count ==="
+          curl -s --max-time 60 https://mytemp-mail.online/app-promo.js | grep -c 'github.com/deepuyrf-blip/offex-mail-site/releases'
+          echo "=== app-promo.js: /OffexMail.apk count ==="
+          curl -s --max-time 60 https://mytemp-mail.online/app-promo.js | grep -c '/OffexMail.apk'
+          echo "=== sample hub de: old count ==="
+          curl -s --max-time 60 https://mytemp-mail.online/de/ | grep -c 'github.com/deepuyrf-blip/offex-mail-site/releases'
+          echo "=== sample hub de: new count ==="
+          curl -s --max-time 60 https://mytemp-mail.online/de/ | grep -c '/OffexMail.apk'
