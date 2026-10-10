@@ -5,7 +5,7 @@
    plain download link (no interstitial), so it stays AdSense-safe. */
 (function () {
   "use strict";
-  var APK = "https://github.com/deepuyrf-blip/offex-mail-site/releases/latest/download/OffexMail.apk";
+  var APK = "/OffexMail.apk";
 
   var STR = {
     en: { t: "\ud83d\udcf1 Better experience on the app \u2014 Download Offex Mail", b: "Download", a: "Download the Offex Mail Android app" },

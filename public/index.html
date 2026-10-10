@@ -517,7 +517,7 @@
 <div class="appdl" role="complementary" aria-label="Download the Offex Mail Android app">
   <div class="appdl-in">
     <span class="appdl-tx" data-i18n-html="appdl_banner">📱 Better experience on the app — <b>Download Offex Mail</b></span>
-    <a class="appdl-btn" data-apk href="https://github.com/deepuyrf-blip/offex-mail-site/releases/latest/download/OffexMail.apk" download rel="noopener" data-i18n="appdl_btn">⬇ Download</a>
+    <a class="appdl-btn" data-apk href="/OffexMail.apk" download rel="noopener" data-i18n="appdl_btn">⬇ Download</a>
   </div>
 </div>
 
@@ -779,7 +779,7 @@
     <h4 data-i18n="appdl_sheet_title">Better experience on the app</h4>
     <p data-i18n="appdl_sheet_text">Install the Offex Mail Android app for instant new-mail alerts and one-tap access to your inbox. Free — no signup.</p>
   </div>
-  <a class="app-sheet-cta" data-apk href="https://github.com/deepuyrf-blip/offex-mail-site/releases/latest/download/OffexMail.apk" download rel="noopener" data-i18n="appdl_sheet_cta">⬇ Download app</a>
+  <a class="app-sheet-cta" data-apk href="/OffexMail.apk" download rel="noopener" data-i18n="appdl_sheet_cta">⬇ Download app</a>
 </div>
 
 <script>
@@ -789,7 +789,7 @@
    clear close button, so it NEVER covers or blocks the temp-mail tool. */
 (function(){
   "use strict";
-  var APK = "https://github.com/deepuyrf-blip/offex-mail-site/releases/latest/download/OffexMail.apk";
+  var APK = "/OffexMail.apk";
   Array.prototype.forEach.call(document.querySelectorAll("[data-apk]"), function(a){ a.href = APK; });
 
   /* localize the close button's aria-label (data-i18n-aria) */
