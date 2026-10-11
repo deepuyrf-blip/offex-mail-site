@@ -1,0 +1,40 @@
+name: adsense-verify
+
+on: workflow_dispatch
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify live AdSense readiness
+        run: |
+          set +e
+          BASE="https://mytemp-mail.online"
+          echo "=== HTTP STATUS ==="
+          for p in "" "ads.txt" "instagram" "adobe" "services" "privacy" "blog/" "blog/sms-free-email-verification" "blog/how-disposable-inboxes-work" "hi/instagram" "es/instagram"; do
+            echo "GET /$p -> $(curl -s -o /dev/null -w '%{http_code}' --max-time 40 "$BASE/$p")"
+          done
+          curl -sL --max-time 40 "$BASE/" -o /tmp/home.html
+          echo "=== HOMEPAGE SIGNALS ==="
+          echo "home_new_pub        : $(grep -c 'ca-pub-9424904813990636' /tmp/home.html)"
+          echo "home_old_pub        : $(grep -c '7802179098119853' /tmp/home.html)"
+          echo "home_keywords_meta  : $(grep -ci 'name=\"keywords\"' /tmp/home.html)"
+          echo "home_learn_marker   : $(grep -c 'offex-learn-start' /tmp/home.html)"
+          echo "home_glossary       : $(grep -c 'Temp mail glossary' /tmp/home.html)"
+          echo "home_blog_links     : $(grep -o '/blog/' /tmp/home.html | wc -l)"
+          echo "home_title          : $(grep -o '<title>[^<]*' /tmp/home.html | head -1 | sed 's/<title>//i')"
+          WORDS=$(perl -0777 -pe 's/<script.*?<\/script>//gs; s/<style.*?<\/style>//gs; s/<[^>]+>/ /g' /tmp/home.html | wc -w)
+          echo "home_visible_words  : $WORDS"
+          echo "=== ADS.TXT ==="
+          echo "ads_http : $(curl -s -o /tmp/ads.txt -w '%{http_code}' --max-time 40 "$BASE/ads.txt")"
+          cat /tmp/ads.txt
+          echo "ads_has_new_line : $(grep -c 'pub-9424904813990636' /tmp/ads.txt)"
+          echo "ads_has_old_line : $(grep -c '7802179098119853' /tmp/ads.txt)"
+          echo "=== SAMPLE PAGES ==="
+          for p in instagram blog/sms-free-email-verification blog/how-disposable-inboxes-work hi/instagram es/instagram; do
+            curl -sL --max-time 40 "$BASE/$p" -o /tmp/p.html
+            echo "/$p :: http=$(curl -s -o /dev/null -w '%{http_code}' --max-time 40 "$BASE/$p") new_pub=$(grep -c 'ca-pub-9424904813990636' /tmp/p.html) old_pub=$(grep -c '7802179098119853' /tmp/p.html) kw=$(grep -ci 'name=\"keywords\"' /tmp/p.html) title=$(grep -o '<title>[^<]*' /tmp/p.html | head -1 | sed 's/<title>//i')"
+          done
