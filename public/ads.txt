@@ -1,8 +1,7 @@
-# Offex Mail — ads.txt
-# Authorized Digital Sellers file.
+# Offex Mail - ads.txt
+# Authorized Digital Sellers (Google AdSense).
 #
-# Paste the exact line Monetag gives you (Dashboard → your site → ads.txt),
-# it usually looks like:
-#   monetag.com, 1234567, DIRECT
-#
-# Until you add it, this file is just a placeholder so the endpoint exists.
+# This is the seller line AdSense gives you for this site.
+# Do not edit it by hand; keep exactly one line per publisher id.
+
+google.com, pub-9424904813990636, DIRECT, f08c47fec0942fa0
