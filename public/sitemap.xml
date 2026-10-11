@@ -665,5 +665,11 @@
 <url><loc>https://mytemp-mail.online/blog/how-disposable-inboxes-work</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
 <url><loc>https://mytemp-mail.online/blog/temp-mail-vs-second-email</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
 <url><loc>https://mytemp-mail.online/blog/temp-mail-safety-guide</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+
+<url><loc>https://mytemp-mail.online/blog/temp-mail-for-app-signups</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+<url><loc>https://mytemp-mail.online/blog/temp-mail-for-testing-and-qa</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+<url><loc>https://mytemp-mail.online/blog/avoid-spam-after-signing-up</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+<url><loc>https://mytemp-mail.online/blog/understanding-email-verification-flows</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+<url><loc>https://mytemp-mail.online/blog/disposable-inbox-privacy-basics</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
 <url><loc>https://mytemp-mail.online/blog/</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
 </urlset>

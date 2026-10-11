@@ -19,6 +19,11 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Offex Mail — Free Temporary Email">
 <meta name="twitter:description" content="Offex Mail gives you a free, instant disposable email address to receive OTPs, verification links and sign-up mail — no signup, no password and nothing left behind in your real inbox.">
+<meta property="og:image" content="https://mytemp-mail.online/images/og-home.svg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Offex Mail — free temporary email and disposable inbox">
+<meta name="twitter:image" content="https://mytemp-mail.online/images/og-home.svg">
 
 <link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png"><link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"><link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png"><link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -325,29 +330,6 @@
   .reveal{opacity:0;transform:translateY(22px);transition:.65s cubic-bezier(.2,.8,.2,1)}
   .reveal.in{opacity:1;transform:none}
 
-  /* ---------- cross-promo popup (promotes Offex Audio) ---------- */
-  .promo-ov{position:fixed;inset:0;z-index:300;background:rgba(8,10,20,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
-    display:flex;align-items:center;justify-content:center;padding:18px;opacity:0;pointer-events:none;transition:opacity .25s}
-  .promo-ov.on{opacity:1;pointer-events:auto}
-  .promo-card{position:relative;width:100%;max-width:420px;background:var(--reader);border:1px solid var(--border2);border-radius:22px;
-    padding:26px 24px 22px;text-align:center;color:var(--text);box-shadow:var(--shadow2);
-    transform:translateY(14px) scale(.98);transition:transform .3s cubic-bezier(.2,.8,.2,1)}
-  .promo-ov.on .promo-card{transform:none}
-  .promo-x{position:absolute;top:10px;inset-inline-end:10px;width:34px;height:34px;border-radius:10px;cursor:pointer;
-    background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-size:15px;font-family:inherit;transition:.15s}
-  .promo-x:hover{border-color:var(--danger);color:var(--danger)}
-  .promo-emoji{font-size:40px;line-height:1;margin-bottom:12px}
-  .promo-tag{display:inline-block;font-size:11px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--accent);
-    background:var(--chip);border:1px solid var(--border2);padding:5px 12px;border-radius:999px;margin-bottom:14px}
-  .promo-card h3{margin:0 0 10px;font-size:19px;font-weight:800;letter-spacing:-.3px}
-  .promo-card p{margin:0 0 18px;font-size:14px;line-height:1.6;color:var(--muted)}
-  .promo-cta{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;background:var(--grad);color:#fff;
-    font-weight:800;font-size:15px;text-decoration:none;padding:14px 18px;border-radius:14px;
-    box-shadow:0 12px 28px rgba(109,77,255,.35);transition:transform .16s}
-  .promo-cta:hover{transform:translateY(-2px)}
-  .promo-skip{display:block;width:100%;margin-top:10px;background:none;border:none;color:var(--muted2);font-size:13px;
-    font-weight:600;cursor:pointer;font-family:inherit;padding:8px}
-  .promo-skip:hover{color:var(--text)}
   .otp-badge{display:inline-block;margin-inline-start:6px;background:var(--chip);border:1px solid var(--border2);color:var(--accent);font-size:11px;font-weight:800;padding:2px 8px;border-radius:999px;vertical-align:middle}
   .otp-bar{margin:0 0 12px;padding:10px 12px;border:1px solid var(--border2);border-radius:12px;background:var(--chip);display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:14px}
   .otp-bar b{font-size:17px;letter-spacing:1px;color:var(--accent)}
@@ -366,9 +348,20 @@
   .topbanner b{font-weight:900}
   .topbanner .dot2{opacity:.75;margin:0 6px}
   @media(max-width:600px){.topbanner{font-size:12px;padding:8px 10px}}
-  .reward-status{min-height:16px;margin-top:10px;font-size:12px;line-height:1.5;color:var(--muted2);text-align:center}
-  button.promo-cta{border:none;cursor:pointer;font:inherit;font-weight:800}
-  button.promo-cta:disabled{opacity:.6;cursor:wait}
+
+  /* ---------- content figures & guide cards ---------- */
+  .fig{margin:26px auto;max-width:760px;text-align:center}
+  .fig img{width:100%;height:auto;border:1px solid var(--border2);border-radius:16px;background:var(--surface)}
+  .fig figcaption{color:var(--muted2);font-size:13px;margin-top:8px}
+  .learn figure{margin:24px 0;text-align:center}
+  .learn figure img{width:100%;height:auto;border:1px solid var(--border2);border-radius:14px;background:var(--surface)}
+  .learn figcaption{color:var(--muted2);font-size:13px;margin-top:8px}
+  .gcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin:22px 0}
+  .gcards a{display:flex;gap:12px;align-items:flex-start;text-decoration:none;border:1px solid var(--border2);border-radius:14px;padding:14px;background:var(--surface);transition:transform .15s}
+  .gcards a:hover{transform:translateY(-2px)}
+  .gcards a img{width:64px;height:auto;flex:none;border-radius:10px;border:1px solid var(--border2);background:var(--surface2)}
+  .gcards b{display:block;font-size:14.5px;color:var(--text);margin-bottom:2px}
+  .gcards small{color:var(--muted2);font-size:12.5px;line-height:1.45}
 
   /* ---------- ads ---------- */
   .ad-slot{max-width:1180px;margin:26px auto;padding:0 20px;text-align:center}
@@ -396,7 +389,7 @@
     h1{font-size:30px}
   }
 
-  /* ---------- app-download promo (always-visible banner + repeating sheet) ---------- */
+  /* ---------- app-download promo (inline banner only) ---------- */
   .appdl{max-width:1180px;margin:16px auto 0;padding:0 20px}
   .appdl-in{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center;text-align:center;
     background:var(--grad);color:#fff;border-radius:16px;padding:12px 16px;box-shadow:0 12px 30px rgba(109,77,255,.3)}
@@ -408,23 +401,6 @@
   .appdl-btn:hover{transform:translateY(-2px)}
   @media(max-width:600px){.appdl{padding:0 14px;margin-top:12px}.appdl-tx{flex:1 1 100%;order:2;font-size:13.5px}
     .appdl-btn{order:3;width:100%;justify-content:center}}
-  /* repeating, dismissible reminder — bottom-anchored card, never covers content */
-  .app-sheet{position:fixed;left:50%;transform:translate(-50%,170%);bottom:16px;z-index:9500;width:calc(100% - 28px);max-width:480px;
-    background:var(--reader);border:1px solid var(--border2);border-radius:18px;box-shadow:var(--shadow2);
-    padding:14px 16px;display:flex;align-items:center;gap:12px;opacity:0;pointer-events:none;
-    transition:transform .35s cubic-bezier(.2,.8,.2,1),opacity .3s}
-  .app-sheet.on{transform:translate(-50%,0);opacity:1;pointer-events:auto}
-  .app-sheet-ic{font-size:24px;line-height:1;flex:none}
-  .app-sheet-body{min-width:0;flex:1 1 auto}
-  .app-sheet-body h4{margin:0 0 2px;font-size:14px;font-weight:800;letter-spacing:-.2px}
-  .app-sheet-body p{margin:0;font-size:12.5px;line-height:1.45;color:var(--muted)}
-  .app-sheet-cta{flex:none;background:var(--grad);color:#fff;text-decoration:none;font-weight:800;font-size:13px;
-    padding:10px 15px;border-radius:12px;white-space:nowrap;box-shadow:0 8px 20px rgba(109,77,255,.35)}
-  .app-sheet-x{position:absolute;top:-10px;inset-inline-end:-6px;width:28px;height:28px;border-radius:50%;border:1px solid var(--border2);
-    background:var(--surface);color:var(--text);font-size:13px;line-height:1;cursor:pointer;font-family:inherit;display:grid;place-items:center;box-shadow:var(--shadow)}
-  .app-sheet-x:hover{border-color:var(--danger);color:var(--danger)}
-  @media(max-width:420px){.app-sheet{padding:12px;gap:10px}.app-sheet-cta{padding:9px 12px;font-size:12px}.app-sheet-body p{display:none}}
-  @media(prefers-reduced-motion:reduce){.app-sheet{transition:opacity .2s}}
 </style>
 
   <style id="svc-css">
@@ -530,6 +506,8 @@
       <a class="btn btn-ghost" href="#how" data-i18n="cta_how">How it works</a>
     </div>
   </section>
+  <figure class="fig reveal"><img src="/images/hero-inbox.svg" width="640" height="420" alt="Browser window showing a temporary inbox receiving new mail and a one-time code" loading="lazy" decoding="async"><figcaption>A disposable inbox, live: your address at the top and new mail arriving in seconds.</figcaption></figure>
+
 
   <section class="wrap" id="inbox">
     <div class="app" id="app">
@@ -609,6 +587,8 @@
       <div class="feat reveal"><div class="ic">🕘</div><h3 data-i18n="f6t">History</h3><p data-i18n="f6d">Every inbox you create is saved — switch back to it anytime.</p></div>
     </div>
   </section>
+  <figure class="fig reveal"><img src="/images/privacy-layers.svg" width="480" height="340" alt="Diagram separating a private real inbox from a throwaway inbox" loading="lazy" decoding="async"><figcaption>One address for people, one throwaway for everything you are only trying.</figcaption></figure>
+
 
   <section class="block wrap" id="how">
     <div class="sec-head reveal">
@@ -621,6 +601,8 @@
       <div class="step reveal"><h3 data-i18n="s3t">Receive mail</h3><p data-i18n="s3d">Mail arrives with a chime and shows up here. Open, read, copy the OTP — done!</p></div>
     </div>
   </section>
+  <figure class="fig reveal"><img src="/images/how-it-works.svg" width="760" height="300" alt="Three step diagram: the site asks for an email, you paste a temp address, the code lands in your inbox" loading="lazy" decoding="async"><figcaption>Three steps, ten seconds: create, paste, receive.</figcaption></figure>
+
 
   <section class="block wrap" id="elevenlabs">
     <div class="sec-head reveal">
@@ -740,11 +722,15 @@
   <p>A temporary email address — also called a temp mail, disposable email, throwaway email or burner inbox — is a working email address you can use immediately and then throw away. It is not tied to your name, your phone number or an account you have to maintain. You open Offex Mail, an address is generated for you on the spot, and you can start receiving mail at it within seconds. When you are done you close the tab, and the inbox and everything in it disappears on its own.</p>
   <p>Every address here runs on Offex Mail's own domain, <strong>mytemp-mail.online</strong>, so what you get is a real, deliverable mailbox rather than something that merely looks like an email address. That matters more than it sounds: many websites quietly reject obvious throwaway domains, and a real domain that accepts mail passes those checks far more often.</p>
 
-  <h3>How a disposable inbox works under the hood</h3>
+  
+  <figure class="fig"><img src="/images/catch-all.svg" width="560" height="340" alt="Catch-all mail server routing any address on the domain to one inbox" loading="lazy" decoding="async"><figcaption>A catch-all server accepts mail for any name on the domain and routes it to your inbox.</figcaption></figure>
+<h3>How a disposable inbox works under the hood</h3>
   <p>A temp mail service is really a mail server with a catch-all rule. Instead of one mailbox per person, the server accepts mail for any address on its domain — <em>random-name@mytemp-mail.online</em>, <em>my-test@mytemp-mail.online</em> and so on — and routes it to the inbox you are viewing. The moment a message arrives the page is told about it and the message appears, usually within a couple of seconds. Nothing is installed and there is no password to remember, because there is no account to log into.</p>
   <p>When an inbox expires, its messages are deleted. That short lifetime is the whole point: a disposable address is meant to be useful for minutes, not years.</p>
 
-  <h2>When should you use a temp mail?</h2>
+  
+  <figure class="fig"><img src="/images/inbox-screen.svg" width="380" height="460" alt="Phone screen mock showing a temporary inbox with new mail" loading="lazy" decoding="async"><figcaption>The same inbox works on desktop and mobile — the address is the key.</figcaption></figure>
+<h2>When should you use a temp mail?</h2>
   <p>A temporary inbox is the right tool whenever a site wants an email address but you do not want a lasting relationship with that site. Typical cases:</p>
   <ul>
    <li><strong>One-off signups and free trials.</strong> Try a service, a template pack or an AI tool without handing over the address your friends and bank use.</li>
@@ -755,7 +741,9 @@
   </ul>
   <p>It is just as important to know when <em>not</em> to use one: banking, payments and government services; accounts you will need to recover later or that hold data you care about; and anything you might turn into a paid, long-term subscription.</p>
 
-  <h2>How to keep your real inbox safe</h2>
+  
+  <figure class="fig"><img src="/images/spam-shield.svg" width="420" height="320" alt="Shield deflecting spam away from the real inbox" loading="lazy" decoding="async"><figcaption>Spam and marketing follow the throwaway address, not you.</figcaption></figure>
+<h2>How to keep your real inbox safe</h2>
   <p>Your primary inbox is the master key to your online life — it is where password resets land. Every site you give it to is another place that can leak it, sell it or spam it. A few habits keep it clean:</p>
   <ul>
    <li><strong>Default to disposable.</strong> If you are not sure a site deserves your real address, it doesn't — use a temp mail first.</li>
@@ -765,7 +753,9 @@
    <li><strong>Read before you click.</strong> A temp inbox shows every message, including phishing — treat unexpected "verify your account" mail with suspicion.</li>
   </ul>
 
-  <h2>How to receive an OTP or verification code</h2>
+  
+  <figure class="fig"><img src="/images/verification-flow.svg" width="760" height="330" alt="Email verification flow: form submitted, email sent, inbox receives, verified" loading="lazy" decoding="async"><figcaption>How a verification code reaches you, from form submit to account verified.</figcaption></figure>
+<h2>How to receive an OTP or verification code</h2>
   <p>Receiving a one-time passcode on a temporary address works the same way as on any mailbox:</p>
   <ol>
    <li>Open Offex Mail and create an inbox, or type a custom name you will recognise.</li>
@@ -776,10 +766,14 @@
   </ol>
   <p>Most codes arrive within seconds. If one does not, ask the site to resend it, wait two full minutes, and double-check the address for a stray space. Some services refuse disposable domains outright, or require a phone number as well — in that case the temp address simply is not the right tool for that account.</p>
 
-  <h2>Is temp mail safe to use?</h2>
+  
+  <figure class="fig"><img src="/images/privacy-scope.svg" width="600" height="340" alt="Two columns listing what a disposable inbox can and cannot protect" loading="lazy" decoding="async"><figcaption>What a disposable inbox protects — and what it does not.</figcaption></figure>
+<h2>Is temp mail safe to use?</h2>
   <p>For its intended job — one-time signups, trials, downloads and testing — a disposable inbox is a sensible privacy tool, not a risky one. It keeps your real address out of marketing lists and data-broker databases, and it leaves nothing behind. Two limits are worth stating plainly. First, a temp inbox is public in the sense that anyone who knows the address can read what arrives there, so never let sensitive mail, receipts or reset links for important accounts go to one. Second, because the inbox expires you cannot use it to recover an account later. Treat it as a burner and it will behave exactly as you expect.</p>
 
-  <h2>Temp mail vs. a second email account</h2>
+  
+  <figure class="fig"><img src="/images/expiry-timer.svg" width="320" height="320" alt="Clock showing an inbox auto-expiring and deleting its messages" loading="lazy" decoding="async"><figcaption>A throwaway inbox deletes itself; a spare account lives on.</figcaption></figure>
+<h2>Temp mail vs. a second email account</h2>
   <p>People often ask whether a spare Gmail account is not simply better. It depends on the job.</p>
   <ul>
    <li><strong>Setup:</strong> a temp address is ready in one click; a second account needs a phone number, a password and often a recovery email.</li>
@@ -803,10 +797,17 @@
    <a href="/blog/how-disposable-inboxes-work"><b>How disposable inboxes work under the hood</b><small>Catch-all mail servers, routing and expiry, explained simply.</small></a>
    <a href="/blog/temp-mail-vs-second-email"><b>Temp mail vs a second email account</b><small>When a burner beats a spare Gmail — and when it does not.</small></a>
    <a href="/blog/temp-mail-safety-guide"><b>Is temp mail safe? A straight answer</b><small>What a disposable inbox protects, and what it cannot.</small></a>
-   <a href="/blog/"><b>All guides</b><small>The Offex Mail blog index.</small></a>
+   <a href="/blog/temp-mail-for-app-signups"><b>Temp mail for app signups</b><small>What sign-up forms ask for — and how to clear verification.</small></a>
+   <a href="/blog/temp-mail-for-testing-and-qa"><b>Temp mail for testing &amp; QA</b><small>Run signup, confirmation and reset flows without real accounts.</small></a>
+   <a href="/blog/avoid-spam-after-signing-up"><b>How to avoid spam after signing up</b><small>How your address spreads and the habits that stop it.</small></a>
+   <a href="/blog/understanding-email-verification-flows"><b>Understanding email verification flows</b><small>Links, codes and buttons — and why a code goes missing.</small></a>
+   <a href="/blog/disposable-inbox-privacy-basics"><b>What a disposable inbox can protect</b><small>An honest line between what it guards and what it cannot.</small></a>
+   <a href="/blog/"><b>All guides</b><small>The Offex Mail blog index.</small></a>   <a href="/blog/"><b>All guides</b><small>The Offex Mail blog index.</small></a>
   </div>
 
-  <h2>Temp mail glossary</h2>
+  
+  <figure class="fig"><img src="/images/otp-code.svg" width="320" height="200" alt="Six digit one-time code shown in boxes" loading="lazy" decoding="async"><figcaption>An OTP is the code you copy back into the site.</figcaption></figure>
+<h2>Temp mail glossary</h2>
   <dl class="gloss">
    <dt>Temp mail</dt><dd>A free, short-lived email address used to receive mail without exposing your real inbox.</dd>
    <dt>Disposable inbox</dt><dd>The mailbox behind a temp address; it is deleted automatically once it expires.</dd>
@@ -830,6 +831,31 @@
 
  </div>
 </section>
+<!-- offex-guides-start -->
+<section class="block wrap" id="guides">
+  <div class="sec-head reveal">
+    <h2>New guides &amp; how-tos</h2>
+    <p>Five new in-depth walkthroughs that go deeper than the FAQ — written to be genuinely useful, not to pad a word count.</p>
+  </div>
+  <div class="gcards reveal">
+    <a href="/blog/temp-mail-for-app-signups"><img src="/images/signup-form.svg" width="520" height="340" alt="Sign-up form with a temporary email address filled in" loading="lazy" decoding="async"><span><b>How to use a temporary email for app signups</b><small>What sign-up forms really ask for, how to clear verification, and when a temp address is the wrong tool.</small></span></a>
+    <a href="/blog/temp-mail-for-testing-and-qa"><img src="/images/qa-testing.svg" width="560" height="340" alt="Testing checklist beside a laptop and an email message" loading="lazy" decoding="async"><span><b>Temporary email for testing and QA</b><small>Run signup, confirmation and password-reset flows over and over without creating real accounts.</small></span></a>
+    <a href="/blog/avoid-spam-after-signing-up"><img src="/images/spam-filter.svg" width="460" height="320" alt="Funnel filtering spam before it reaches the inbox" loading="lazy" decoding="async"><span><b>How to avoid spam after signing up somewhere</b><small>Spam rarely starts with a hack — it starts with a sign-up. Here is how to stop it at the source.</small></span></a>
+    <a href="/blog/understanding-email-verification-flows"><img src="/images/verification-types.svg" width="600" height="340" alt="Cards showing OTP code, magic link and confirm-button verification types" loading="lazy" decoding="async"><span><b>Understanding email verification flows</b><small>Links, one-time codes and confirm buttons — and why a code sometimes never arrives.</small></span></a>
+    <a href="/blog/disposable-inbox-privacy-basics"><img src="/images/device-sync.svg" width="460" height="320" alt="Desktop and phone showing the same temporary inbox" loading="lazy" decoding="async"><span><b>Privacy basics: what a disposable inbox can and cannot protect</b><small>An honest line between what a throwaway address guards and what it never could.</small></span></a>
+  </div>
+  <div class="learn" style="margin-top:30px">
+    <p>Temporary email is a small idea with a lot of depth once you start using it seriously. The quick questions are answered in the FAQ above; the guides below are for the moments when you want the whole picture — how a sign-up works end to end, why a verification code sometimes goes missing, and what a disposable inbox can and cannot protect.</p>
+    <h3>Start with the job, not the tool</h3>
+    <p>Most people arrive here because a site asked for an email address and they did not want to hand over the real one. That instinct is right, and it scales further than most people expect. The same disposable address that dodges a newsletter sign-up also keeps your primary inbox out of a data broker's database, lets a developer run one confirmation flow twenty times without twenty accounts, and gives a tester a clean mailbox for every case in a matrix. The tool is identical; only the job changes.</p>
+    <h3>What separates a good temp-mail habit from a careless one</h3>
+    <p>A careless habit is using a burner for everything, including the accounts you will need later — then discovering, too late, that the reset link went to an inbox that no longer exists. A good habit is deliberate: a throwaway address for anything you are only trying, a permanent secondary address for the services you keep, and your real inbox reserved for people and the things that genuinely matter. Two addresses, clearly divided, solve most of the problem before it starts.</p>
+    <p>That division is also what makes disposable email fast. A temp address needs no password, no phone number and no setup, so it is ready the moment you need it and gone the moment you do not. Verification mail usually lands within seconds; if it does not, the cause is almost always a mistyped address, a sender-side queue, or a site that refuses throwaway domains — all three of which the guides below explain and, more usefully, show you how to work around.</p>
+    <h3>How to read these guides</h3>
+    <p>Each guide is written in plain language and assumes you want the reasoning, not just a list of steps. If you only read one, start with the privacy basics guide: it draws the line that makes every other decision easier — which sign-ups deserve your real address, and which are better served by something you can throw away. From there, the app-signups and verification guides cover the everyday flow, the testing guide is aimed at developers, and the spam guide is the one to read if your primary inbox is already noisy.</p>
+  </div>
+</section>
+<!-- offex-guides-end -->
 <!-- offex-learn-end -->
 </main>
 
@@ -864,98 +890,8 @@
 
 <div class="toast" id="toast"></div>
 
-<div class="promo-ov" id="promoOv" role="dialog" aria-modal="true">
-  <div class="promo-card">
-    <button class="promo-x" id="promoX" aria-label="Close">&#10005;</button>
-    <div class="promo-emoji">&#127925;</div>
-    <span class="promo-tag" data-i18n="p_tag">Free</span>
-    <h3 data-i18n="p_title">Free Online Audio Tools</h3>
-    <p data-i18n="p_text">Remove silence, clean noise and split voice from music — right in your browser. Free, no signup.</p>
-    <a class="promo-cta" href="https://offexmail.online" target="_blank" rel="noopener" data-i18n="p_cta">🎵 Try Offex Audio →</a>
-    <button class="promo-skip" id="promoSkip" data-i18n="p_skip">Maybe later</button>
-  </div>
-</div>
-
-<div class="promo-ov" id="rewardOv" role="dialog" aria-modal="true">
-  <div class="promo-card">
-    <button class="promo-x" id="rewardX" aria-label="Close">&#10005;</button>
-    <div class="promo-emoji">&#127873;</div>
-    <span class="promo-tag" data-i18n="rw_tag">Support us</span>
-    <h3 data-i18n="rw_title">Watch a short ad to create your inbox</h3>
-    <p data-i18n="rw_text">Offex Mail is free to use. A quick ad keeps it running — then your private inbox is created instantly.</p>
-    <button class="promo-cta" id="rewardBtn" data-i18n="rw_btn">&#9654; Watch ad &amp; create inbox</button>
-    <div class="reward-status" id="rewardStatus"></div>
-    <button class="promo-skip" id="rewardSkip" data-i18n="rw_skip">Maybe later</button>
-  </div>
-</div>
-
 <script src="/i18n.js?v=9"></script>
-<!-- app-download promo: repeating, dismissible reminder (never blocks the tool) -->
-<div class="app-sheet" id="appSheet" role="region" aria-label="Download the Offex Mail app">
-  <button class="app-sheet-x" id="appSheetX" type="button" data-i18n-aria="appdl_close" aria-label="Close">✕</button>
-  <span class="app-sheet-ic" aria-hidden="true">📱</span>
-  <div class="app-sheet-body">
-    <h4 data-i18n="appdl_sheet_title">Better experience on the app</h4>
-    <p data-i18n="appdl_sheet_text">Install the Offex Mail Android app for instant new-mail alerts and one-tap access to your inbox. Free — no signup.</p>
-  </div>
-  <a class="app-sheet-cta" data-apk href="/OffexMail.apk" download rel="noopener" data-i18n="appdl_sheet_cta">⬇ Download app</a>
-</div>
-
-<script>
-/* app-download promo: repeating, dismissible reminder.
-   Shows at most once per page view (after 60s) and again every 3rd page view.
-   Dismissal is remembered for the session. It is a small bottom card with a
-   clear close button, so it NEVER covers or blocks the temp-mail tool. */
-(function(){
-  "use strict";
-  var APK = "/OffexMail.apk";
-  Array.prototype.forEach.call(document.querySelectorAll("[data-apk]"), function(a){ a.href = APK; });
-
-  /* localize the close button's aria-label (data-i18n-aria) */
-  function applyAria(){
-    var lang = "en"; try{ lang = localStorage.getItem("offex_lang") || "en"; }catch(e){}
-    var d = (window.OFFEX_STR && window.OFFEX_STR[lang]) || {};
-    var en = (window.OFFEX_STR && window.OFFEX_STR.en) || {};
-    Array.prototype.forEach.call(document.querySelectorAll("[data-i18n-aria]"), function(el){
-      var k = el.getAttribute("data-i18n-aria");
-      el.setAttribute("aria-label", d[k] || en[k] || "Close");
-    });
-  }
-  applyAria();
-  var sel = document.getElementById("langSel");
-  if(sel) sel.addEventListener("change", applyAria);
-
-  var sheet = document.getElementById("appSheet");
-  var x = document.getElementById("appSheetX");
-  var pwa = document.getElementById("pwaInstall");
-  if(!sheet) return;
-
-  var KEY = "offex_apppromo";
-  function isDismissed(){ try{ return sessionStorage.getItem(KEY) === "1"; }catch(e){ return false; } }
-  function dismiss(){ try{ sessionStorage.setItem(KEY, "1"); }catch(e){} }
-  function bumpViews(){
-    var n = 0; try{ n = parseInt(sessionStorage.getItem(KEY + "_v") || "0", 10) || 0; }catch(e){}
-    n += 1; try{ sessionStorage.setItem(KEY + "_v", String(n)); }catch(e){}
-    return n;
-  }
-  function show(){
-    if(isDismissed()) return;
-    sheet.classList.add("on");
-    if(pwa) pwa.style.display = "none";
-  }
-  function hide(){ sheet.classList.remove("on"); }
-  function close(){ hide(); dismiss(); }
-
-  if(x) x.addEventListener("click", close);
-  if(isDismissed()) return;
-
-  var views = bumpViews();
-  var t1 = setTimeout(show, 60000);            /* ~60s after load */
-  if(views > 1 && views % 3 === 0) setTimeout(show, 8000);   /* every 3rd page view */
-  window.addEventListener("pagehide", function(){ clearTimeout(t1); });
-})();
-</script>
-
+<!-- app-download promo: inline banner only (no auto-opening popup) -->
 <script>
 (function(){
   "use strict";
@@ -1171,32 +1107,6 @@
     renderMessages([]); startPolling(); loadMessages(true); tickExpiry(); renderHistory();
   }
 
-  /* ---------- rewarded ad gate (network plug-and-play) ---------- */
-  var OFFEX_REWARDED = false; /* flip to true once a rewarded ad network is connected */
-  function rewardedReady(){ return OFFEX_REWARDED && typeof window.offexRewardedAd === "function"; }
-  var _rewardPending = false;
-  function createInbox(){
-    if(!rewardedReady() && !window.OFFEX_PREVIEW_REWARDED){ doCreateInbox(); return; }
-    var ov = $("rewardOv"); if(!ov){ doCreateInbox(); return; }
-    var st = $("rewardStatus"); if(st) st.textContent = "";
-    ov.classList.add("on");
-  }
-  function closeRewardGate(){ var ov = $("rewardOv"); if(ov) ov.classList.remove("on"); }
-  function runRewarded(){
-    if(_rewardPending) return; _rewardPending = true;
-    var btn = $("rewardBtn"), st = $("rewardStatus");
-    if(btn) btn.disabled = true;
-    if(st) st.textContent = t("rw_loading");
-    function done(){ _rewardPending = false; if(btn) btn.disabled = false; closeRewardGate(); doCreateInbox(); }
-    function fail(){ _rewardPending = false; if(btn) btn.disabled = false; if(st) st.textContent = t("rw_fail"); }
-    if(rewardedReady()){
-      try{ Promise.resolve(window.offexRewardedAd()).then(function(ok){ if(ok === false) fail(); else done(); }).catch(fail); }catch(e){ fail(); }
-    } else if(window.OFFEX_PREVIEW_REWARDED){
-      var left = 15; if(st) st.textContent = "Preview " + left + "s";
-      var iv = setInterval(function(){ left--; if(st) st.textContent = "Preview " + left + "s"; if(left <= 0){ clearInterval(iv); done(); } }, 1000);
-    } else { fail(); }
-  }
-
   /* ---------- create / load ---------- */
   function doCreateInbox(){
     var custom = ($("customName").value || "").trim().toLowerCase();
@@ -1345,12 +1255,8 @@
     }, 1000);
   }
 
-  $("createBtn").onclick = createInbox;
-  if($("rewardBtn")) $("rewardBtn").onclick = runRewarded;
-  if($("rewardX")) $("rewardX").onclick = closeRewardGate;
-  if($("rewardSkip")) $("rewardSkip").onclick = closeRewardGate;
-  if($("rewardOv")) $("rewardOv").addEventListener("click", function(e){ if(e.target === $("rewardOv")) closeRewardGate(); });
-  $("customName").addEventListener("keydown", function(e){ if(e.key === "Enter") createInbox(); });
+  $("createBtn").onclick = doCreateInbox;
+  $("customName").addEventListener("keydown", function(e){ if(e.key === "Enter") doCreateInbox(); });
   $("copyBtn").onclick = function(){
     if(!state.address) return;
     navigator.clipboard.writeText(state.address).then(function(){ toast(t("t_copied"), "ok"); }).catch(function(){ toast("Copy failed", "err"); });
@@ -1381,19 +1287,6 @@
         }).catch(function(){});
       }
     }catch(e){}
-  })();
-
-  /* ---------- cross-promo (Offex Audio) ---------- */
-  (function(){
-    var KEY = "offex_mail_promo_seen";
-    try { if (sessionStorage.getItem(KEY)) return; } catch(e){}
-    var ov = $("promoOv"); if(!ov) return;
-    function close(){ ov.classList.remove("on"); try{ sessionStorage.setItem(KEY,"1"); }catch(e){} }
-    $("promoX").onclick = close;
-    $("promoSkip").onclick = close;
-    ov.addEventListener("click", function(e){ if(e.target === ov) close(); });
-    document.addEventListener("keydown", function(e){ if(e.key === "Escape") close(); });
-    setTimeout(function(){ ov.classList.add("on"); }, 2500);
   })();
 
   /* ---------- boot ---------- */
