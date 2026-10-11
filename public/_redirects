@@ -1,5 +1,5 @@
 # Offex Mail - Cloudflare Pages redirects
-# Served at https://tempmail.offexmail.online/_redirects
+# Served at https://mytemp-mail.online/_redirects
 
 # --- Removed service pages -> /services (301) ---
 /youtube   /services  301

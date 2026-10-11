@@ -26,8 +26,8 @@ jobs:
           npx --yes wrangler@3 pages deploy ad --project-name=audio --branch=main
       - name: Verify
         run: |
-          M=$(curl -sL --max-time 30 https://tempmail.offexmail.online/)
-          echo "MAIL load       : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://tempmail.offexmail.online/)"
+          M=$(curl -sL --max-time 30 https://mytemp-mail.online/)
+          echo "MAIL load       : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://mytemp-mail.online/)"
           echo "MAIL detectOtp  : $(echo "$M" | grep -c 'detectOtp')"
           echo "MAIL otp-badge  : $(echo "$M" | grep -c 'otp-badge')"
           echo "MAIL otp-bar    : $(echo "$M" | grep -c 'otp-bar')"
