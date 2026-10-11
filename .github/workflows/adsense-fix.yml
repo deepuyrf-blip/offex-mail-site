@@ -1,0 +1,31 @@
+name: adsense-fix
+
+# One-shot migration: applies tools/adsense_fix.py to public/ and commits the result.
+# Safe to re-run — every content injection is marker-guarded and idempotent.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Apply AdSense readiness fixes
+        run: python3 tools/adsense_fix.py
+      - name: Commit and push
+        run: |
+          git config user.email "actions@github.com"
+          git config user.name "offex-adsense-bot"
+          git add -A public tools
+          if git diff --cached --quiet; then
+            echo "nothing to commit"
+          else
+            git commit -m "AdSense readiness: new publisher id, remove keywords meta, soften claims, add homepage content + blog guides + service-page content"
+            git push
+          fi
