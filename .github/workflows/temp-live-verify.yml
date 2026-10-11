@@ -1,0 +1,59 @@
+name: temp-live-verify
+on:
+  workflow_dispatch:
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify live Offex Mail site
+        run: |
+          BASE=https://mytemp-mail.online
+          echo "===== HOMEPAGE ====="
+          curl -s -o /tmp/home.html -w "homepage HTTP %{http_code}\n" --max-time 40 "$BASE/"
+          echo "homepage bytes: $(wc -c < /tmp/home.html)"
+          echo "===== POPUP MARKUP (expect all 0) ====="
+          for t in promoOv rewardOv appSheet offex_mail_promo_seen offex_apppromo "offexmail.online" "Try Offex Audio"; do
+            printf "%-22s %s\n" "$t" "$(grep -c -- "$t" /tmp/home.html || true)"
+          done
+          echo "===== INLINE APP BANNER + TOOL + ADSENSE (expect > 0) ====="
+          for t in "appdl" "doCreateInbox" "adsbygoogle" "ca-pub-9424904813990636"; do
+            printf "%-22s %s\n" "$t" "$(grep -c -- "$t" /tmp/home.html || true)"
+          done
+          echo "===== HOMEPAGE WORD COUNT ====="
+          python3 - <<'PY'
+          import re
+          h=open('/tmp/home.html').read()
+          t=re.sub(r'<script.*?</script>','',h,flags=re.S)
+          t=re.sub(r'<style.*?</style>','',t,flags=re.S)
+          t=re.sub(r'<[^>]+>',' ',t)
+          print("homepage words:", len(t.split()))
+          print("img tags:", len(re.findall(r'<img\b', h)))
+          PY
+          echo "===== NEW IMAGES REFERENCED ON HOMEPAGE ====="
+          for img in hero-inbox how-it-works inbox-screen catch-all verification-flow privacy-scope expiry-timer spam-shield otp-code signup-form qa-testing spam-filter verification-types device-sync og-home; do
+            printf "%-20s %s\n" "$img" "$(grep -c -- "images/$img.svg" /tmp/home.html || true)"
+          done
+          echo "===== SVG ASSETS (expect 200) ====="
+          for img in hero-inbox how-it-works verification-flow privacy-scope qa-testing catch-all og-home og-blog; do
+            printf "%-22s %s\n" "$img.svg" "$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "$BASE/images/$img.svg")"
+          done
+          echo "===== NEW GUIDE PAGES (expect 200) ====="
+          for g in temp-mail-for-app-signups temp-mail-for-testing-and-qa avoid-spam-after-signing-up understanding-email-verification-flows disposable-inbox-privacy-basics; do
+            printf "%-40s %s\n" "$g" "$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "$BASE/blog/$g")"
+          done
+          echo "===== BLOG INDEX + SITEMAP (expect 200) ====="
+          printf "%-22s %s\n" "blog/" "$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "$BASE/blog/")"
+          printf "%-22s %s\n" "sitemap.xml" "$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "$BASE/sitemap.xml")"
+          echo "new guide urls in sitemap: $(curl -s --max-time 20 "$BASE/sitemap.xml" | grep -c 'temp-mail-for-app-signups\|avoid-spam-after-signing-up\|disposable-inbox-privacy-basics')"
+          echo "===== OG IMAGE META ====="
+          echo "og:image on home: $(grep -c 'og:image' /tmp/home.html || true)"
+          echo "===== ALT-TEXT + DIMENSION COVERAGE ====="
+          python3 - <<'PY'
+          import re
+          h=open('/tmp/home.html').read()
+          imgs=re.findall(r'<img\b[^>]*>', h)
+          print("img tags:", len(imgs))
+          print("with alt:", sum('alt=' in i for i in imgs))
+          print("with width+height:", sum(('width=' in i and 'height=' in i) for i in imgs))
+          print("with loading=lazy:", sum('loading="lazy"' in i for i in imgs))
+          PY
