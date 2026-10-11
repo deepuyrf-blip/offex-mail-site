@@ -1,0 +1,30 @@
+name: tmp-audit-verify
+on:
+  workflow_dispatch:
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Live audit verification
+        run: |
+          set +e
+          BASE="https://mytemp-mail.online"
+          H=$(curl -sL --max-time 30 "$BASE/")
+          echo "home_http: $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$BASE/")"
+          echo "hinglish_marker_ke_liye: $(printf '%s' "$H" | grep -c 'ke liye')"
+          echo "hinglish_marker_address_lo: $(printf '%s' "$H" | grep -c 'Address lo')"
+          echo "hinglish_marker_code_le_lo: $(printf '%s' "$H" | grep -c 'Code le lo')"
+          echo "english_marker_get_my_inbox: $(printf '%s' "$H" | grep -c 'Get my inbox')"
+          echo "english_marker_el_head: $(printf '%s' "$H" | grep -c 'Temp Mail for ElevenLabs')"
+          echo "english_marker_free_disposable: $(printf '%s' "$H" | grep -c 'Free Disposable Email')"
+          echo "english_marker_hero: $(printf '%s' "$H" | grep -c 'Temporary Email')"
+          C=$(curl -sL --max-time 30 "$BASE/contact")
+          echo "contact_http: $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$BASE/contact")"
+          echo "contact_new_email: $(printf '%s' "$C" | grep -c 'support@mytemp-mail.online')"
+          echo "contact_old_email: $(printf '%s' "$C" | grep -c 'support@offexmail.online')"
+          echo "landing_sitemap_http: $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$BASE/landing-sitemap.xml")"
+          echo "ads_js_http: $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$BASE/ads.js")"
+          echo "worker_secret_http: $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$BASE/worker_secret.py")"
+          echo "robots_http: $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$BASE/robots.txt")"
+          echo "sitemap_http: $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$BASE/sitemap.xml")"
+          echo "robots_has_landing_sitemap: $(curl -sL --max-time 30 "$BASE/robots.txt" | grep -c 'landing-sitemap')"
