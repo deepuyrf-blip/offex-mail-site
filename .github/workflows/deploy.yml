@@ -23,6 +23,8 @@ jobs:
         run: |
           mkdir -p ad
           cp audio/*.html audio/_worker.js audio/_headers audio/favicon.svg audio/robots.txt audio/sitemap.xml audio/ads.txt audio/sw.js audio/promo.js audio/styles.css audio/audio-engine.js audio/gradio_client.js ad/
+          mkdir -p ad/images
+          cp audio/images/*.svg ad/images/
           npx --yes wrangler@3 pages deploy ad --project-name=audio --branch=main
       - name: Verify
         run: |

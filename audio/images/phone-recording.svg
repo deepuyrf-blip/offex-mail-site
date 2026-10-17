@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 420" width="760" height="420" role="img" aria-label="Recording clean voice on a phone"><title>Recording clean voice on a phone</title><defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#6366f1"/><stop offset="1" stop-color="#22d3ee"/></linearGradient><linearGradient id="g2" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#22d3ee"/><stop offset="1" stop-color="#d946ef"/></linearGradient><linearGradient id="g3" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#d946ef"/><stop offset="1" stop-color="#6366f1"/></linearGradient></defs><rect width="760" height="420" rx="18" fill="#0d1020"/><rect x="0.5" y="0.5" width="759" height="419" rx="18" fill="none" stroke="#242a48"/>
+<rect x="70" y="70" width="150" height="280" rx="22" fill="#12162a" stroke="#242a48"/>
+<rect x="86" y="98" width="118" height="196" rx="10" fill="#05060d"/>
+<text x="145" y="200" font-family="Inter,system-ui,sans-serif" font-size="20" font-weight="800" fill="#f87171" text-anchor="middle">REC</text>
+<circle cx="145" cy="330" r="9" fill="#eef1fb" opacity="0.6"/>
+<text x="260" y="110" font-family="Inter,system-ui,sans-serif" font-size="16" font-weight="700" fill="#eef1fb" text-anchor="start">Quiet room, soft surfaces</text>
+<text x="260" y="150" font-family="Inter,system-ui,sans-serif" font-size="15" font-weight="500" fill="#9aa3c0" text-anchor="start">Hold 15–20 cm from the mouth</text>
+<text x="260" y="186" font-family="Inter,system-ui,sans-serif" font-size="15" font-weight="500" fill="#9aa3c0" text-anchor="start">Airplane mode on, notifications off</text>
+<text x="260" y="222" font-family="Inter,system-ui,sans-serif" font-size="15" font-weight="500" fill="#9aa3c0" text-anchor="start">Record 10 s of room tone first</text>
+<text x="260" y="258" font-family="Inter,system-ui,sans-serif" font-size="15" font-weight="500" fill="#9aa3c0" text-anchor="start">Speak across the mic, not into it</text>
+</svg>
