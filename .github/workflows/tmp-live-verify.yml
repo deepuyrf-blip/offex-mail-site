@@ -9,6 +9,7 @@ jobs:
         run: |
           base=https://offexmail.online
           fail=0
+          count () { grep -c "$1" 2>/dev/null || true; }
           check () {
             p="$1"; code=$(curl -s -o /tmp/body -w '%{http_code}' --max-time 30 "$base$p")
             echo "STATUS $code  $p  ($(wc -c </tmp/body) bytes)"
@@ -21,14 +22,14 @@ jobs:
 
           echo "===== ADS.TXT ====="
           curl -s --max-time 30 "$base/ads.txt"; echo "---"
-          echo "ads_txt_exact: $(curl -s --max-time 30 "$base/ads.txt" | grep -c 'google.com, pub-9424904813990636, DIRECT, f08c47fec0942fa0')"
+          echo "ads_txt_exact: $(curl -s --max-time 30 "$base/ads.txt" | count 'google.com, pub-9424904813990636, DIRECT, f08c47fec0942fa0')"
 
           echo "===== PUBLISHER ID PER PAGE ====="
           for p in / /remove-background-noise-from-a-recording /clean-up-audio-for-a-podcast \
-                   /how-to-fix-muffled-audio /blog /app-ui; do
-            n=$(curl -s --max-time 30 "$base$p" | grep -c 'ca-pub-9424904813990636')
-            bad=$(curl -s --max-time 30 "$base$p" | grep -c 'ca-pub-7802179098119853')
-            echo "pub_ok $p new=$n old=$bad"
+                   /how-to-fix-muffled-audio /blog /app-ui /about /contact /privacy /terms \
+                   /remove-silence-from-audio-guide /separate-vocals-from-a-song /why-is-my-recording-noisy; do
+            B=$(curl -s --max-time 30 "$base$p")
+            echo "pub_ok $p new=$(echo "$B" | count 'ca-pub-9424904813990636') old=$(echo "$B" | count 'ca-pub-7802179098119853')"
           done
 
           echo "===== HOMEPAGE CONTENT MARKERS ====="
@@ -37,25 +38,32 @@ jobs:
                    'Frequently asked questions' 'oa-glossary' 'images/waveform-before-after.svg' \
                    'images/upload-flow.svg' 'id="removeTool"' 'id="enhanceTool"' 'id="isolateTool"' \
                    'PROCESS_ENDPOINT' 'ENHANCE_ENDPOINT' 'ISOLATE_ENDPOINT' 'adsbygoogle'; do
-            echo "home_marker $(echo "$H" | grep -c "$m")  $m"
+            echo "home_marker $(echo "$H" | count "$m")  $m"
           done
 
           echo "===== NEW GUIDE MARKERS ====="
-          for p in /remove-background-noise-from-a-recording /clean-up-audio-for-a-podcast /how-to-fix-muffled-audio; do
+          for p in /remove-background-noise-from-a-recording /clean-up-audio-for-a-podcast /how-to-fix-muffled-audio /separate-vocals-from-a-song; do
             G=$(curl -s --max-time 30 "$base$p")
-            echo "$p  h1=$(echo "$G" | grep -c '<h1')  jsonld=$(echo "$G" | grep -c 'application/ld+json')  faq=$(echo "$G" | grep -c 'oa-faq')  img=$(echo "$G" | grep -c 'oa-figure-img')  canonical=$(echo "$G" | grep -c 'rel=\"canonical\"')"
+            echo "$p h1=$(echo "$G" | count '<h1') jsonld=$(echo "$G" | count 'application/ld+json') faq=$(echo "$G" | count 'oa-faq') img=$(echo "$G" | count 'oa-figure-img') canonical=$(echo "$G" | count 'rel=\"canonical\"') pub=$(echo "$G" | count 'ca-pub-9424904813990636')"
           done
 
           echo "===== BLOG INDEX ====="
           B=$(curl -s --max-time 30 "$base/blog")
-          echo "blog_articles $(echo "$B" | grep -c 'oa-tile')"
-          echo "blog_links_new $(echo "$B" | grep -c 'separate-vocals-from-a-song')"
+          echo "blog_tiles $(echo "$B" | count 'oa-tile')"
+          echo "blog_has_new $(echo "$B" | count 'separate-vocals-from-a-song')"
+          echo "blog_pub $(echo "$B" | count 'ca-pub-9424904813990636')"
 
           echo "===== SITEMAP ====="
           S=$(curl -s --max-time 30 "$base/sitemap.xml")
-          echo "sitemap_urls $(echo "$S" | grep -c '<loc>')"
-          echo "sitemap_has_new $(echo "$S" | grep -c 'remove-background-noise-from-a-recording')"
-          echo "sitemap_lastmod $(echo "$S" | grep -c '2026-10-17')"
+          echo "sitemap_urls $(echo "$S" | count '<loc>')"
+          echo "sitemap_has_new $(echo "$S" | count 'remove-background-noise-from-a-recording')"
+          echo "sitemap_lastmod $(echo "$S" | count '2026-10-17')"
+
+          echo "===== APP-UI MARKERS ====="
+          A=$(curl -s --max-time 30 "$base/app-ui")
+          for m in 'APPUI_VERSION=2.2' 'scr-remove' 'ca-pub-9424904813990636' 'rel="canonical"'; do
+            echo "appui_marker $(echo "$A" | count "$m")  $m"
+          done
 
           echo "===== ROBOTS ====="
           curl -s --max-time 30 "$base/robots.txt"
