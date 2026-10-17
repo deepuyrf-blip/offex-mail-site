@@ -17,7 +17,7 @@ Before this pass, the live domain served the old package even for `/robots.txt`,
 - Added crawlable footer navigation to the blog and article pages.
 - Added `robots.txt` with a sitemap reference.
 - Added `sitemap.xml` containing the homepage, blog, four articles, and legal pages.
-- Added `ads.txt` for the existing publisher ID: `pub-7802179098119853`.
+- Set `ads.txt` and the AdSense verification snippet to the current publisher ID: `pub-9424904813990636`.
 - Validated all ten HTML pages for a title, description, canonical URL, and working local links.
 
 ## Deployment checklist
@@ -34,7 +34,7 @@ No one can guarantee AdSense approval or a specific Google ranking. Original, us
 
 ## Official references
 
-- [Google AdSense eligibility requirements](https://support.google.com/adsense/answer/9724?hl=en)
-- [Google guidance for pages ready for AdSense](https://support.google.com/adsense/answer/7299563?hl=en)
-- [Google AdSense Program policies](https://support.google.com/adsense/answer/48182?hl=en)
+- [Google AdSense eligibility requirements](https://support.google.com/adsense/answer/9724
+- [Google guidance for pages ready for AdSense](https://support.google.com/adsense/answer/7299563
+- [Google AdSense Program policies](https://support.google.com/adsense/answer/48182
 - [Google Search sitemap documentation](https://developers.google.com/search/docs/crawling-indexing/sitemaps/overview)
