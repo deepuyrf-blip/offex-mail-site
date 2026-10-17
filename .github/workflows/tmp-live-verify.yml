@@ -1,0 +1,64 @@
+name: tmp-live-verify
+on:
+  workflow_dispatch:
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify live Offex Audio site
+        run: |
+          base=https://offexmail.online
+          fail=0
+          check () {
+            p="$1"; code=$(curl -s -o /tmp/body -w '%{http_code}' --max-time 30 "$base$p")
+            echo "STATUS $code  $p  ($(wc -c </tmp/body) bytes)"
+            if [ "$code" != "200" ]; then fail=1; fi
+          }
+          echo "===== HTTP STATUS ====="
+          for p in / /remove-background-noise-from-a-recording /clean-up-audio-for-a-podcast \
+                   /how-to-fix-muffled-audio /blog /app-ui /ads.txt /robots.txt /sitemap.xml \
+                   /images/og-cover.svg /images/noise-removal.svg; do check "$p"; done
+
+          echo "===== ADS.TXT ====="
+          curl -s --max-time 30 "$base/ads.txt"; echo "---"
+          echo "ads_txt_exact: $(curl -s --max-time 30 "$base/ads.txt" | grep -c 'google.com, pub-9424904813990636, DIRECT, f08c47fec0942fa0')"
+
+          echo "===== PUBLISHER ID PER PAGE ====="
+          for p in / /remove-background-noise-from-a-recording /clean-up-audio-for-a-podcast \
+                   /how-to-fix-muffled-audio /blog /app-ui; do
+            n=$(curl -s --max-time 30 "$base$p" | grep -c 'ca-pub-9424904813990636')
+            bad=$(curl -s --max-time 30 "$base$p" | grep -c 'ca-pub-7802179098119853')
+            echo "pub_ok $p new=$n old=$bad"
+          done
+
+          echo "===== HOMEPAGE CONTENT MARKERS ====="
+          H=$(curl -s --max-time 30 "$base/")
+          for m in 'Free online audio tools for clean, clear voice' 'Audio glossary' 'Noise floor' \
+                   'Frequently asked questions' 'oa-glossary' 'images/waveform-before-after.svg' \
+                   'images/upload-flow.svg' 'id="removeTool"' 'id="enhanceTool"' 'id="isolateTool"' \
+                   'PROCESS_ENDPOINT' 'ENHANCE_ENDPOINT' 'ISOLATE_ENDPOINT' 'adsbygoogle'; do
+            echo "home_marker $(echo "$H" | grep -c "$m")  $m"
+          done
+
+          echo "===== NEW GUIDE MARKERS ====="
+          for p in /remove-background-noise-from-a-recording /clean-up-audio-for-a-podcast /how-to-fix-muffled-audio; do
+            G=$(curl -s --max-time 30 "$base$p")
+            echo "$p  h1=$(echo "$G" | grep -c '<h1')  jsonld=$(echo "$G" | grep -c 'application/ld+json')  faq=$(echo "$G" | grep -c 'oa-faq')  img=$(echo "$G" | grep -c 'oa-figure-img')  canonical=$(echo "$G" | grep -c 'rel=\"canonical\"')"
+          done
+
+          echo "===== BLOG INDEX ====="
+          B=$(curl -s --max-time 30 "$base/blog")
+          echo "blog_articles $(echo "$B" | grep -c 'oa-tile')"
+          echo "blog_links_new $(echo "$B" | grep -c 'separate-vocals-from-a-song')"
+
+          echo "===== SITEMAP ====="
+          S=$(curl -s --max-time 30 "$base/sitemap.xml")
+          echo "sitemap_urls $(echo "$S" | grep -c '<loc>')"
+          echo "sitemap_has_new $(echo "$S" | grep -c 'remove-background-noise-from-a-recording')"
+          echo "sitemap_lastmod $(echo "$S" | grep -c '2026-10-17')"
+
+          echo "===== ROBOTS ====="
+          curl -s --max-time 30 "$base/robots.txt"
+
+          echo "VERIFY_DONE fail=$fail"
+          exit $fail
