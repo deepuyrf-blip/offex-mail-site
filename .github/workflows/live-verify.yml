@@ -12,59 +12,45 @@ jobs:
           set -u
           B="https://offexmail.online"
           CB="?cb=${{ github.run_id }}"
+          H=$(curl -s --max-time 30 "$B/$CB")
 
           echo "== STATUS =="
           echo "home            : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$B/$CB")"
           for l in hi es pt ar ru id fr de; do
             echo "hub/$l          : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$B/$l/$CB")"
           done
-          echo "premium.css     : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$B/premium.css?v=4&cb=${{ github.run_id }}")"
-          echo "styles.css      : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$B/styles.css?v=4&cb=${{ github.run_id }}")"
-          echo "sitemap.xml     : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$B/sitemap.xml")"
-          echo "robots.txt      : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$B/robots.txt")"
 
-          H=$(curl -s --max-time 30 "$B/$CB")
-          echo "== HOMEPAGE MARKUP (expect >0) =="
-          echo "oa-mosaic       : $(echo "$H" | grep -c 'class="oa-mosaic"')"
-          echo "oa-row          : $(echo "$H" | grep -c 'class="oa-row"')"
-          echo "oa-pill         : $(echo "$H" | grep -c 'class="oa-pill"')"
-          echo "oa-hero-inner   : $(echo "$H" | grep -c 'oa-hero-inner')"
-          echo "aria-hidden     : $(echo "$H" | grep -c 'class="oa-mosaic" aria-hidden="true"')"
-          echo "hero-h1         : $(echo "$H" | grep -c 'Cut the silence. Keep the signal.')"
-          echo "hero-lede       : $(echo "$H" | grep -c 'hero-lede')"
-          echo "anchor-remove   : $(echo "$H" | grep -c 'id="removeTool"')"
-          echo "anchor-enhance  : $(echo "$H" | grep -c 'id="enhanceTool"')"
-          echo "anchor-isolate  : $(echo "$H" | grep -c 'id="isolateTool"')"
-          echo "switcher        : $(echo "$H" | grep -c 'class="tool-switcher"')"
-          echo "lang-select     : $(echo "$H" | grep -c 'id="langSelect"')"
-          echo "lang-options    : $(echo "$H" | grep -c 'data-lang=')"
-          echo "hreflang        : $(echo "$H" | grep -c 'hreflang=')"
-          echo "adsense-meta    : $(echo "$H" | grep -c 'google-adsense-account')"
-          echo "adsense-script  : $(echo "$H" | grep -c 'adsbygoogle')"
-          echo "css-versioned   : $(echo "$H" | grep -c 'premium.css?v=4')"
-          echo "live-badge      : $(echo "$H" | grep -c 'id="footStatus"')"
+          echo "== HOMEPAGE: OCCURRENCE COUNTS =="
+          echo "oa-mosaic layer : $(printf '%s' "$H" | grep -o 'class="oa-mosaic" aria-hidden="true"' | wc -l)"
+          echo "oa-row          : $(printf '%s' "$H" | grep -o 'class="oa-row"' | wc -l)"
+          echo "oa-pill         : $(printf '%s' "$H" | grep -o 'class="oa-pill"' | wc -l)"
+          echo "oa-hero-inner   : $(printf '%s' "$H" | grep -o 'class="oa-hero-inner"' | wc -l)"
+          echo "hero h1         : $(printf '%s' "$H" | grep -o 'Cut the silence. Keep the signal.' | wc -l)"
+          echo "hero-lede       : $(printf '%s' "$H" | grep -o 'class="hero-lede"' | wc -l)"
+          echo "tool anchors    : $(printf '%s' "$H" | grep -o 'id="removeTool"\|id="enhanceTool"\|id="isolateTool"' | wc -l)"
+          echo "tool-switcher   : $(printf '%s' "$H" | grep -o 'class="tool-switcher"' | wc -l)"
+          echo "lang switcher   : $(printf '%s' "$H" | grep -o 'id="langSelect"' | wc -l)"
+          echo "lang options    : $(printf '%s' "$H" | grep -o 'data-lang=' | wc -l)"
+          echo "hreflang links  : $(printf '%s' "$H" | grep -o 'hreflang=' | wc -l)"
+          echo "adsense meta    : $(printf '%s' "$H" | grep -o 'google-adsense-account' | wc -l)"
+          echo "adsense script  : $(printf '%s' "$H" | grep -o 'adsbygoogle' | wc -l)"
+          echo "css ?v=4 links  : $(printf '%s' "$H" | grep -o 'styles.css?v=4\|premium.css?v=4' | wc -l)"
+          echo "live badge      : $(printf '%s' "$H" | grep -o 'id="footStatus"' | wc -l)"
+          echo "heroWave        : $(printf '%s' "$H" | grep -o 'id="heroWave"' | wc -l)"
+          echo "old stack order : $(printf '%s' "$H" | grep -o 'class="hero-wave" id="heroWave"></div><h1' | wc -l)  (expect 0)"
 
-          A=$(curl -s --max-time 30 "$B/ar/$CB")
-          echo "== ARABIC HUB =="
-          echo "ar-rtl          : $(echo "$A" | grep -c 'dir="rtl"')"
-          echo "ar-oa-mosaic    : $(echo "$A" | grep -c 'class="oa-mosaic"')"
-          echo "ar-oa-hero-inner: $(echo "$A" | grep -c 'oa-hero-inner')"
-          echo "ar-h1           : $(echo "$A" | grep -c 'اقتطع الصمت')"
-          echo "ar-lang-select  : $(echo "$A" | grep -c 'id="langSelect"')"
-          echo "ar-adsense-meta : $(echo "$A" | grep -c 'google-adsense-account')"
-
+          echo "== LIVE premium.css RULES =="
           C=$(curl -s --max-time 30 "$B/premium.css?v=4&cb=${{ github.run_id }}")
-          echo "== LIVE premium.css =="
-          echo "css-bytes       : $(echo "$C" | wc -c)"
-          echo "css-oa-mosaic   : $(echo "$C" | grep -c '^\.oa-mosaic{')"
-          echo "css-oa-row-flex : $(echo "$C" | grep -c 'display:flex!important')"
-          echo "css-mosaic-h    : $(echo "$C" | grep -c -- '--mosaic-h:clamp(300px,42vw,460px)')"
-          echo "css-hero-inner  : $(echo "$C" | grep -c '^\.oa-hero-inner{')"
-          echo "css-clamp-phone : $(echo "$C" | grep -c -- '--mosaic-h:clamp(300px,80vw,344px)')"
-          echo "css-mask        : $(echo "$C" | grep -c 'mask-composite:intersect')"
+          echo "bytes           : $(printf '%s' "$C" | wc -c)"
+          echo "--- .oa-mosaic ---"
+          printf '%s' "$C" | awk '/^\.oa-mosaic\{/{f=1} f{print} /^\}/{if(f){exit}}' | head -30
+          echo "--- .oa-row ---"
+          printf '%s' "$C" | awk '/^\.oa-row\{/{f=1} f{print} /^\}/{if(f){exit}}' | head -20
+          echo "--- phone overrides ---"
+          printf '%s' "$C" | grep -n -- '--mosaic-h:clamp(300px,80vw,344px)\|min-height:clamp(304px,86vw,348px)' | head
           echo "--- headers ---"
-          curl -sI --max-time 30 "$B/premium.css?v=4&cb=${{ github.run_id }}" | grep -iE '^(HTTP|cache-control|content-type|etag|cf-cache-status)' | tr -d '\r'
+          curl -sI --max-time 30 "$B/premium.css?v=4&cb=${{ github.run_id }}" | grep -iE '^(HTTP|cache-control|content-type)' | tr -d '\r'
 
-          echo "== /hf PROXY (expect a non-5xx code) =="
+          echo "== /hf + /health =="
           echo "hf              : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$B/hf")"
-          echo "health          : $(curl -s --max-time 30 "$B/health" | head -c 300)"
+          echo "health          : $(curl -s --max-time 30 "$B/health" | head -c 200)"
