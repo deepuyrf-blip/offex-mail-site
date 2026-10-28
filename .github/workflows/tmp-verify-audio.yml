@@ -1,0 +1,118 @@
+name: TMP verify audio upgrade
+on:
+  workflow_dispatch:
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Live verification of Offex Audio upgrade
+        run: |
+          python3 - <<'PY'
+          import json, re, sys, urllib.request
+
+          BASE = 'https://offexmail.online'
+          NEW = ['fix-clipped-distorted-audio', 'loudness-normalization-explained',
+                 'audio-editing-mistakes-beginners', 'fix-wind-noise-outdoor-recordings']
+          OLD = ['/', '/blog', '/about', '/remove-silence-from-audio-guide',
+                 '/how-to-fix-muffled-audio', '/app-ui', '/privacy']
+          fails = []
+
+          def get(path):
+              req = urllib.request.Request(BASE + path, headers={'User-Agent': 'offex-verify/1.0'})
+              with urllib.request.urlopen(req, timeout=45) as r:
+                  return r.getcode(), r.read().decode('utf-8', 'replace'), dict(r.headers)
+
+          def words(html):
+              return len(re.findall(r"[A-Za-z0-9'\u2019\-]+", re.sub(r'<[^>]+>', ' ', html)))
+
+          print('=== NEW ARTICLES ===')
+          for slug in NEW:
+              try:
+                  code, body, hdrs = get('/' + slug)
+              except Exception as e:
+                  fails.append('%s fetch %s' % (slug, e)); print(slug, 'FETCH FAIL', e); continue
+              art = body[body.find('<article'):body.find('</article>')] if '<article' in body else ''
+              n_h1 = len(re.findall(r'<h1[\s>]', body))
+              n_h2 = len(re.findall(r'<h2[\s>]', body))
+              canon = 'rel="canonical"' in body and ('/%s"' % slug) in body
+              ld = len(re.findall(r'application/ld\+json', body))
+              art_ld = '"@type":"Article"' in body
+              faq_ld = '"@type":"FAQPage"' in body
+              pub = 'ca-pub-9424904813990636' in body
+              prem = 'href="/premium.css"' in body
+              wc = words(art)
+              print('%-38s code=%s h1=%d h2=%d canon=%s ld=%d Article=%s FAQ=%s adsense=%s premium=%s words=%d'
+                    % (slug, code, n_h1, n_h2, canon, ld, art_ld, faq_ld, pub, prem, wc))
+              if code != 200: fails.append(slug + ' code %s' % code)
+              if n_h1 != 1: fails.append(slug + ' h1=%d' % n_h1)
+              if n_h2 < 4: fails.append(slug + ' h2=%d' % n_h2)
+              if not canon: fails.append(slug + ' canonical')
+              if not (art_ld and faq_ld): fails.append(slug + ' json-ld')
+              if not pub: fails.append(slug + ' adsense')
+              if not prem: fails.append(slug + ' premium.css')
+              if wc < 700: fails.append(slug + ' words=%d' % wc)
+
+          print('=== EXISTING PAGES / premium.css ===')
+          for path in OLD:
+              try:
+                  code, body, hdrs = get(path)
+              except Exception as e:
+                  fails.append('%s fetch %s' % (path, e)); print(path, 'FETCH FAIL', e); continue
+              prem = 'href="/premium.css"' in body
+              print('%-38s code=%s premium=%s bytes=%d' % (path, code, prem, len(body)))
+              if code != 200: fails.append('%s code %s' % (path, code))
+              if not prem: fails.append('%s premium.css missing' % path)
+
+          try:
+              code, css, hdrs = get('/premium.css')
+              print('%-38s code=%s type=%s bytes=%d oaAurora=%s' % ('/premium.css', code,
+                    hdrs.get('Content-Type'), len(css), 'oaAurora' in css))
+              if code != 200 or len(css) < 3000: fails.append('premium.css load')
+          except Exception as e:
+              fails.append('premium.css fetch %s' % e)
+
+          print('=== BLOG / SITEMAP ===')
+          code, blog, _ = get('/blog')
+          tiles = {s: ('href="/%s"' % s) in blog for s in NEW}
+          parts = blog.count('"@type":"Article"')
+          print('/blog code=%s tiles=%s ld-article-entries=%d' % (code, tiles, parts))
+          for s, ok in tiles.items():
+              if not ok: fails.append('blog tile ' + s)
+          if code != 200: fails.append('/blog code %s' % code)
+
+          code, sm, _ = get('/sitemap.xml')
+          smurls = {s: ('https://offexmail.online/%s</loc>' % s) in sm for s in NEW}
+          print('/sitemap.xml code=%s urls=%s total=<url>=%d' % (code, smurls, sm.count('<url>')))
+          for s, ok in smurls.items():
+              if not ok: fails.append('sitemap ' + s)
+          if code != 200: fails.append('/sitemap.xml code %s' % code)
+          try:
+              import xml.etree.ElementTree as ET
+              ET.fromstring(sm.encode('utf-8'))
+              print('/sitemap.xml parses as XML: yes')
+          except Exception as e:
+              fails.append('sitemap xml parse %s' % e)
+
+          print('=== TOOLS / WORKER STILL INTACT ===')
+          code, idx, _ = get('/')
+          for tok in ['removeTool', 'enhanceTool', 'isolateTool', 'ca-pub-9424904813990636']:
+              print('index %-24s %s' % (tok, tok in idx))
+              if tok not in idx: fails.append('index ' + tok)
+          code, app, _ = get('/app-ui')
+          for tok in ['APPUI_VERSION=2.2', 'OA-UPBOX-NAME-PCT', 'OA-UPBOX-SEL', 'OA-VIZ', 'scr-remove']:
+              print('app-ui %-23s %s' % (tok, tok in app))
+              if tok not in app: fails.append('app-ui ' + tok)
+          try:
+              req = urllib.request.Request(BASE + '/hf/api/health',
+                                           headers={'User-Agent': 'offex-verify/1.0'})
+              with urllib.request.urlopen(req, timeout=30) as r:
+                  print('/hf proxy status: %s' % r.getcode())
+          except Exception as e:
+              print('/hf proxy probe (non-fatal): %s' % e)
+
+          print('=== RESULT ===')
+          print('FAILURES: %d' % len(fails))
+          for f in fails:
+              print(' - ' + f)
+          sys.exit(1 if fails else 0)
+          PY
