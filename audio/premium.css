@@ -227,41 +227,120 @@ h1,h2,h3,h4,.brand-title,.card-title,.oa-brand,.oa-hero h1{
 }
 
 .oa-mosaic{
+  /* Contained decorative layer: absolute, fixed height, clipped.
+     It is a background texture behind the hero copy and can never add
+     height to the document, whatever the row/pill rules do. */
   --pill-h:46px;
-  position:relative;
-  display:flex;flex-direction:column;align-items:center;
-  width:100%;max-width:1060px;
-  margin:40px auto 10px;
-  padding:10px 0 16px;
+  --mosaic-h:clamp(300px,42vw,460px);
+  position:absolute;
+  left:0;right:0;top:50%;
+  translate:0 -50%;
+  height:var(--mosaic-h);
+  display:flex;flex-direction:column;
+  justify-content:space-between;
+  align-items:flex-start;
+  padding:2px 0;
   overflow:hidden;
-  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 8%,#000 92%,transparent 100%);
-  mask-image:linear-gradient(90deg,transparent 0,#000 8%,#000 92%,transparent 100%);
+  z-index:0;
+  pointer-events:none;
+  opacity:.68;
+  -webkit-mask-image:
+    linear-gradient(90deg,transparent 0,#000 15%,#000 85%,transparent 100%),
+    linear-gradient(180deg,transparent 0,#000 14%,#000 86%,transparent 100%);
+  mask-image:
+    linear-gradient(90deg,transparent 0,#000 15%,#000 85%,transparent 100%),
+    linear-gradient(180deg,transparent 0,#000 14%,#000 86%,transparent 100%);
+  -webkit-mask-composite:source-in;
+  mask-composite:intersect;
 }
 .oa-row{
-  display:flex;align-items:center;justify-content:center;
-  width:100%;margin-top:-1px;
+  /* one flex line, never wraps: the row bleeds past the layer and is clipped */
+  display:flex!important;
+  flex-direction:row!important;
+  flex-wrap:nowrap!important;
+  align-items:center;
+  justify-content:flex-start;
+  width:max-content;
+  min-width:100%;
+  flex:none;
+  margin-left:-9%;
   transform:translateX(var(--shift,0));
+  overflow:hidden;
 }
-.oa-row:first-child{margin-top:0}
+.oa-row > .oa-pill{display:inline-flex!important;flex:0 0 auto!important}
+
+/* the JS-drawn waveform keeps its bars visible at every width */
+.hero-wave,
+:root .app .hero-wave,
+:root .hero-wave{gap:2px;overflow:hidden}
+.hero-wave span,
+:root .app .hero-wave span,
+:root .hero-wave span{min-width:2px}
+
+.oa-hero-inner h1,
+.oa-hero-inner p{text-shadow:0 1px 2px rgba(12,7,3,.42),0 2px 22px rgba(12,7,3,.55)}
+html:root[data-theme="light"] .oa-hero-inner h1,
+html:root[data-theme="light"] .oa-hero-inner p{text-shadow:0 1px 2px rgba(255,255,255,.55),0 2px 20px rgba(250,244,235,.75)}
+
+/* --- hero stage: copy sits on top of the mosaic layer --- */
+.hero,
+:root .app .hero,
+:root .hero{
+  position:relative;
+  overflow:hidden;
+  isolation:isolate;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:clamp(360px,40vw,470px);
+  padding:26px 12px 28px;
+}
+.oa-hero-inner{
+  position:relative;
+  z-index:2;
+  width:100%;
+  max-width:920px;
+  margin:0 auto;
+  display:flex;flex-direction:column;align-items:center;
+}
+.hero::before{
+  /* legibility scrim between the pills and the copy */
+  content:"";
+  position:absolute;inset:0;
+  z-index:1;
+  pointer-events:none;
+  background:radial-gradient(72% 84% at 50% 48%,
+    rgba(18,13,9,.96) 0%,
+    rgba(18,13,9,.86) 34%,
+    rgba(18,13,9,.52) 58%,
+    rgba(18,13,9,.12) 74%,
+    rgba(18,13,9,0) 84%);
+}
+html:root[data-theme="light"] .hero::before{
+  background:radial-gradient(72% 84% at 50% 48%,
+    rgba(250,244,235,.97) 0%,
+    rgba(250,244,235,.88) 34%,
+    rgba(250,244,235,.55) 58%,
+    rgba(250,244,235,.14) 74%,
+    rgba(250,244,235,0) 84%);
+}
 
 @media(max-width:980px){
   .oa-mosaic{--pill-h:42px}
   .oa-pill .oa-wv{--wv:64px;height:18px}
 }
 @media(max-width:760px){
-  .oa-mosaic{--pill-h:40px;margin-top:32px}
-  .oa-row:nth-child(n+5){display:none}
-  .oa-pill:nth-child(n+4){display:none}
+  .oa-mosaic{--pill-h:38px;opacity:.62}
+  .oa-row:nth-child(n+4){display:none!important}   /* three offset rows on phones */
+  .oa-row{margin-left:-16%}
   .oa-pill{padding:0 13px 0 9px;margin-inline:-5px}
   .oa-pill .oa-wv{--wv:54px}
   .oa-pill .oa-ts{font-size:9px}
 }
 @media(max-width:460px){
-  .oa-mosaic{--pill-h:36px}
-  .oa-row:nth-child(n+4){display:none}
-  .oa-pill:nth-child(n+3){display:none}
+  .oa-mosaic{--pill-h:34px;--mosaic-h:clamp(300px,80vw,344px)}
+  .oa-row{margin-left:-22%}
   .oa-pill .oa-wv{--wv:46px;height:16px}
   .oa-pill .oa-ava{width:18px;height:18px}
+  .oa-pill .oa-ts{font-size:8.5px}
 }
 @media(prefers-reduced-motion:reduce){
   .oa-pill{animation:none;transform:rotate(var(--rot,0deg))}
@@ -805,13 +884,14 @@ a.drop{text-decoration:none}
    -------------------------------------------------------------------------- */
 @keyframes oaRise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
 @keyframes oaGlow{0%,100%{opacity:.45}50%{opacity:.85}}
+@keyframes oaFadeIn{from{opacity:0}}
 @media (prefers-reduced-motion:no-preference){
   :root .app .hero,
   :root .hero{animation:oaRise .6s cubic-bezier(.2,.8,.25,1) both}
   :root .app .card,
   :root .app .stat-box,
   .oa-card{animation:oaRise .6s cubic-bezier(.2,.8,.25,1) both;animation-delay:.08s}
-  :root .oa-mosaic{animation:oaRise .8s cubic-bezier(.2,.8,.25,1) both;animation-delay:.14s}
+  :root .oa-mosaic{animation:oaFadeIn .9s ease both;animation-delay:.14s}
 }
 @media (prefers-reduced-motion:reduce){
   :root .oa-pill,
@@ -832,3 +912,65 @@ a.drop{text-decoration:none}
 ::-webkit-scrollbar-track{background:#120d09}
 ::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#4a3728,#2a1f16);border-radius:8px;border:2px solid #120d09}
 ::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,#f0b264,#c46f37)}
+
+/* --------------------------------------------------------------------------
+   15. First-screen budget on phones — keep the headline, the tool switcher
+       and the first tool card above the fold at 360px wide.
+   -------------------------------------------------------------------------- */
+@media(max-width:640px){
+  :root .app{width:calc(100% - 16px);padding:10px 0 44px}
+
+  /* compact top bar: brand + language + theme on one line */
+  :root .app .top-bar{
+    padding:7px 9px;border-radius:18px;gap:8px;flex-wrap:nowrap;margin-bottom:9px;
+  }
+  :root .app .brand-logo{width:27px;height:27px}
+  :root .app .brand-logo .icon{width:15px;height:15px}
+  :root .app .brand-title{font-size:12.5px;letter-spacing:0}
+  :root .app .top-actions{
+    flex:1 1 auto;flex-wrap:nowrap;justify-content:flex-end;gap:5px;min-width:0;
+  }
+  :root .app .top-nav,
+  :root .app .ig-chip,
+  :root .app .badge-creator{display:none}   /* all three live in the footer */
+  :root .app .lang-switcher{gap:4px}
+  :root .app .lang-select{font-size:11px;padding:4px 6px}
+  :root .app .theme-toggle{width:29px;height:29px;border-radius:50%}
+  :root .app .theme-toggle .icon{width:14px;height:14px}
+
+  /* one-line backend / Live status */
+  :root .app .api-bar{
+    padding:6px 10px;border-radius:14px;margin-bottom:9px;gap:8px;flex-wrap:nowrap;
+  }
+  :root .app .api-dot{width:7px;height:7px;box-shadow:0 0 0 3px color-mix(in srgb,var(--signal) 22%,transparent)}
+  :root .app .api-info{flex:1 1 auto;min-width:0}
+  :root .app .api-info h3{font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  :root .app .api-info p{display:none}
+  :root .app .oa-status{font-size:9.5px;padding:3px 8px;flex:none}
+
+  /* hero: contained stage, copy trimmed, mosaic stays a texture */
+  :root .app .hero,
+  :root .hero{
+    min-height:clamp(304px,86vw,348px);
+    padding:8px 10px 14px;
+  }
+  :root .app .hero-wave,
+  :root .hero-wave{height:32px;margin-bottom:11px;max-width:94%;padding:0 10px;gap:1.5px}
+  :root .app .hero h1,
+  :root .hero h1{font-size:clamp(27px,8.6vw,34px);line-height:1.06;letter-spacing:-.03em}
+  :root .hero h1:after{margin-top:10px;width:48px;height:2px}
+  :root .app .hero p,
+  :root .hero p.hero-lede{
+    margin-top:9px;font-size:12.4px;line-height:1.48;max-width:46ch;
+  }
+
+  /* tools are reachable immediately */
+  :root .app .tool-switcher{margin:6px auto 12px;gap:6px}
+  :root .app .tool-switcher a{padding:6px 12px;font-size:12px}
+  :root .app .workspace{gap:14px}
+}
+@media(max-width:380px){
+  :root .app .brand-title{font-size:11.5px}
+  :root .app .lang-select{font-size:10.5px}
+  :root .app .hero h1{font-size:clamp(25px,8.4vw,30px)}
+}
