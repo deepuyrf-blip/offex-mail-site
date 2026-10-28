@@ -1,0 +1,120 @@
+/* ==========================================================================
+   Offex Audio — PREMIUM UI UPGRADE PACK (v2)
+   Load AFTER styles.css on every page:
+   <link rel="stylesheet" href="/styles.css">
+   <link rel="stylesheet" href="/premium.css">
+   Purely visual — no markup or JS changes required. All tools keep working.
+   ========================================================================== */
+
+:root{
+  --oa-grad-text:linear-gradient(120deg,#ffffff 0%,#c7d2fe 45%,#a5f3fc 80%,#f0abfc 100%);
+  --oa-ring:rgba(34,211,238,.35);
+}
+
+/* ---------- Animated aurora background (content pages) ---------- */
+.oa-body{position:relative;overflow-x:hidden;}
+.oa-body::before{
+  content:"";position:fixed;inset:-20%;z-index:-2;pointer-events:none;
+  background:
+    radial-gradient(38% 42% at 18% 22%,rgba(99,102,241,.20),transparent 70%),
+    radial-gradient(34% 38% at 82% 18%,rgba(34,211,238,.16),transparent 70%),
+    radial-gradient(40% 42% at 55% 88%,rgba(217,70,239,.14),transparent 70%);
+  animation:oaAurora 26s ease-in-out infinite alternate;
+}
+.oa-body::after{
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.5;
+  background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+  background-size:56px 56px;
+  mask-image:radial-gradient(70% 60% at 50% 30%,#000 0%,transparent 100%);
+  -webkit-mask-image:radial-gradient(70% 60% at 50% 30%,#000 0%,transparent 100%);
+}
+@keyframes oaAurora{
+  0%{transform:translate3d(-2%,-1%,0) scale(1)}
+  50%{transform:translate3d(2%,1.5%,0) scale(1.06)}
+  100%{transform:translate3d(-1%,2%,0) scale(1.02)}
+}
+
+/* ---------- Header: floating pill nav ---------- */
+.oa-header{
+  top:10px;margin:0 auto;width:min(1080px,calc(100% - 24px));
+  border:1px solid var(--line);border-radius:18px;
+  background:linear-gradient(180deg,rgba(10,12,26,.82),rgba(10,12,26,.66));
+  box-shadow:0 18px 44px rgba(2,4,14,.45);
+}
+.oa-header-in{padding:10px 14px;}
+.oa-brand .mark{transition:transform .3s cubic-bezier(.2,.9,.3,1.4),box-shadow .3s ease;}
+.oa-brand:hover .mark{transform:rotate(-6deg) scale(1.08);box-shadow:0 10px 28px rgba(217,70,239,.45);}
+.oa-nav a{position:relative;}
+.oa-nav a:not(.cta)::after{
+  content:"";position:absolute;left:12px;right:12px;bottom:5px;height:2px;border-radius:2px;
+  background:var(--grad);transform:scaleX(0);transform-origin:left;transition:transform .22s ease;
+}
+.oa-nav a:not(.cta):hover::after{transform:scaleX(1);}
+.oa-nav a.cta{transition:transform .18s ease,box-shadow .18s ease;}
+.oa-nav a.cta:hover{transform:translateY(-2px);box-shadow:0 14px 32px rgba(217,70,239,.42);}
+
+/* ---------- Hero: gradient sweep headline ---------- */
+.oa-hero h1{
+  background:var(--oa-grad-text);background-size:220% 100%;
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:oaSheen 9s ease-in-out infinite;
+}
+@keyframes oaSheen{0%,100%{background-position:0% 0}50%{background-position:100% 0}}
+.oa-kicker{box-shadow:0 0 0 1px rgba(34,211,238,.18),0 8px 22px rgba(34,211,238,.10);}
+
+/* ---------- Cards: hover lift + gradient border ---------- */
+.oa-card{position:relative;}
+.oa-tile{position:relative;overflow:hidden;}
+.oa-tile::before{
+  content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;
+  background:linear-gradient(135deg,rgba(99,102,241,.55),transparent 40%,transparent 60%,rgba(34,211,238,.5));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+  opacity:0;transition:opacity .25s ease;
+}
+.oa-tile:hover::before{opacity:1;}
+.oa-tile:hover h3{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;}
+
+/* ---------- Buttons: sheen sweep ---------- */
+.oa-btn.primary,.btn-primary{position:relative;overflow:hidden;}
+.oa-btn.primary::after,.btn-primary::after{
+  content:"";position:absolute;top:0;bottom:0;width:44%;left:-60%;pointer-events:none;
+  background:linear-gradient(105deg,transparent,rgba(255,255,255,.55),transparent);
+  transform:skewX(-18deg);transition:left .55s ease;
+}
+.oa-btn.primary:hover::after,.btn-primary:hover::after{left:130%;}
+.oa-btn:focus-visible,.oa-nav a:focus-visible,.oa-tile:focus-visible{
+  outline:2px solid var(--oa-ring);outline-offset:2px;
+}
+
+/* ---------- FAQ: smooth accent ---------- */
+.oa-faq details{transition:border-color .2s ease,background .2s ease,transform .2s ease;}
+.oa-faq details:hover{transform:translateX(3px);}
+
+/* ---------- Figures: subtle zoom ---------- */
+.oa-figure-img{transition:transform .5s ease,box-shadow .3s ease;}
+.oa-figure:hover .oa-figure-img{transform:scale(1.012);box-shadow:var(--glow);}
+
+/* ---------- Footer: nicer columns ---------- */
+.oa-footer a{transition:color .15s ease,padding-left .2s ease;}
+.oa-footer a:hover{padding-left:6px;}
+
+/* ---------- Scrollbar (WebKit) ---------- */
+::-webkit-scrollbar{width:11px;height:11px;}
+::-webkit-scrollbar-track{background:var(--ink);}
+::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#3b3f63,#23273f);border-radius:8px;border:2px solid var(--ink);}
+::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,#6366f1,#22d3ee);}
+
+/* ---------- Selection ---------- */
+::selection{background:rgba(99,102,241,.45);color:#fff;}
+
+/* ---------- Entrance animation (progressive enhancement) ---------- */
+@media (prefers-reduced-motion:no-preference){
+  .oa-hero,.oa-card{animation:oaRise .55s cubic-bezier(.2,.8,.25,1) both;}
+  .oa-card{animation-delay:.08s;}
+}
+@keyframes oaRise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+/* ---------- Light theme: keep grid subtle ---------- */
+:root[data-theme="light"] .oa-body::after{opacity:.28;}
