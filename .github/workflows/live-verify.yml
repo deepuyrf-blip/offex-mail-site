@@ -1,0 +1,70 @@
+name: Live verify (temporary)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Live checks
+        run: |
+          set -u
+          B="https://offexmail.online"
+          CB="?cb=${{ github.run_id }}"
+
+          echo "== STATUS =="
+          echo "home            : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$B/$CB")"
+          for l in hi es pt ar ru id fr de; do
+            echo "hub/$l          : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$B/$l/$CB")"
+          done
+          echo "premium.css     : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$B/premium.css?v=4&cb=${{ github.run_id }}")"
+          echo "styles.css      : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$B/styles.css?v=4&cb=${{ github.run_id }}")"
+          echo "sitemap.xml     : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$B/sitemap.xml")"
+          echo "robots.txt      : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$B/robots.txt")"
+
+          H=$(curl -s --max-time 30 "$B/$CB")
+          echo "== HOMEPAGE MARKUP (expect >0) =="
+          echo "oa-mosaic       : $(echo "$H" | grep -c 'class="oa-mosaic"')"
+          echo "oa-row          : $(echo "$H" | grep -c 'class="oa-row"')"
+          echo "oa-pill         : $(echo "$H" | grep -c 'class="oa-pill"')"
+          echo "oa-hero-inner   : $(echo "$H" | grep -c 'oa-hero-inner')"
+          echo "aria-hidden     : $(echo "$H" | grep -c 'class="oa-mosaic" aria-hidden="true"')"
+          echo "hero-h1         : $(echo "$H" | grep -c 'Cut the silence. Keep the signal.')"
+          echo "hero-lede       : $(echo "$H" | grep -c 'hero-lede')"
+          echo "anchor-remove   : $(echo "$H" | grep -c 'id="removeTool"')"
+          echo "anchor-enhance  : $(echo "$H" | grep -c 'id="enhanceTool"')"
+          echo "anchor-isolate  : $(echo "$H" | grep -c 'id="isolateTool"')"
+          echo "switcher        : $(echo "$H" | grep -c 'class="tool-switcher"')"
+          echo "lang-select     : $(echo "$H" | grep -c 'id="langSelect"')"
+          echo "lang-options    : $(echo "$H" | grep -c 'data-lang=')"
+          echo "hreflang        : $(echo "$H" | grep -c 'hreflang=')"
+          echo "adsense-meta    : $(echo "$H" | grep -c 'google-adsense-account')"
+          echo "adsense-script  : $(echo "$H" | grep -c 'adsbygoogle')"
+          echo "css-versioned   : $(echo "$H" | grep -c 'premium.css?v=4')"
+          echo "live-badge      : $(echo "$H" | grep -c 'id="footStatus"')"
+
+          A=$(curl -s --max-time 30 "$B/ar/$CB")
+          echo "== ARABIC HUB =="
+          echo "ar-rtl          : $(echo "$A" | grep -c 'dir="rtl"')"
+          echo "ar-oa-mosaic    : $(echo "$A" | grep -c 'class="oa-mosaic"')"
+          echo "ar-oa-hero-inner: $(echo "$A" | grep -c 'oa-hero-inner')"
+          echo "ar-h1           : $(echo "$A" | grep -c 'اقتطع الصمت')"
+          echo "ar-lang-select  : $(echo "$A" | grep -c 'id="langSelect"')"
+          echo "ar-adsense-meta : $(echo "$A" | grep -c 'google-adsense-account')"
+
+          C=$(curl -s --max-time 30 "$B/premium.css?v=4&cb=${{ github.run_id }}")
+          echo "== LIVE premium.css =="
+          echo "css-bytes       : $(echo "$C" | wc -c)"
+          echo "css-oa-mosaic   : $(echo "$C" | grep -c '^\.oa-mosaic{')"
+          echo "css-oa-row-flex : $(echo "$C" | grep -c 'display:flex!important')"
+          echo "css-mosaic-h    : $(echo "$C" | grep -c -- '--mosaic-h:clamp(300px,42vw,460px)')"
+          echo "css-hero-inner  : $(echo "$C" | grep -c '^\.oa-hero-inner{')"
+          echo "css-clamp-phone : $(echo "$C" | grep -c -- '--mosaic-h:clamp(300px,80vw,344px)')"
+          echo "css-mask        : $(echo "$C" | grep -c 'mask-composite:intersect')"
+          echo "--- headers ---"
+          curl -sI --max-time 30 "$B/premium.css?v=4&cb=${{ github.run_id }}" | grep -iE '^(HTTP|cache-control|content-type|etag|cf-cache-status)' | tr -d '\r'
+
+          echo "== /hf PROXY (expect a non-5xx code) =="
+          echo "hf              : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$B/hf")"
+          echo "health          : $(curl -s --max-time 30 "$B/health" | head -c 300)"
