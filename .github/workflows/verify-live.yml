@@ -1,0 +1,96 @@
+name: Verify live audio site
+on:
+  workflow_dispatch:
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify live pages
+        run: |
+          python3 - <<'PY'
+          import urllib.request, re, collections, sys
+          BASE = "https://offexmail.online"
+          PAGES = ["/", "/about", "/blog", "/contact", "/terms", "/privacy",
+                   "/remove-echo-reverb", "/app-ui", "/how-to-fix-muffled-audio",
+                   "/remove-silence-from-audio-guide", "/separate-vocals-from-a-song",
+                   "/why-is-my-recording-noisy"]
+          HING = re.compile(r"\b(karein|ke liye|nahi|dobara|dabate|rakhein|jayegi|milengi|pehle|phir|abhi|alag|thoda|kijiye|chahiye|upar|hai|hain)\b")
+          MODALS = ["aboutModal", "termsModal", "privacyModal", "contactModal"]
+          fail = 0
+          print("%-34s %5s %7s %5s %5s %7s %5s %6s" % ("PAGE", "CODE", "BYTES", "DUP", "META", "PREMIUM", "MODAL", "HING"))
+          for p in PAGES:
+              req = urllib.request.Request(BASE + p, headers={"User-Agent": "Mozilla/5.0 verify", "Cache-Control": "no-cache"})
+              try:
+                  with urllib.request.urlopen(req, timeout=45) as r:
+                      code = r.status
+                      body = r.read().decode("utf-8", "replace")
+              except Exception as e:
+                  print("%-34s ERROR %s" % (p, e)); fail += 1; continue
+              ids = re.findall(r'\sid="([^"]+)"', body)
+              dups = {k: v for k, v in collections.Counter(ids).items() if v > 1}
+              meta = 'name="google-adsense-account"' in body and 'content="ca-pub-9424904813990636"' in body
+              prem = "/premium.css" in body
+              mods = sum(body.count('id="%s"' % m) for m in MODALS)
+              hing = len(HING.findall(body))
+              print("%-34s %5d %7d %5d %5s %7s %5d %6d" % (p, code, len(body), len(dups), meta, prem, mods, hing))
+              if dups: print("   DUPLICATE IDS:", dups)
+              if code != 200 or dups or not meta or not prem or mods or hing: fail += 1
+
+          req = urllib.request.Request(BASE + "/", headers={"User-Agent": "Mozilla/5.0 verify", "Cache-Control": "no-cache"})
+          home = urllib.request.urlopen(req, timeout=45).read().decode("utf-8", "replace")
+          print("\n--- HOMEPAGE CONTENT CHECKS ---")
+          def chk(label, cond, extra=""):
+              global fail
+              print(("PASS " if cond else "FAIL ") + label + ((" :: " + extra) if extra else ""))
+              if not cond: fail += 1
+          english = [
+              "Enter your value (default: 0.02 sec)",
+              "Upload a separate audio file for this tool. It does not depend on the Remove Silence output.",
+              "Upload audio for the Enhancer",
+              "Upload audio for the enhancer first...",
+              "You will get both the voice-only and the BGM-only file together.",
+              "Upload audio for Isolation",
+              "High quality (best result, slightly slower)",
+              "Upload an audio file above first, then isolate.",
+              "Server is slow, retrying",
+              "the file uploads automatically when you press Process.",
+              "Upload audio first to use Remove Silence.",
+              "Keep the silence value between 0 and 10 seconds.",
+              "Upload a separate audio file first to use Enhance Audio.",
+              "Upload a separate audio file first to use Voice / BGM Isolation.",
+              "The file is not ready yet.",
+              "MP3 failed",
+          ]
+          for s in english:
+              chk("english string present: " + s[:52], s in home)
+          chk("compat span enhanceStatusCompat", 'id="enhanceStatusCompat"' in home)
+          chk("compat span separationStatusCompat", 'id="separationStatusCompat"' in home)
+          chk("top nav Guides", 'class="top-nav"' in home and 'href="/blog">Guides' in home)
+          chk("top nav About", 'href="/about">About' in home)
+          chk("top nav Contact", 'href="/contact">Contact' in home)
+          chk("footer slash blog", 'href="/blog">Blog' in home)
+          chk("footer slash about", 'href="/about">About Us' in home)
+          chk("footer slash terms", 'href="/terms">Terms' in home)
+          chk("footer slash privacy", 'href="/privacy">Privacy Policy' in home)
+          chk("footer slash contact", 'href="/contact">Contact Us' in home)
+          chk("copyright brand", "&copy; 2026 Offex Audio" in home or "\u00a9 2026 Offex Audio \u00b7 Made by Deepu \u00b7 All Rights Reserved." in home)
+          chk("no old brand string", "Silence Remove From Audio \u00b7 Made with Deepu" not in home)
+          chk("removeTool intact", 'id="removeTool"' in home)
+          chk("enhanceTool intact", 'id="enhanceTool"' in home)
+          chk("isolateTool intact", 'id="isolateTool"' in home)
+          chk("processingStatus intact", 'id="processingStatus"' in home)
+          chk("enhanceStatus visible intact", 'id="enhanceStatus"' in home)
+          chk("separationStatus visible intact", 'id="separationStatus"' in home)
+          chk("readyToast intact", 'id="readyToast"' in home)
+          chk("hf proxy endpoint", 'location.origin+"/hf"' in home)
+          chk("process endpoint", "/process_audio" in home)
+          chk("enhance endpoint", "/enhance_audio" in home)
+          chk("isolate endpoint", "/isolate_voice_bgm" in home)
+          chk("adsense loader intact", "adsbygoogle.js?client=ca-pub-9424904813990636" in home)
+          chk("premium.css linked", "/premium.css" in home)
+          chk("styles.css linked", "/styles.css" in home)
+          chk("no modal markup", sum(home.count('id="%s"' % m) for m in MODALS) == 0)
+          chk("no hinglish on homepage", len(HING.findall(home)) == 0)
+          print("\nFAILURES:", fail)
+          sys.exit(1 if fail else 0)
+          PY
