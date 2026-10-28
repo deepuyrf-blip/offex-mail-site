@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-lang="en">
 <head>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9424904813990636" crossorigin="anonymous"></script>
 <meta name="google-adsense-account" content="ca-pub-9424904813990636">
@@ -16,12 +16,14 @@
 <meta property="og:description" content="Free, practical audio editing guides: remove background noise, clean up podcast audio, separate vocals, fix muffled sound and record clean voice.">
 <meta property="og:url" content="https://offexmail.online/blog">
 <meta property="og:site_name" content="Offex Audio">
-<meta property="og:image" content="https://offexmail.online/images/og-cover.svg">
+<meta property="og:image" content="https://offexmail.online/images/og-cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Offex Audio free online audio tools">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Audio Editing Guides and Tutorials | Offex Audio">
 <meta name="twitter:description" content="Free, practical audio editing guides: remove background noise, clean up podcast audio, separate vocals, fix muffled sound and record clean voice.">
-<meta name="twitter:image" content="https://offexmail.online/images/og-cover.svg">
+<meta name="twitter:image" content="https://offexmail.online/images/og-cover.png">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="apple-touch-icon" href="/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -42,7 +44,21 @@
       <a href="/#isolateTool">Voice / BGM</a>
       <a href="/blog">Guides</a>
       <a href="/about">About</a>
-      <a class="cta" href="/">Open tools</a>
+      <div class="lang-switcher">
+        <label for="langSelect">Language</label>
+        <select id="langSelect" class="lang-select" aria-label="Language">
+          <option value="/" data-lang="en">English</option>
+          <option value="/hi/" data-lang="hi">हिन्दी</option>
+          <option value="/es/" data-lang="es">Español</option>
+          <option value="/pt/" data-lang="pt">Português</option>
+          <option value="/ar/" data-lang="ar">العربية</option>
+          <option value="/ru/" data-lang="ru">Русский</option>
+          <option value="/id/" data-lang="id">Bahasa Indonesia</option>
+          <option value="/fr/" data-lang="fr">Français</option>
+          <option value="/de/" data-lang="de">Deutsch</option>
+        </select>
+      </div>
+            <a class="cta" href="/">Open tools</a>
     </nav>
   </div>
 </header>
@@ -107,5 +123,6 @@
 navigator.serviceWorker.getRegistrations().then(function(rs){rs.forEach(function(r){try{r.unregister();}catch(e){}});}).catch(function(){});
 }catch(e){}})();
 </script>
+<script src="/lang-switch.js" defer></script>
 </body>
 </html>
