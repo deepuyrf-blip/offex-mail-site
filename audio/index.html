@@ -3,6 +3,7 @@
 <head>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9424904813990636"
      crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-9424904813990636">
 <meta charset="UTF-8">
 <link rel="canonical" href="https://offexmail.online/">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -136,6 +137,14 @@ a { color: inherit; }
 }
 .ig-chip:hover { border-color: var(--signal); transform: translateY(-1px); }
 .ig-chip .icon { width: 15px; height: 15px; color: var(--signal); stroke-width: 2.1; }
+.top-nav { display: flex; align-items: center; gap: 2px; flex-wrap: wrap; }
+.top-nav-link {
+  display: inline-flex; align-items: center; text-decoration: none; color: var(--muted);
+  padding: 5px 9px; border-radius: 99px; font-size: 12px; font-weight: 700; letter-spacing: .1px;
+  transition: color .15s ease, background .15s ease;
+}
+.top-nav-link:hover, .top-nav-link:focus-visible { color: var(--text); background: var(--panel-2); }
+@media (max-width: 380px) { .top-nav-link { padding: 5px 7px; font-size: 11.5px; } }
 .theme-toggle {
   width: 34px; height: 34px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel-2);
   color: var(--text); display: grid; place-items: center; cursor: pointer; flex: none;
@@ -1033,6 +1042,11 @@ body{
       <span class="brand-title">Offex Audio</span>
     </div>
     <div class="top-actions">
+      <nav class="top-nav" aria-label="Main">
+        <a class="top-nav-link" href="/blog">Guides</a>
+        <a class="top-nav-link" href="/about">About</a>
+        <a class="top-nav-link" href="/contact">Contact</a>
+      </nav>
       <a class="ig-chip" href="https://www.instagram.com/offexyt" target="_blank" rel="noopener noreferrer">
         <svg class="icon"><use href="#icon-instagram"></use></svg> @offexyt
       </a>
@@ -1099,7 +1113,7 @@ body{
                    inputmode="decimal" aria-label="Silence duration in seconds">
             <span class="custom-unit">sec</span>
           </div>
-          <div class="input-hint">Apni value enter karein (default: 0.02 sec)</div>
+          <div class="input-hint">Enter your value (default: 0.02 sec)</div>
         </div>
 
         <button class="btn-primary" id="removeBtn" disabled data-normal="🔇 Remove Silence">🔇 Remove Silence</button>
@@ -1182,11 +1196,11 @@ body{
       <div class="enhancer-grid">
         <div class="enhancer-info">
           <h2><span class="icon-tile"><svg class="icon"><use href="#icon-sparkle"></use></svg></span> Audio Enhancer Suite</h2>
-          <p>Is tool ke liye alag audio upload karein. Ye Remove Silence ke output par depend nahi karta.</p>
+          <p>Upload a separate audio file for this tool. It does not depend on the Remove Silence output.</p>
           <label class="drop mini-drop" id="enhanceDropZone" for="enhanceFileInput">
             <div>
               <div class="drop-icon"><svg class="icon"><use href="#icon-upload"></use></svg></div>
-              <strong id="enhanceFileText">Enhancer ke liye audio upload karein</strong>
+              <strong id="enhanceFileText">Upload audio for the Enhancer</strong>
               <span id="enhanceFileSub">MP3, WAV, M4A, OGG, FLAC — click or drag & drop</span>
             </div>
           </label>
@@ -1200,7 +1214,7 @@ body{
           </div>
           <input type="hidden" id="enhanceStrength" value="Balanced">
           <button class="btn-secondary" id="enhanceBtn" disabled data-normal="✨ Enhance Audio">✨ Enhance Audio</button>
-          <div class="status-text" id="enhanceStatus">Pehle enhancer ke liye audio upload karein...</div>
+          <div class="status-text" id="enhanceStatus">Upload audio for the enhancer first...</div>
           
 <div class="tool-monitor clean-tool-monitor" id="enhanceMonitor" aria-live="polite">
   <div class="ai-progress-visual" id="enhanceVisual">
@@ -1219,7 +1233,7 @@ body{
     </div>
   </div>
   <div class="compat-progress-data" aria-hidden="true">
-    <span id="enhanceStatus"></span>
+    <span id="enhanceStatusCompat"></span>
     <span id="enhanceLiveState">LIVE</span>
     <span id="enhanceElapsed">0s</span>
     <span id="enhanceEta">—</span>
@@ -1255,14 +1269,14 @@ body{
         <div class="badge">AI Stem Split</div>
       </div>
       <p style="color:var(--muted); font-size:12.5px; line-height:1.6; margin-bottom:14px;">
-        Is tool ke liye bhi alag original audio upload karein. Voice-only aur BGM-only dono files ek saath milengi.
+        Upload a separate original audio file for this tool too. You will get both the voice-only and the BGM-only file together.
       </p>
       <div class="grid">
         <section>
           <label class="drop mini-drop" id="isolateDropZone" for="isolateFileInput">
             <div>
               <div class="drop-icon"><svg class="icon"><use href="#icon-upload"></use></svg></div>
-              <strong id="isolateFileText">Isolation ke liye audio upload karein</strong>
+              <strong id="isolateFileText">Upload audio for Isolation</strong>
               <span id="isolateFileSub">MP3, WAV, M4A, OGG, FLAC — click or drag & drop</span>
             </div>
           </label>
@@ -1274,10 +1288,10 @@ body{
               <span class="value" id="separationModelValue">High quality</span>
             </div>
             <select id="separationModel" class="custom-value" style="width:100%; cursor:pointer;">
-              <option value="High quality">High quality (best result, thoda slow)</option>
+              <option value="High quality">High quality (best result, slightly slower)</option>
               <option value="Faster">Faster (quick result)</option>
             </select>
-            <div class="input-hint">Pehle upar audio file upload karein, phir isolate karein.</div>
+            <div class="input-hint">Upload an audio file above first, then isolate.</div>
           </div>
           <button class="btn-primary" id="isolateBtn" disabled data-normal="🎙️ Isolate Voice & BGM">🎙️ Isolate Voice & BGM</button>
           <div class="status-text" id="separationStatus">Upload audio to start...</div>
@@ -1299,7 +1313,7 @@ body{
     </div>
   </div>
   <div class="compat-progress-data" aria-hidden="true">
-    <span id="separationStatus"></span>
+    <span id="separationStatusCompat"></span>
     <span id="isolateLiveState">LIVE</span>
     <span id="isolateElapsed">0s</span>
     <span id="isolateEta">—</span>
@@ -1427,63 +1441,16 @@ body{
 
   <footer>
     <div class="footer-links">
-      <a href="blog">Blog</a>
-      <a href="about">About Us</a>
-      <a href="terms">Terms &amp; Conditions</a>
-      <a href="privacy">Privacy Policy</a>
-      <a href="contact">Contact Us</a>
+      <a href="/blog">Blog</a>
+      <a href="/about">About Us</a>
+      <a href="/terms">Terms &amp; Conditions</a>
+      <a href="/privacy">Privacy Policy</a>
+      <a href="/contact">Contact Us</a>
       <a class="footer-ig" href="https://www.instagram.com/offexyt" target="_blank" rel="noopener noreferrer"><svg class="icon"><use href="#icon-instagram"></use></svg> @offexyt</a>
     </div>
-    <div class="copyright">© 2026 Silence Remove From Audio · Made with Deepu · All Rights Reserved.</div>
+    <div class="copyright">© 2026 Offex Audio · Made by Deepu · All Rights Reserved.</div>
   </footer>
 
-</div>
-
-<!-- MODALS -->
-<div class="modal-overlay" id="aboutModal">
-  <div class="modal-content" id="about">
-    <button class="modal-close" onclick="closeModal('aboutModal')"><svg class="icon"><use href="#icon-close"></use></svg></button>
-    <h2>About Us</h2>
-    <p><strong>Silence Remove From Audio</strong> is an online audio utility platform created by Deepu. It provides practical tools for creators, students, podcasters and everyday users who need to clean or separate audio without installing desktop software.</p>
-    <p>Current tools include silence removal, speech/noise enhancement and voice/BGM separation. Processing is performed by our connected audio-processing backend and results are returned to the browser for playback and download.</p>
-    <p>We focus on simple controls, transparent processing status and useful results rather than complicated audio-editing workflows.</p>
-  </div>
-</div>
-
-<div class="modal-overlay" id="termsModal">
-  <div class="modal-content" id="terms">
-    <button class="modal-close" onclick="closeModal('termsModal')"><svg class="icon"><use href="#icon-close"></use></svg></button>
-    <h2>Terms & Conditions</h2>
-    <p>By using this website, you agree to use the service lawfully and responsibly.</p>
-    <ul>
-      <li><strong>Acceptable use:</strong> Do not upload material you do not have permission to process, or use the service for unlawful activity.</li>
-      <li><strong>Uploads:</strong> You are responsible for the audio files you submit and for having the rights necessary to process them.</li>
-      <li><strong>Processing:</strong> Audio is processed by a remote backend. Processing time and availability can vary with file length, server load and network conditions.</li>
-      <li><strong>Results:</strong> Automated audio processing can introduce artifacts. Always review downloaded results before publishing or using them commercially.</li>
-      <li><strong>Availability:</strong> We may perform maintenance or temporarily limit processing. We do not promise uninterrupted service.</li>
-    </ul>
-  </div>
-</div>
-
-<div class="modal-overlay" id="privacyModal">
-  <div class="modal-content" id="privacy">
-    <button class="modal-close" onclick="closeModal('privacyModal')"><svg class="icon"><use href="#icon-close"></use></svg></button>
-    <h2>Privacy Policy</h2>
-    <p>We collect limited technical information needed to operate the service. Anonymous visitor activity may be counted to display basic usage statistics. We do not intentionally collect IP addresses as part of the visitor counter.</p>
-    <p>When you upload audio, the file is sent to our processing backend. Processed audio and source files may be retained in a private administrator archive for operational purposes and are subject to the configured retention period. Do not upload confidential or sensitive recordings unless you are comfortable with remote processing.</p>
-    <p>We do not sell uploaded audio recordings. We may use essential hosting, security and infrastructure providers to operate the website and processing service.</p>
-    <p>For privacy questions or deletion requests, contact <a href="mailto:deepu.yrf@gmail.com">deepu.yrf@gmail.com</a>.</p>
-  </div>
-</div>
-
-<div class="modal-overlay" id="contactModal">
-  <div class="modal-content" id="contact">
-    <button class="modal-close" onclick="closeModal('contactModal')"><svg class="icon"><use href="#icon-close"></use></svg></button>
-    <h2>Contact Us</h2>
-    <p>For support, bug reports, feature requests, privacy questions or business enquiries, email:</p>
-    <p><strong><a href="mailto:deepu.yrf@gmail.com">deepu.yrf@gmail.com</a></strong></p>
-    <p>Please include the tool name, a short description of the problem and (when useful) the exact error message.</p>
-  </div>
 </div>
 
 <div class="ready-toast" id="readyToast" role="status" aria-live="assertive">
@@ -1853,7 +1820,7 @@ async function uploadFileToBackend(kind,file){
       try{return await uploadOnce(kind,file,t)}
       catch(e){lastErr=e;console.warn("Upload attempt failed:",t,e?.message||e)}
     }
-    if(round===0){setUploadLabel(kind,"Server slow hai, dobara try ho raha hai…");await new Promise(r=>setTimeout(r,2500))}
+    if(round===0){setUploadLabel(kind,"Server is slow, retrying…");await new Promise(r=>setTimeout(r,2500))}
   }
   throw lastErr||new Error("Upload failed");
 }
@@ -1884,7 +1851,7 @@ async function setUpload(kind,file){
       renderUpload(kind,{phase:"done",pct:100,done:file.size,totalText:" MB",title:"Uploaded",speedText:sec>0?"avg "+fmtSpeed(file.size/sec):"—",eta:sec>0?"in "+(sec<60?sec.toFixed(1)+"s":formatEta(sec)):"",note:""});
     }catch(error){
       uploadedFiles[kind]=null;console.error(error);
-      renderUpload(kind,{phase:"warn",title:"Will upload on Process",done:file.size,totalText:" MB",eta:"",note:"Pre-upload nahi hui — Process dabate hi file automatically upload ho jayegi."});
+      renderUpload(kind,{phase:"warn",title:"Will upload on Process",done:file.size,totalText:" MB",eta:"",note:"Pre-upload did not run — the file uploads automatically when you press Process."});
     }finally{setUploadButtonsLocked(false)}
   }else{
     renderUpload(kind,{phase:"done",pct:100,done:file.size,totalText:" MB",title:"Ready",speedText:"local",eta:"in a moment",note:"Server offline — processing will use the in-browser fallback engine."});
@@ -1898,7 +1865,7 @@ $("toastClose").addEventListener("click",()=>$("readyToast").classList.remove("s
 function chooseEnhanceMode(mode){$("enhanceStrength").value=mode;document.querySelectorAll(".enhance-mode").forEach(b=>{const active=b.dataset.mode===mode;b.classList.toggle("active",active);b.setAttribute("aria-checked",active?"true":"false")});if(enhanceFile&&!busy.enhance)$("enhanceStatus").textContent=`Mode: ${mode} — ready to enhance.`}
 document.querySelectorAll(".enhance-mode").forEach(b=>b.addEventListener("click",()=>chooseEnhanceMode(b.dataset.mode)));
 async function removeSilence(){
-  if(!removeFile){alert("Remove Silence ke liye pehle audio upload karein.");return}
+  if(!removeFile){alert("Upload audio first to use Remove Silence.");return}
   if(busy.remove)return;
   const btn=$("removeBtn");busy.remove=true;setBusy(btn,true,"Processing Silence");
   resetMonitor("remove","REMOVE SILENCE",clientEstimate("remove",fileDurations.remove));
@@ -1906,7 +1873,7 @@ async function removeSilence(){
   $("resultBadge").textContent="Processing";
   try{
     const raw=Number($("seconds").value);
-    if(!Number.isFinite(raw)||raw<0||raw>10)throw new Error("Silence value 0 se 10 seconds ke beech rakhein.");
+    if(!Number.isFinite(raw)||raw<0||raw>10)throw new Error("Keep the silence value between 0 and 10 seconds.");
     const seconds=Math.round(raw*100)/100;$("seconds").value=seconds.toFixed(2);
     addLog("remove",`Input: ${removeFile.name} · keep silence: ${seconds}s`,"info");
     let url=null;
@@ -1945,7 +1912,7 @@ async function removeSilence(){
   }finally{busy.remove=false;stopClock("remove");setBusy(btn,false)}
 }
 async function enhanceAudio(){
-  if(!enhanceFile){alert("Enhance Audio ke liye pehle alag audio file upload karein.");return}
+  if(!enhanceFile){alert("Upload a separate audio file first to use Enhance Audio.");return}
   if(busy.enhance)return;
   const btn=$("enhanceBtn");busy.enhance=true;setBusy(btn,true,"Enhancing Audio");
   resetMonitor("enhance","AUDIO ENHANCER",clientEstimate("enhance",fileDurations.enhance));
@@ -1985,7 +1952,7 @@ async function enhanceAudio(){
   }finally{busy.enhance=false;stopClock("enhance");setBusy(btn,false)}
 }
 async function isolateVoiceBgm(){
-  if(!isolateFile){alert("Voice / BGM Isolation ke liye pehle alag audio file upload karein.");return}
+  if(!isolateFile){alert("Upload a separate audio file first to use Voice / BGM Isolation.");return}
   if(!client){
     $("separationStatus").textContent="Not connected — voice / BGM separation needs the Hugging Face Space processor.";
     alert("Voice / BGM separation runs on the server AI processor and the Hugging Face Space is not connected right now.\n\nRemove Silence and Enhance Audio still work — they fall back to the in-browser engine.");
@@ -2095,7 +2062,7 @@ async function directDownload(id){
   const link=$(id),kind=id==="downloadLink"?"remove":id==="enhancedDownload"?"enhance":id==="vocalsDownload"?"vocals":"bgm";
   if(downloadBusy[kind])return;
   const url=link.dataset.fileUrl;
-  if(!url){alert("File abhi ready nahi hai.");return}
+  if(!url){alert("The file is not ready yet.");return}
   const baseName=link.dataset.filename||"audio",label=link.dataset.label||"Download";
   const wantMp3=downloadFormat[kind]==="mp3";
   downloadBusy[kind]=true;dlSetBusy(link,true);dlSetState(link,"");dlSetRing(link,0);
@@ -2113,7 +2080,7 @@ async function directDownload(id){
         mp3Blob=await encodeToMp3(srcBlob,f=>{dlSetRing(link,0.45+f*0.55);dlSetText(link,`Encoding MP3… ${Math.round(f*100)}%`)});
       }catch(encErr){
         console.warn("MP3 encode failed, falling back to WAV:",encErr);
-        dlSetText(link,"MP3 fail — WAV de rahe hain");
+        dlSetText(link,"MP3 failed — sending WAV");
         triggerBlobDownload(srcBlob,baseName+".wav");
         dlSetState(link,"done");dlSetRing(link,1);dlSetText(link,"WAV Downloaded");
         setTimeout(()=>{dlSetState(link,"");dlSetBusy(link,false);dlSetText(link,label)},2600);
