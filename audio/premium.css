@@ -118,3 +118,42 @@
 
 /* ---------- Light theme: keep grid subtle ---------- */
 :root[data-theme="light"] .oa-body::after{opacity:.28;}
+
+/* ------------------------------------------------------------------
+   Language switcher (shared by every page and by the localised hubs)
+   ------------------------------------------------------------------ */
+.lang-switcher{display:inline-flex;align-items:center;gap:6px;min-width:0}
+.lang-switcher label{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.lang-select{
+  appearance:none;-webkit-appearance:none;-moz-appearance:none;
+  font:600 11.5px/1.2 var(--font-body,Inter,sans-serif);color:var(--text,#f4ede0);
+  background-color:var(--panel-2,#241d13);
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ab9d84' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6 6-6'/></svg>");
+  background-repeat:no-repeat;background-position:right 7px center;background-size:9px 9px;
+  border:1px solid var(--line,#3a2f1e);border-radius:999px;
+  padding:5px 23px 5px 10px;cursor:pointer;max-width:158px;
+  text-overflow:ellipsis;white-space:nowrap;
+}
+.lang-select:hover,.lang-select:focus-visible{border-color:var(--signal,#e8a13d);color:var(--signal,#e8a13d)}
+.lang-select option{background:var(--panel,#1d170f);color:var(--text,#f4ede0)}
+.lang-return{margin-inline-start:6px;font:700 11px var(--font-body,Inter,sans-serif);color:var(--signal,#e8a13d);text-decoration:none;border-bottom:1px solid currentColor;white-space:nowrap}
+.lang-return:hover{color:var(--signal-strong,#f4b558)}
+
+/* Anchor-styled controls used on the localised hubs, where the processing
+   screen itself lives on the English homepage. */
+a.btn-primary,a.btn-secondary{display:flex;align-items:center;justify-content:center;text-align:center;text-decoration:none}
+a.drop{text-decoration:none}
+.hub-note{
+  margin-top:14px;padding:11px 14px;border:1px solid var(--line,#3a2f1e);
+  border-inline-start:3px solid var(--signal,#e8a13d);border-radius:10px;
+  background:var(--panel-2,#241d13);color:var(--muted,#ab9d84);
+  font-size:12.5px;line-height:1.6;
+}
+
+/* Right-to-left support (Arabic hub) */
+[dir="rtl"] .lang-select{padding:5px 10px 5px 23px;background-position:left 7px center}
+[dir="rtl"] .seo-steps,[dir="rtl"] .seo-content ul,[dir="rtl"] .seo-content ol{padding-inline-start:1.2em}
+[dir="rtl"] .drop,[dir="rtl"] .card-title,[dir="rtl"] .label-row{direction:rtl}
+[dir="rtl"] .enhance-mode.active:after{right:auto;left:6px}
+[dir="rtl"] .status-text{direction:rtl}
+[dir="rtl"] .hero h1,[dir="rtl"] .hero p{letter-spacing:0}

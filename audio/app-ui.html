@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-lang="en">
 <head>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9424904813990636" crossorigin="anonymous"></script>
 <meta name="google-adsense-account" content="ca-pub-9424904813990636">
@@ -16,11 +16,13 @@
 <meta property="og:description" content="The Offex Audio app: remove silence, enhance noisy voice recordings and split voice from background music in your mobile browser. Free and no signup.">
 <meta property="og:url" content="https://offexmail.online/app-ui">
 <meta property="og:site_name" content="Offex Audio">
-<meta property="og:image" content="https://offexmail.online/images/og-cover.svg">
+<meta property="og:image" content="https://offexmail.online/images/og-cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Offex Audio App: Remove Silence and Clean Audio Online">
 <meta name="twitter:description" content="The Offex Audio app: remove silence, enhance noisy voice recordings and split voice from background music in your mobile browser. Free and no signup.">
-<meta name="twitter:image" content="https://offexmail.online/images/og-cover.svg">
+<meta name="twitter:image" content="https://offexmail.online/images/og-cover.png">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="stylesheet" href="/premium.css">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Offex Audio App","url":"https://offexmail.online/app-ui","description":"Mobile-friendly browser app for removing silence, enhancing noisy voice recordings and separating voice from background music.","applicationCategory":"MultimediaApplication","operatingSystem":"Web Browser","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"author":{"@type":"Person","name":"Deepu"}}</script>
@@ -206,7 +208,16 @@ select{background:#050b1c;border:1px solid var(--line2);color:var(--text);border
       <h1 id="brandTitle">Offex <span>Audio</span></h1>
       <p id="brandTag" data-i18n="tagline">Audio Studio</p>
     </div>
-    <div class="status checking" id="livePill"><i class="dot"></i><span id="liveText">Checking\u2026</span></div>
+    <div class="lang-switcher"><label for="langSelect">Language</label><select id="langSelect" class="lang-select" aria-label="Language"><option value="/" data-lang="en">English</option>
+          <option value="/hi/" data-lang="hi">हिन्दी</option>
+          <option value="/es/" data-lang="es">Español</option>
+          <option value="/pt/" data-lang="pt">Português</option>
+          <option value="/ar/" data-lang="ar">العربية</option>
+          <option value="/ru/" data-lang="ru">Русский</option>
+          <option value="/id/" data-lang="id">Bahasa Indonesia</option>
+          <option value="/fr/" data-lang="fr">Français</option>
+          <option value="/de/" data-lang="de">Deutsch</option></select></div>
+    <div class="status checking" id="livePill"><i class="dot"></i><span id="liveText">Checking&#8230;</span></div>
   </div>
 
   <!-- ============================ REMOVE SILENCE ============================ -->
@@ -1123,5 +1134,6 @@ select{background:#050b1c;border:1px solid var(--line2);color:var(--text);border
   }catch(e){}
 })();
 </script>
+<script src="/lang-switch.js" defer></script>
 </body>
 </html>

@@ -170,7 +170,12 @@ async function spaceOnline(env) {
 function applyCachePolicy(url, res) {
   const p = url.pathname.toLowerCase();
   const ct = String(res.headers.get("content-type") || "").toLowerCase();
-  const isHTML = ct.indexOf("text/html") !== -1 || p === "/app-ui" || /\.html$/.test(p);
+  const isHTML =
+    ct.indexOf("text/html") !== -1 ||
+    p === "/app-ui" ||
+    /\.html$/.test(p) ||
+    p === "/" ||
+    /^\/[a-z]{2}(?:-[a-z]{2})?\/?$/.test(p);
 
   if (p === "/sw.js" || isHTML) {
     const h = new Headers(res.headers);
@@ -180,7 +185,17 @@ function applyCachePolicy(url, res) {
     return new Response(res.body, { status: res.status, statusText: res.statusText, headers: h });
   }
 
-  if (/\.(?:js|css|svg|png|jpe?g|webp|gif|ico|woff2?|ttf|otf)$/.test(p)) {
+  // Unversioned stylesheets and scripts change on every deploy, so they get a
+  // short max-age plus stale-while-revalidate: fast repeat loads, but a new
+  // deploy reaches returning visitors within the hour instead of a week.
+  if (/\.(?:js|css)$/.test(p)) {
+    const h = new Headers(res.headers);
+    h.set("Cache-Control", "public, max-age=3600, stale-while-revalidate=86400");
+    return new Response(res.body, { status: res.status, statusText: res.statusText, headers: h });
+  }
+
+  // Images, icons and fonts are content-stable; cache them hard.
+  if (/\.(?:svg|png|jpe?g|webp|gif|ico|woff2?|ttf|otf)$/.test(p)) {
     const h = new Headers(res.headers);
     h.set("Cache-Control", "public, max-age=604800");
     return new Response(res.body, { status: res.status, statusText: res.statusText, headers: h });

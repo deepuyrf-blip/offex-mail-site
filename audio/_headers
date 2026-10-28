@@ -19,15 +19,22 @@
 /sw.js
   Cache-Control: no-cache, no-store, must-revalidate
 
-# Versioned, non-executing static assets are safe to cache hard.
+# Non-executing static assets: short max-age + stale-while-revalidate, so
+# a deploy reaches returning visitors within the hour.
 /audio-engine.js
-  Cache-Control: public, max-age=604800
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
 
 /gradio_client.js
-  Cache-Control: public, max-age=604800
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
 
 /styles.css
-  Cache-Control: public, max-age=604800
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+
+/premium.css
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
 
 /promo.js
-  Cache-Control: public, max-age=604800
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+
+# Localised hubs (/hi, /es, /pt, /ar, /ru, /id, /fr, /de) are HTML and are
+# covered by the HTML rule in _worker.js (always revalidate).
