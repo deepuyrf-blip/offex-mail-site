@@ -8,22 +8,27 @@ jobs:
       - name: Verify live pages
         run: |
           python3 - <<'PY'
-          import urllib.request, re, collections, sys
+          import urllib.request, re, collections, sys, time, hashlib
           BASE = "https://offexmail.online"
+          CB = "?cb=%d" % int(time.time())
           PAGES = ["/", "/about", "/blog", "/contact", "/terms", "/privacy",
                    "/remove-echo-reverb", "/app-ui", "/how-to-fix-muffled-audio",
                    "/remove-silence-from-audio-guide", "/separate-vocals-from-a-song",
                    "/why-is-my-recording-noisy"]
           HING = re.compile(r"\b(karein|ke liye|nahi|dobara|dabate|rakhein|jayegi|milengi|pehle|phir|abhi|alag|thoda|kijiye|chahiye|upar|hai|hain)\b")
           MODALS = ["aboutModal", "termsModal", "privacyModal", "contactModal"]
+
+          def fetch(path, bust):
+              url = BASE + path + (CB if bust else "")
+              req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 verify", "Cache-Control": "no-cache", "Pragma": "no-cache"})
+              with urllib.request.urlopen(req, timeout=45) as r:
+                  return r.status, r.read().decode("utf-8", "replace")
+
           fail = 0
-          print("%-34s %5s %7s %5s %5s %7s %5s %6s" % ("PAGE", "CODE", "BYTES", "DUP", "META", "PREMIUM", "MODAL", "HING"))
+          print("%-34s %5s %7s %5s %5s %7s %5s %6s %6s" % ("PAGE", "CODE", "BYTES", "DUP", "META", "PREMIUM", "MODAL", "HING", "ADSNS"))
           for p in PAGES:
-              req = urllib.request.Request(BASE + p, headers={"User-Agent": "Mozilla/5.0 verify", "Cache-Control": "no-cache"})
               try:
-                  with urllib.request.urlopen(req, timeout=45) as r:
-                      code = r.status
-                      body = r.read().decode("utf-8", "replace")
+                  code, body = fetch(p, True)
               except Exception as e:
                   print("%-34s ERROR %s" % (p, e)); fail += 1; continue
               ids = re.findall(r'\sid="([^"]+)"', body)
@@ -32,16 +37,20 @@ jobs:
               prem = "/premium.css" in body
               mods = sum(body.count('id="%s"' % m) for m in MODALS)
               hing = len(HING.findall(body))
-              print("%-34s %5d %7d %5d %5s %7s %5d %6d" % (p, code, len(body), len(dups), meta, prem, mods, hing))
+              adsn = body.count("adsbygoogle")
+              print("%-34s %5d %7d %5d %5s %7s %5d %6d %6d" % (p, code, len(body), len(dups), meta, prem, mods, hing, adsn))
               if dups: print("   DUPLICATE IDS:", dups)
+              if not meta:
+                  print("   >>> META MISSING. head snippet:")
+                  for ln in body.splitlines()[:9]:
+                      print("   | " + ln[:160])
               if code != 200 or dups or not meta or not prem or mods or hing: fail += 1
 
-          req = urllib.request.Request(BASE + "/", headers={"User-Agent": "Mozilla/5.0 verify", "Cache-Control": "no-cache"})
-          home = urllib.request.urlopen(req, timeout=45).read().decode("utf-8", "replace")
+          code, home = fetch("/", True)
           print("\n--- HOMEPAGE CONTENT CHECKS ---")
-          def chk(label, cond, extra=""):
+          def chk(label, cond):
               global fail
-              print(("PASS " if cond else "FAIL ") + label + ((" :: " + extra) if extra else ""))
+              print(("PASS " if cond else "FAIL ") + label)
               if not cond: fail += 1
           english = [
               "Enter your value (default: 0.02 sec)",
@@ -73,7 +82,7 @@ jobs:
           chk("footer slash terms", 'href="/terms">Terms' in home)
           chk("footer slash privacy", 'href="/privacy">Privacy Policy' in home)
           chk("footer slash contact", 'href="/contact">Contact Us' in home)
-          chk("copyright brand", "&copy; 2026 Offex Audio" in home or "\u00a9 2026 Offex Audio \u00b7 Made by Deepu \u00b7 All Rights Reserved." in home)
+          chk("copyright brand", "2026 Offex Audio \u00b7 Made by Deepu \u00b7 All Rights Reserved." in home)
           chk("no old brand string", "Silence Remove From Audio \u00b7 Made with Deepu" not in home)
           chk("removeTool intact", 'id="removeTool"' in home)
           chk("enhanceTool intact", 'id="enhanceTool"' in home)
@@ -87,6 +96,7 @@ jobs:
           chk("enhance endpoint", "/enhance_audio" in home)
           chk("isolate endpoint", "/isolate_voice_bgm" in home)
           chk("adsense loader intact", "adsbygoogle.js?client=ca-pub-9424904813990636" in home)
+          chk("adsense meta present", 'name="google-adsense-account"' in home)
           chk("premium.css linked", "/premium.css" in home)
           chk("styles.css linked", "/styles.css" in home)
           chk("no modal markup", sum(home.count('id="%s"' % m) for m in MODALS) == 0)
