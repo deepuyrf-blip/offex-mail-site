@@ -1,0 +1,48 @@
+name: Temp verify audio light theme
+
+on:
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check live audio site (light theme fix)
+        run: |
+          CB=$(date +%s)
+          B="https://offexmail.online"
+          echo "=== STATUS (cache-busted) ==="
+          echo "home        : $(curl -s -o /dev/null -w 'HTTP %{http_code}' --max-time 30 "$B/?cb=$CB")"
+          echo "guide       : $(curl -s -o /dev/null -w 'HTTP %{http_code}' --max-time 30 "$B/remove-hum-and-hiss-from-audio?cb=$CB")"
+          echo "guide .html : $(curl -s -o /dev/null -w 'HTTP %{http_code}' --max-time 30 "$B/remove-hum-and-hiss-from-audio.html?cb=$CB")"
+          echo "hub hi      : $(curl -s -o /dev/null -w 'HTTP %{http_code}' --max-time 30 "$B/hi/?cb=$CB")"
+          echo "hub de      : $(curl -s -o /dev/null -w 'HTTP %{http_code}' --max-time 30 "$B/de/?cb=$CB")"
+          echo "app-ui      : $(curl -s -o /dev/null -w 'HTTP %{http_code}' --max-time 30 "$B/app-ui?cb=$CB")"
+
+          H=$(curl -sL --max-time 30 "$B/?cb=$CB")
+          G=$(curl -sL --max-time 30 "$B/remove-hum-and-hiss-from-audio.html?cb=$CB")
+          U=$(curl -sL --max-time 30 "$B/hi/?cb=$CB")
+          echo "=== CACHE-BUSTER v=5 IN MARKUP ==="
+          echo "home  premium.css?v=5 : $(printf '%s' "$H" | grep -o 'premium.css?v=5' | wc -l)"
+          echo "home  styles.css?v=5  : $(printf '%s' "$H" | grep -o 'styles.css?v=5' | wc -l)"
+          echo "guide premium.css?v=5 : $(printf '%s' "$G" | grep -o 'premium.css?v=5' | wc -l)"
+          echo "guide styles.css?v=5  : $(printf '%s' "$G" | grep -o 'styles.css?v=5' | wc -l)"
+          echo "hub   premium.css?v=5 : $(printf '%s' "$U" | grep -o 'premium.css?v=5' | wc -l)"
+          echo "any   ?v=4 leftover   : $(printf '%s%s%s' "$H" "$G" "$U" | grep -o '?v=4' | wc -l)"
+
+          echo "=== SERVED CSS: LIGHT THEME TOKEN BLOCK ==="
+          C=$(curl -sL --max-time 30 "$B/premium.css?v=5&cb=$CB")
+          S=$(curl -sL --max-time 30 "$B/styles.css?v=5&cb=$CB")
+          echo "premium.css bytes          : $(printf '%s' "$C" | wc -c)"
+          echo "styles.css bytes           : $(printf '%s' "$S" | wc -c)"
+          echo "premium light token block  : $(printf '%s' "$C" | grep -c 'html:root\[data-theme="light"\]')"
+          echo "styles  light token block  : $(printf '%s' "$S" | grep -c ':root\[data-theme="light"\]')"
+          echo "premium --heading:#241a10  : $(printf '%s' "$C" | grep -c '\-\-heading:#241a10')"
+          echo "premium --copy:#4a3a2a     : $(printf '%s' "$C" | grep -c '\-\-copy:#4a3a2a')"
+          echo "premium --muted:#4a3a2a    : $(printf '%s' "$C" | grep -c '\-\-muted:#4a3a2a')"
+          echo "premium light patch marker : $(printf '%s' "$C" | grep -c 'Light-theme legibility patch')"
+          echo "styles  --heading token    : $(printf '%s' "$S" | grep -c '\-\-heading:#241a10')"
+          echo "old near-white h2 literal  : $(printf '%s' "$C" | grep -c 'seo-content h2{color:#fdf7ec')"
+          echo "old near-white faq literal : $(printf '%s' "$C" | grep -c 'faq-list summary{color:#fdf7ec')"
+          echo "=== CACHE HEADERS ==="
+          curl -sI --max-time 30 "$B/premium.css?v=5&cb=$CB" | grep -i 'cache-control\|content-type\|cf-cache-status' | tr -d '\r'
