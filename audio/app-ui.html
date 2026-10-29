@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>Offex Audio App: Remove Silence and Clean Audio Online</title>
-<link rel="canonical" href="https://offexmail.online/app-ui">
+<link rel="canonical" href="https://offex.cyou/app-ui">
 <meta name="description" content="The Offex Audio app: remove silence, enhance noisy voice recordings and split voice from background music in your mobile browser. Free and no signup.">
 <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
 <meta name="theme-color" content="#05060d">
@@ -14,18 +14,18 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="Offex Audio App: Remove Silence and Clean Audio Online">
 <meta property="og:description" content="The Offex Audio app: remove silence, enhance noisy voice recordings and split voice from background music in your mobile browser. Free and no signup.">
-<meta property="og:url" content="https://offexmail.online/app-ui">
+<meta property="og:url" content="https://offex.cyou/app-ui">
 <meta property="og:site_name" content="Offex Audio">
-<meta property="og:image" content="https://offexmail.online/images/og-cover.png">
+<meta property="og:image" content="https://offex.cyou/images/og-cover.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Offex Audio App: Remove Silence and Clean Audio Online">
 <meta name="twitter:description" content="The Offex Audio app: remove silence, enhance noisy voice recordings and split voice from background music in your mobile browser. Free and no signup.">
-<meta name="twitter:image" content="https://offexmail.online/images/og-cover.png">
+<meta name="twitter:image" content="https://offex.cyou/images/og-cover.png">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="stylesheet" href="/premium.css?v=5">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Offex Audio App","url":"https://offexmail.online/app-ui","description":"Mobile-friendly browser app for removing silence, enhancing noisy voice recordings and separating voice from background music.","applicationCategory":"MultimediaApplication","operatingSystem":"Web Browser","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"author":{"@type":"Person","name":"Deepu"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Offex Audio App","url":"https://offex.cyou/app-ui","description":"Mobile-friendly browser app for removing silence, enhancing noisy voice recordings and separating voice from background music.","applicationCategory":"MultimediaApplication","operatingSystem":"Web Browser","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"author":{"@type":"Person","name":"Deepu"}}</script>
 
 <!-- Offex Audio app-ui :: APPUI_VERSION=2.2 :: cache-bust build 2026-10-08c :: OA-UPBOX-NAME-PCT OA-UPBOX-SEL OA-VIZ -->
 <meta name="app-ui-version" content="2.2">
@@ -336,7 +336,7 @@ select{background:#050b1c;border:1px solid var(--line2);color:var(--text);border
       <div class="mrow"><div class="ml" data-i18n="more_notifications">Job notifications</div>
         <div class="sw on" id="notifySw"><i></i></div></div>
       <div class="mrow"><div class="ml" data-i18n="more_sound">Notification sound</div><select id="soundSel"></select></div>
-      <div class="mrow"><div class="ml" data-i18n="more_backend">Backend</div><div class="mv" data-i18n="more_backend_value">offexmail.online</div></div>
+      <div class="mrow"><div class="ml" data-i18n="more_backend">Backend</div><div class="mv" data-i18n="more_backend_value">offex.cyou</div></div>
       <div class="mrow"><div class="ml" data-i18n="more_version">Version</div><div class="mv" id="moreVer2">2.0</div></div>
       <button class="btn ghost" id="rewardBtn">Watch an ad to support Offex Audio</button>
       <button class="btn ghost" id="privacyBtn"><span data-i18n="more_privacy">Privacy</span></button>
@@ -387,9 +387,9 @@ select{background:#050b1c;border:1px solid var(--line2);color:var(--text);border
   var state = { remove:null, enhance:null, isolate:null };
   var result = { remove:null, enhance:null, vocals:null, bgm:null };
   var client = null, connecting = null;
-  var proxy = "https://offexmail.online/hf";
+  var proxy = "https://offex.cyou/hf";
   var DIRECT_SPACE = "https://hydui-ytvideo.hf.space";
-  var HEALTH = "https://offexmail.online/health";
+  var HEALTH = "https://offex.cyou/health";
   var EP = { remove:"/process_audio", enhance:"/enhance_audio", isolate:"/isolate_voice_bgm" };
   var live = false, healthTimer = null;
 
@@ -1098,7 +1098,7 @@ select{background:#050b1c;border:1px solid var(--line2);color:var(--text);border
     $("saveVocals").addEventListener("click", function(){ save("isolate","vocals"); });
     $("saveBgm").addEventListener("click", function(){ save("isolate","bgm"); });
     $("clearHist").addEventListener("click", function(){ call("clearHistory"); });
-    $("privacyBtn").addEventListener("click", function(){ call("openLink", "https://offexmail.online/privacy.html"); });
+    $("privacyBtn").addEventListener("click", function(){ call("openLink", "https://offex.cyou/privacy.html"); });
     $("rewardBtn").addEventListener("click", function(){ call("showRewarded"); });
 
     // initial state from native

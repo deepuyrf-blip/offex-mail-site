@@ -22,7 +22,7 @@ jobs:
       - name: Deploy Offex Audio
         run: |
           mkdir -p ad
-          cp audio/*.html audio/_worker.js audio/_headers audio/favicon.svg audio/robots.txt audio/sitemap.xml audio/ads.txt audio/sw.js audio/promo.js audio/styles.css audio/premium.css audio/audio-engine.js audio/gradio_client.js audio/lang-switch.js ad/
+          cp audio/*.html audio/_worker.js audio/_headers audio/_redirects audio/favicon.svg audio/robots.txt audio/sitemap.xml audio/ads.txt audio/sw.js audio/promo.js audio/styles.css audio/premium.css audio/audio-engine.js audio/gradio_client.js audio/lang-switch.js ad/
           mkdir -p ad/images
           cp audio/images/* ad/images/
           # Multilingual hubs: /hi /es /pt /ar /ru /id /fr /de
@@ -37,15 +37,19 @@ jobs:
           echo "MAIL otp-bar    : $(echo "$M" | grep -c 'otp-bar')"
           echo "MAIL autoOpened : $(echo "$M" | grep -c 'autoOpened')"
           echo "MAIL adsterra(0): $(echo "$M" | grep -c 'highperformanceformat\|profitableratecpmnetwork')"
-          echo "AUDIO load      : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://offexmail.online/)"
-          echo "AUDIO app-ui    : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://offexmail.online/app-ui)"
-          echo "AUDIO app-ui htm: $(curl -s --max-time 30 https://offexmail.online/app-ui | grep -c 'scr-remove')"
-          echo "AUDIO app-ui ver: $(curl -s --max-time 30 https://offexmail.online/app-ui | grep -c 'APPUI_VERSION=2.2')"
-          echo "AUDIO upbox    : $(curl -s --max-time 30 https://offexmail.online/app-ui | grep -c 'OA-UPBOX-NAME-PCT')"
-          echo "AUDIO upbox sel: $(curl -s --max-time 30 https://offexmail.online/app-ui | grep -c 'OA-UPBOX-SEL')"
-          echo "AUDIO viz      : $(curl -s --max-time 30 https://offexmail.online/app-ui | grep -c 'OA-VIZ')"
+          # Audio now serves on https://offex.cyou (the old offexmail.online
+          # 301-redirects to it from audio/_worker.js).
+          echo "AUDIO load      : $(curl -sL -o /dev/null -w '%{http_code}' --max-time 30 https://offex.cyou/)"
+          echo "AUDIO app-ui    : $(curl -sL -o /dev/null -w '%{http_code}' --max-time 30 https://offex.cyou/app-ui)"
+          echo "AUDIO app-ui htm: $(curl -sL --max-time 30 https://offex.cyou/app-ui | grep -c 'scr-remove')"
+          echo "AUDIO app-ui ver: $(curl -sL --max-time 30 https://offex.cyou/app-ui | grep -c 'APPUI_VERSION=2.2')"
+          echo "AUDIO upbox    : $(curl -sL --max-time 30 https://offex.cyou/app-ui | grep -c 'OA-UPBOX-NAME-PCT')"
+          echo "AUDIO upbox sel: $(curl -sL --max-time 30 https://offex.cyou/app-ui | grep -c 'OA-UPBOX-SEL')"
+          echo "AUDIO viz      : $(curl -sL --max-time 30 https://offex.cyou/app-ui | grep -c 'OA-VIZ')"
+          echo "AUDIO canonical: $(curl -sL --max-time 30 https://offex.cyou/ | grep -o 'rel=\"canonical\" href=\"[^\"]*\"' | head -1)"
+          echo "AUDIO old->new  : $(curl -s -o /dev/null -w '%{http_code} -> %{redirect_url}' --max-time 30 https://offexmail.online/)"
           echo "AUDIO panel    : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 'https://api.mytemp-mail.online/audio-admin?code=Hyco')"
-          echo "AUDIO app-ui cc : $(curl -sI --max-time 30 https://offexmail.online/app-ui | grep -i '^cache-control' | tr -d '\r')"
+          echo "AUDIO app-ui cc : $(curl -sIL --max-time 30 https://offex.cyou/app-ui | grep -i '^cache-control' | tr -d '\r' | tail -1)"
           for lang in hi es pt ar ru id fr de; do
-            echo "AUDIO hub/$lang   : $(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "https://offexmail.online/$lang/?cb=deploy")"
+            echo "AUDIO hub/$lang   : $(curl -sL -o /dev/null -w '%{http_code}' --max-time 30 "https://offex.cyou/$lang/?cb=deploy")"
           done

@@ -204,9 +204,26 @@ function applyCachePolicy(url, res) {
   return res;
 }
 
+// ---------------------------------------------------------------------------
+// Legacy-host redirect.
+//
+// The audio site now lives on https://offex.cyou. Cloudflare Pages `_redirects`
+// cannot match on hostname, so the host-based 301 is done here instead: any
+// request that still arrives on the old host is redirected to the same path on
+// the new domain. Path and query string are preserved, so
+// https://offexmail.online/app-ui -> https://offex.cyou/app-ui keeps the Android
+// app (which loads the old /app-ui URL) working.
+// ---------------------------------------------------------------------------
+const NEW_ORIGIN = "https://offex.cyou";
+const LEGACY_HOSTS = ["offexmail.online", "www.offexmail.online"];
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+
+    if (LEGACY_HOSTS.includes(url.hostname.toLowerCase())) {
+      return Response.redirect(NEW_ORIGIN + url.pathname + url.search, 301);
+    }
 
     // Lightweight, non-blocking health probe used by the Live / Not connected
     // badge. It reflects the Hugging Face Space, not a local placeholder.

@@ -13,7 +13,7 @@ How the tools work now
 - Voice / BGM     -> server-side AI feature. Shown as "Not connected" unless a
                      processing backend is configured (see BACKEND_URL below).
 
-Files served (Cloudflare Pages project: "audio", domain offexmail.online)
+Files served (Cloudflare Pages project: "audio", domain offex.cyou)
 ------------------------------------------------------------------------
 index.html, _worker.js, styles.css, audio-engine.js, favicon.svg, robots.txt,
 sitemap.xml, ads.txt, sw.js, promo.js, and the guide/legal .html pages.

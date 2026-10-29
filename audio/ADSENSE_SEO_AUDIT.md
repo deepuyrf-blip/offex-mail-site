@@ -23,9 +23,9 @@ Before this pass, the live domain served the old package even for `/robots.txt`,
 ## Deployment checklist
 
 1. Upload the contents of `offexmail-adsense-seo-ready.zip` to the Cloudflare Pages production deployment. Keep `_worker.js` at the project root.
-2. Confirm `https://offexmail.online/robots.txt` returns plain text, not the homepage HTML.
-3. Confirm `https://offexmail.online/sitemap.xml`, `/ads.txt`, `/privacy.html`, `/terms.html`, `/about.html`, and `/contact.html` each return their own content.
-4. In Google Search Console, verify the domain, submit `https://offexmail.online/sitemap.xml`, and request indexing for the important URLs. A sitemap improves discovery but does not guarantee crawling or indexing.
+2. Confirm `https://offex.cyou/robots.txt` returns plain text, not the homepage HTML.
+3. Confirm `https://offex.cyou/sitemap.xml`, `/ads.txt`, `/privacy.html`, `/terms.html`, `/about.html`, and `/contact.html` each return their own content.
+4. In Google Search Console, verify the domain, submit `https://offex.cyou/sitemap.xml`, and request indexing for the important URLs. A sitemap improves discovery but does not guarantee crawling or indexing.
 5. After deployment and indexing signals are established, apply for AdSense. Do not click your own ads, encourage clicks, buy low-quality traffic, or place ads where they can be mistaken for navigation or download controls.
 
 ## Important limitations

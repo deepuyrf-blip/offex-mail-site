@@ -1,0 +1,12 @@
+# Offex Audio — Cloudflare Pages redirects.
+#
+# The audio site now serves on https://offex.cyou. The old domain
+# (offexmail.online) redirects to it with a 301.
+#
+# IMPORTANT: Cloudflare Pages `_redirects` rules match on PATH only — they cannot
+# match on hostname, so the old-domain 301 is NOT expressible here. It is
+# implemented in the advanced-mode worker instead (see audio/_worker.js,
+# "Legacy-host redirect"): any request whose hostname is offexmail.online is
+# answered with a 301 to the same path on https://offex.cyou.
+#
+# Keep any path-level rules below this comment block.
