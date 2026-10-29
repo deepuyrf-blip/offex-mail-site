@@ -20,6 +20,15 @@
   --muted:#c9b8a2;
   --muted-2:#9c8a75;
 
+  /* Text tokens that flip with the theme (never hardcode these literals) */
+  --heading:#fdf7ec;      /* h1-h4, FAQ questions, tile + footer titles */
+  --heading-2:#f6ead9;    /* h3 inside prose */
+  --copy:#e2d5c4;         /* body copy, list items, notes, captions */
+  --copy-strong:#fff9f0;  /* <strong> inside prose */
+  --hover-ink:#ffffff;    /* link / button hover label */
+  --pill-ink:rgba(255,246,234,.90);  /* decorative mosaic pill waveform */
+  --pill-ts:rgba(255,240,224,.60);   /* decorative mosaic pill timestamp */
+
   /* Warm accent light */
   --brand-1:#ffd39a;   /* sand  */
   --brand-2:#f0b264;   /* amber */
@@ -72,9 +81,20 @@
   --line:rgba(96,66,36,.14);
   --line-soft:rgba(96,66,36,.08);
   --line-2:rgba(96,66,36,.24);
-  --text:#2b2018;
-  --muted:#7a6650;
-  --muted-2:#95806a;
+  --text:#241a10;
+  --muted:#4a3a2a;
+  --muted-2:#6b5844;
+  --heading:#241a10;
+  --heading-2:#33261a;
+  --copy:#4a3a2a;
+  --copy-strong:#1c130a;
+  --hover-ink:#1c130a;
+  --pill-ink:rgba(58,40,22,.82);
+  --pill-ts:rgba(90,68,44,.72);
+  --ok:#1f7a45;
+  --bad:#b3371f;
+  --warn:#8a5a00;
+  --danger:#b3371f;
   --signal:#b4741f;
   --signal-strong:#8f5a12;
   --signal-ink:#fff8ee;
@@ -131,7 +151,7 @@ img{max-width:100%}
   text-rendering:optimizeLegibility;
 }
 .oa-body a{color:var(--signal-strong);text-underline-offset:3px}
-.oa-body a:hover{color:#fff}
+.oa-body a:hover{color:var(--hover-ink)}
 .oa-body h1,.oa-body h2,.oa-body h3,.oa-body h4{
   font-family:var(--font-display);
   font-weight:600;
@@ -205,7 +225,7 @@ img{max-width:100%}
 .oa-hero h1{
   font-size:clamp(31px,5.2vw,54px);
   margin:0 0 16px;
-  color:#fdf7ec;
+  color:var(--heading);
   letter-spacing:-.035em;
   line-height:1.02;
   max-width:22ch;
@@ -241,12 +261,12 @@ img{max-width:100%}
   backdrop-filter:blur(20px) saturate(1.2);
   -webkit-backdrop-filter:blur(20px) saturate(1.2);
 }
-.oa-prose h2{font-size:clamp(22px,2.9vw,30px);margin:40px 0 14px;color:#fdf7ec}
-.oa-prose h3{font-size:clamp(17px,2.1vw,21px);margin:28px 0 10px;color:#f6ead9}
-.oa-prose p{margin:15px 0;color:#e2d5c4}
-.oa-prose ul,.oa-prose ol{margin:15px 0;padding-left:22px;color:#e2d5c4}
+.oa-prose h2{font-size:clamp(22px,2.9vw,30px);margin:40px 0 14px;color:var(--heading)}
+.oa-prose h3{font-size:clamp(17px,2.1vw,21px);margin:28px 0 10px;color:var(--heading-2)}
+.oa-prose p{margin:15px 0;color:var(--copy)}
+.oa-prose ul,.oa-prose ol{margin:15px 0;padding-left:22px;color:var(--copy)}
 .oa-prose li{margin:9px 0}
-.oa-prose strong{color:#fff9f0;font-weight:600}
+.oa-prose strong{color:var(--copy-strong);font-weight:600}
 .oa-prose h2:first-child,.oa-prose h3:first-child{margin-top:0}
 .oa-prose blockquote{
   margin:20px 0;padding:2px 0 2px 18px;border-left:2px solid var(--signal);
@@ -265,7 +285,7 @@ img{max-width:100%}
   backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
   transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease,color .18s ease;
 }
-.oa-btn:hover{transform:translateY(-2px);border-color:var(--glass-brd-strong);color:#fff;box-shadow:0 1px 0 rgba(255,255,255,.22) inset,0 20px 40px rgba(18,8,2,.34)}
+.oa-btn:hover{transform:translateY(-2px);border-color:var(--glass-brd-strong);color:var(--hover-ink);box-shadow:0 1px 0 rgba(255,255,255,.22) inset,0 20px 40px rgba(18,8,2,.34)}
 .oa-btn.primary{
   background:linear-gradient(180deg,#2b2118 0%,#151009 100%);
   color:#fff8ee;border:1px solid rgba(255,230,200,.30);
@@ -296,7 +316,7 @@ img{max-width:100%}
   border-color:var(--glass-brd-strong);
   box-shadow:0 1px 0 rgba(255,255,255,.20) inset,0 22px 46px rgba(18,8,2,.34),0 0 34px rgba(240,178,100,.10);
 }
-.oa-tile h3{margin:0 0 7px;font-size:16.5px;color:#fdf7ec;letter-spacing:-.02em;line-height:1.25}
+.oa-tile h3{margin:0 0 7px;font-size:16.5px;color:var(--heading);letter-spacing:-.02em;line-height:1.25}
 .oa-tile p{margin:0;color:var(--muted);font-size:13.8px;line-height:1.55}
 
 /* FAQ */
@@ -304,12 +324,12 @@ img{max-width:100%}
 .oa-faq details{
   border:1px solid var(--glass-brd);
   border-radius:var(--radius-md);
-  background:var(--glass-fill),rgba(255,244,230,.03);
+  background:var(--glass-fill),var(--surface);
   padding:15px 20px;margin:10px 0;
   transition:border-color .2s ease,background .2s ease;
 }
 .oa-faq details[open]{border-color:rgba(255,214,164,.38);background:rgba(240,178,100,.09)}
-.oa-faq summary{cursor:pointer;font-weight:600;color:#fdf7ec;font-size:15.5px;list-style:none;letter-spacing:-.015em}
+.oa-faq summary{cursor:pointer;font-weight:600;color:var(--heading);font-size:15.5px;list-style:none;letter-spacing:-.015em}
 .oa-faq summary::-webkit-details-marker{display:none}
 .oa-faq summary::before{content:"+";color:var(--signal);margin-right:12px;font-weight:600;font-family:var(--font-mono)}
 .oa-faq details[open] summary::before{content:"\2013"}
@@ -321,7 +341,7 @@ img{max-width:100%}
   border-left:2px solid var(--signal);
   background:rgba(240,178,100,.075);
   border-radius:0 16px 16px 0;
-  padding:15px 19px;margin:22px 0;color:#efdfcb;font-size:14.5px;
+  padding:15px 19px;margin:22px 0;color:var(--copy);font-size:14.5px;
 }
 
 /* Footer */
@@ -334,7 +354,7 @@ img{max-width:100%}
 @media(min-width:760px){.oa-footer .cols{grid-template-columns:1.5fr 1fr 1fr 1fr}}
 .oa-footer h4{
   font-family:var(--font-display);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;
-  color:#fdf7ec;margin:0 0 12px;font-weight:600;
+  color:var(--heading);margin:0 0 12px;font-weight:600;
 }
 .oa-footer a{display:block;color:var(--muted);text-decoration:none;padding:5px 0;transition:color .16s ease}
 .oa-footer a:hover{color:var(--signal-strong)}
@@ -361,7 +381,7 @@ img{max-width:100%}
 .oa-glossary .gloss-item{
   margin:0;padding:13px 17px;
   border:1px solid var(--line);border-radius:14px;
-  background:rgba(255,244,230,.035);
+  background:var(--surface);
 }
 .oa-glossary dt{font-weight:600;color:var(--signal-strong);font-size:14px;margin-bottom:4px;letter-spacing:-.01em}
 .oa-glossary dd{margin:0;color:var(--muted);font-size:13.6px;line-height:1.55}
