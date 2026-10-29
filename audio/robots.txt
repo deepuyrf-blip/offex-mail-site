@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://offexmail.online/sitemap.xml
+Sitemap: https://offex.cyou/sitemap.xml
