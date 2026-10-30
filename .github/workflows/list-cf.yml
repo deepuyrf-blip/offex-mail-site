@@ -6,11 +6,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          UA="Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Mobile Safari/537.36"
-          for u in "https://offex.cyou/sitemap.xml" "https://offex.cyou/robots.txt" "https://offex.cyou/" "https://offex.cyou/hi/"; do
-            echo "=== $u"
-            curl -sS -o /tmp/out -w "code=%{http_code} type=%{content_type} size=%{size_download} ip=%{remote_ip}\n" --max-time 25 -A "$UA" "$u" || echo "curl failed: $?"
-            head -c 220 /tmp/out; echo; echo
-          done
-          echo "=== DNS ==="
-          getent hosts offex.cyou || echo "no DNS"
+          GB="Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
+          echo "=== GOOGLEBOT sitemap ==="
+          curl -sS -o /tmp/s -w "code=%{http_code} type=%{content_type} size=%{size_download}\n" --max-time 25 -A "$GB" "https://offex.cyou/sitemap.xml"
+          head -c 200 /tmp/s; echo
+          echo "=== GOOGLEBOT robots ==="
+          curl -sS -o /tmp/r -w "code=%{http_code}\n" --max-time 25 -A "$GB" "https://offex.cyou/robots.txt"
+          cat /tmp/r
+          echo "=== GOOGLEBOT home ==="
+          curl -sS -o /dev/null -w "code=%{http_code}\n" --max-time 25 -A "$GB" "https://offex.cyou/"
+          echo "=== cf headers ==="
+          curl -sSI --max-time 25 -A "$GB" "https://offex.cyou/sitemap.xml" | head -25
+          echo "=== sitemap first 3 locs ==="
+          grep -o "<loc>[^<]*</loc>" /tmp/s | head -3
+          echo "=== sitemap loc count ==="
+          grep -c "<loc>" /tmp/s
